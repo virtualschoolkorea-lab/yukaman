@@ -184,7 +184,7 @@
       return data;
     },
     listPosts: p => remote.call('GET', '/posts' + qs(p)),
-    getPost: id => remote.call('GET', '/posts/' + id),
+    getPost: (id, first) => remote.call('GET', '/posts/' + id + (first ? '?v=1' : '')),     // first = 이 기기에서 처음 여는 질문(조회수 +1)
     join: (nick, invite) => remote.call('POST', '/join', { nick, invite, terms: true }),   // 화면이 동의 칸을 확인한 뒤에만 부른다
     agreeTerms: () => remote.call('POST', '/me/terms', { agree: true }),
     blockUser: id => remote.call('POST', '/blocks', { user_id: id }),
@@ -760,13 +760,13 @@
     high: { g: ['gear-school', 'gear-trip'], c: ['school', 'trip', 'play'] },
     teen: { g: ['gear-trip'], c: ['trip', 'play'] }
   };
-  const shopChips = keys => '<div class="chips shopchips">' + keys.map(k => SHOP_CAT[k]).filter(Boolean).map(c => '<a class="chip" data-cta="chip" href="#/shop/' + esc(c.key) + '"><span class="e">' + esc(c.e) + '</span>' + esc(c.name) + '</a>').join('') + '</div>';
+  // 홈의 소제목은 음영 띠로 구분한다(11-13 운영자 "소 타이틀에는 음영을 넣어서 제목 구분이 가도록")
+  const homeSec = (title, right) => '<div class="sec shade"><h2>' + title + '</h2>' + (right || '') + '</div>';
+  // 용품 칸은 글 두 편만(11-13 운영자: '고르는 법 전체' · 육아템 카테고리 칩 · '육아템 추천받기' 단추를 홈에서 뺌. 카테고리 c는 남겨 둔다)
   function homeGear(key) {
     const a = AGE_GEAR[key] || AGE_GEAR[''], rows = a.g.map(id => GD.items.find(x => x.id === id)).filter(Boolean);
-    return '<div class="sec"><h2>' + (AGE[key] ? '이 나이에 챙길 용품' : '아빠가 고르는 용품') + '</h2><a class="all" href="#/guide/gear">고르는 법 전체 →</a></div>'
-      + '<div class="glist" style="margin-top:0">' + rows.map(grow).join('') + '</div>'
-      + shopChips(a.c)
-      + shopGo('');
+    return homeSec(AGE[key] ? '이 나이에 챙길 용품' : '아빠가 고르는 용품')
+      + '<div class="glist" style="margin-top:0">' + rows.map(grow).join('') + '</div>';
   }
   async function renderHome() {
     setTab('home');
@@ -781,32 +781,35 @@
       + kidCard()
       + kidsRow()
       + agesRow(key)
-      + '<div class="sec"><h2>' + (a ? esc(a.name) + ', 지금 챙길 것' : '지금 챙길 것') + '</h2>' + (a ? '<span>순서대로</span>' : '') + '</div>'
+      + homeSec(a ? esc(a.name) + ', 지금 챙길 것' : '지금 챙길 것', a ? '<span>순서대로</span>' : '')
       + (a && calcS.job !== 'worker' ? '<a class="jobhint" href="#/g/leave-job">회사원 등 고용보험 기준이에요. <b>다른 직종 보기 ›</b></a>' : '')
       + timeline(key, d)
       + homeGear(key)
-      + '<div class="sec"><h2>' + (a ? '이 나이에 맞는 글' : '아빠 가이드') + '</h2>' + (!a ? '<a class="all" href="#/guide">전체 보기 →</a>' : picks.length > (isWide() ? 3 : 4) ? '<a class="all" href="#/guide/age/' + key + '">전체 보기 →</a>' : '') + '</div>'
+      + homeSec(a ? '이 나이에 맞는 글' : '아빠 가이드', !a ? '<a class="all" href="#/guide">전체 보기 →</a>' : picks.length > (isWide() ? 3 : 4) ? '<a class="all" href="#/guide/age/' + key + '">전체 보기 →</a>' : '')
       + '<div class="tiles" style="margin-top:0">' + (isWide() ? picks.slice(0, 3).map(wideTile) : picks.slice(0, 4).map(g => tile(g.e, g.title, '#/g/' + g.id))).join('') + '</div>'
-      // 가이드로 가는 단추(11-05 휴먼쌤 "홈 타일 대신 가이드로 가는 큰 버튼")는 남기되, 글 타일 아래에 테두리 단추로 둔다. 홈에서 가장 큰 파란 단추는 '육아템 추천받기'
-      + '<a class="btn line gomore" href="#/guide">가이드 탭에서 더 많은 정보 보기 →</a>'
-      + '<div id="homeCom">' + (canRead() ? '<div class="sec"><h2>' + (a ? '또래 아빠들 질문' : '질문게시판') + '</h2><a class="all" href="#/community">전체 보기 →</a></div><div class="loading">불러오는 중…</div>' : '') + '</div>'
+      // '가이드 탭에서 더 많은 정보 보기' 단추는 뺐다(11-13 운영자). 가이드는 아래 탭과 위 '전체 보기'로 간다
+      + '<div id="homeCom">' + (canRead() ? homeSec('최근 질문', '<a class="all" href="#/community">전체 보기 →</a>') + '<div class="loading">불러오는 중…</div>' : '') + '</div>'
       + '<p class="foot-note"><a href="terms.html">이용약관</a> · <a href="privacy.html">개인정보 처리방침</a></p>'
       + '</section>';
     window.scrollTo(0, 0);
     bindHomeAge();
-    let posts = [], err = null, locked = !canRead(), peers = false;
+    // 맨 아래 질문게시판: 최근 질문 3개 + 많이 본 질문 3개(11-13 운영자). 많이 본 질문은 최근 질문과 겹치지 않게, 아직 열린 질문이 없으면 그 칸은 그리지 않는다
+    let recent = [], popular = [], err = null, locked = !canRead();
     if (!locked) {
       try {
-        if (key) { posts = (await api('listPosts', { limit: 3, age: key })).posts; peers = posts.length > 0; }
-        if (!posts.length) posts = (await api('listPosts', { limit: 3 })).posts;
+        const both = await Promise.all([api('listPosts', { limit: 3 }), api('listPosts', { limit: 6, sort: 'views' })]);
+        recent = both[0].posts || [];
+        const ids = recent.map(p => p.id);
+        popular = (both[1].posts || []).filter(p => p.views > 0 && ids.indexOf(p.id) < 0).slice(0, 3);
       } catch (e) { if (readDenied(e)) locked = true; else err = e; }
     }
     if (seq !== renderSeq) return;
     const box = $('#homeCom'); if (!box) return;
     box.innerHTML = locked
-      ? '<div class="sec"><h2>질문게시판</h2></div><a class="notice vcta" id="homeLock" href="#/community" style="margin-top:0"><span class="e">🔒</span><span>' + (socialOn() ? '가입한' : '인증한') + ' 아빠끼리 묻고 답해요. <b>' + joinWord() + '</b></span></a>'
-      : '<div class="sec"><h2>' + (peers ? '또래 아빠들 질문' : '질문게시판') + '</h2><a class="all" href="#/community">전체 보기 →</a></div>'
-        + '<div class="list" id="homeList">' + (err ? empty('질문을 못 불러왔어요', '잠시 뒤 다시 열어 주세요') : (posts.length ? posts.map(pcard).join('') : '<a class="notice vcta" href="#/write" style="margin-top:0"><span class="e">🙋</span><span>아직 질문이 없어요. <b>첫 질문하기</b></span></a>')) + '</div>';
+      ? homeSec('질문게시판') + '<a class="notice vcta" id="homeLock" href="#/community" style="margin-top:0"><span class="e">🔒</span><span>' + (socialOn() ? '가입한' : '인증한') + ' 아빠끼리 묻고 답해요. <b>' + joinWord() + '</b></span></a>'
+      : homeSec('최근 질문', '<a class="all" href="#/community">전체 보기 →</a>')
+        + '<div class="list" id="homeList">' + (err ? empty('질문을 못 불러왔어요', '잠시 뒤 다시 열어 주세요') : (recent.length ? recent.map(pcard).join('') : '<a class="notice vcta" href="#/write" style="margin-top:0"><span class="e">🙋</span><span>아직 질문이 없어요. <b>첫 질문하기</b></span></a>')) + '</div>'
+        + (popular.length ? homeSec('많이 본 질문') + '<div class="list homelist">' + popular.map(pcard).join('') + '</div>' : '');
     if (err) fail(err);
   }
 
@@ -821,11 +824,13 @@
   }
   // 가이드 상단 버튼(11-05 휴먼쌤 "'계산기' 다음에 '나들이'를 넣어주고 그다음에 '놀이'" · "'정책/정보/자료실'을 하나로 합쳐줘"). 커뮤니티 잠금 화면의 타일도 이 목록을 쓴다
   const MERGED = [{ key: 'policy', name: '정책', h: '#/guide/policy' }, { key: 'info', name: '정보', h: '#/guide/info' }, { key: 'library', name: '자료실', h: '#/library' }];
+  // 용품을 맨 왼쪽에 두고 가이드 탭의 기본 칸으로 한다(11-13 운영자 "'용품' 탭을 맨 왼쪽으로 옮겨서 기본으로 보여주고")
+  const GUIDE_DEFAULT = 'gear';
   const GUIDE_BTNS = [
+    { h: '#/guide/gear', e: '🎒', name: '용품', on: ['gear'] },        // 11-12 운영 방향 1단계: 용품 고르는 법 글 자리. 상품은 육아템 탭(#/shop)
     { h: '#/guide/leave', e: '💼', name: '육아휴직', on: ['leave'] },
     { h: '#/guide/faq', e: '🙋', name: 'Q&A', on: ['faq'] },
     { h: '#/calc', e: '💰', name: '계산기', on: ['calc'] },
-    { h: '#/guide/gear', e: '🎒', name: '용품', on: ['gear'] },        // 11-12 운영 방향 1단계: 용품 고르는 법 글 자리. 상품은 육아템 탭(#/shop)
     { h: '#/guide/outing', e: '🎡', name: '나들이', on: ['outing'] },
     { h: '#/guide/play', e: '🎮', name: '놀이', on: ['play'] },
     { h: '#/guide/mind', e: '🧠', name: '심리', on: ['mind'] },
@@ -883,18 +888,18 @@
   // '육아템 추천받기' 큰 파란 단추(11-12 운영자 "크게 '육아템 추천받기' 넣어주고 누르면 '육아템' 탭으로" · "파란색 버튼"): 용품 글과 용품 칸의 맨 위. key가 육아템 카테고리면 그 카테고리로 간다
   const shopGo = key => '<a class="btn primary shopgo" data-cta="go" href="#/shop' + (key && SHOP_CAT[key] ? '/' + esc(key) : '') + '">육아템 추천받기 →</a>';
   function renderGuide(cat) {
-    if (!cat) cat = 'leave';
+    if (!cat) cat = GUIDE_DEFAULT;
     if (cat === 'faq') { renderQna(); return; }
     setTab('guide');
     bar(brandBar());
     const items = GD.items.filter(g => g.cat === cat);
     // 용품 칸(11-12): 육아템 카테고리마다 고르는 법 글 한 편(guide-data.js '용품' 절). 맨 위에 파란 '육아템 추천받기' 단추. 광고 칸은 쿠팡 가입 뒤에
+    // 11-13 운영자: 맨 위 안내 글('아빠 몸과 아빠 차에 맞춰 …')은 뺐다. 써 본 후기가 아니라는 말은 글마다 머리에 그대로 있다
     const gearEmpty = '<div class="about">용품 고르는 법 글을 준비하고 있어요.</div>';
-    const gearAbout = '<div class="about"><b>아빠 몸과 아빠 차에 맞춰 고르는 기준</b>을 정리했어요. 써 본 후기가 아니라 공공 자료와 전문 기관 안내로 확인한 내용이에요.</div>';
     view.innerHTML = '<section class="pad">'
       + guideHead(cat)
       + (cat === 'leave' ? calcCard() + '<a class="grow" href="#/calc" style="margin-top:16px"><span class="ge">🧮</span><span class="tx"><b>계산기 모음</b><small>단축근무 · 출산휴가 · 아이 날짜</small></span></a>' : '')
-      + (cat === 'gear' ? shopGo('') + (items.length ? gearAbout : gearEmpty) : '')
+      + (cat === 'gear' ? shopGo('') + (items.length ? '' : gearEmpty) : '')
       + (cat === 'gear' && !items.length ? '' : '<div class="glist">' + (items.length ? items.map(grow).join('') : empty('준비 중이에요', '곧 글이 올라와요'))
         + (cat === 'outing' ? '<a class="grow" href="#/community/play"><span class="ge">🙋</span><span class="tx"><b>아빠들에게 물어보기</b><small>질문게시판 놀이·나들이 칸</small></span></a>' : '') + '</div>')
       + lawBox(lawsFor(items))
@@ -933,7 +938,7 @@
       : g.status === '용품 기준' ? '<div class="draft"><span>✅</span><span>' + dotd(g.updated) + ' 공공 자료와 전문 기관 안내로 확인한 기준이에요. 써 본 후기는 아니에요.</span></div>' : '';
     view.innerHTML = '<section class="pad"><article class="garticle">'
       + '<div class="meta"><span class="badge c-etc">' + esc(c.e || '') + ' ' + esc(c.name || '') + '</span>' + (g.tag ? '<span class="tag ' + tagCls(g.tag) + '">' + esc(g.tag) + '</span>' : '') + '</div>'
-      + '<h1>' + esc(g.title) + '</h1><p class="gsub">' + esc(g.sub) + '</p>' + (g.shop ? shopGo(g.shop) : '') + lawWarn(g, laws) + note
+      + '<h1>' + esc(g.title) + '</h1><p class="gsub">' + esc(g.sub) + '</p>' + lawWarn(g, laws) + note     // 글 맨 위의 '육아템 추천받기'는 뺐다(11-13 운영자). 글 끝의 단추는 그대로
       + blocks(g.body, g)
       + (g.shop ? shopGo(g.shop) : '')     // 다 읽은 뒤에도 한 번 더(읽고 난 뒤가 누를 마음이 가장 클 때)
       + (related.length ? '<div class="gearrel"><b>이 글과 닿는 용품</b><div class="glist">' + related.map(grow).join('') + '</div><a class="lk2" data-cta="rel" href="#/shop">육아템 추천받기 ›</a></div>' : '')
@@ -1303,7 +1308,7 @@
       view.innerHTML = '<section class="pad">' + pageHead('🛍️', '아빠 육아템', '아빠가 고르는 육아용품') + (any ? SHOP_NOTE : '')
         + '<div class="cats">' + SHOP_CATS.map(x => '<a class="cat" href="#/shop/' + esc(x.key) + '"><span class="ge">' + esc(x.e) + '</span><b>' + esc(x.name) + '</b><small>' + esc(shopSubs(x)) + '</small></a>').join('') + '</div>'
         + (any ? SHOP_CATS.map(x => { const list = shopItems(x.key); return list.length ? '<div class="sec"><h2>' + esc(x.name) + '</h2><a class="all" href="#/shop/' + esc(x.key) + '">전체 보기 →</a></div><div class="prods">' + list.slice(0, 2).map(prodCard).join('') + '</div>' : ''; }).join('') + SHOP_NOTES()
-          : shopReady() + '<a class="grow" href="#/guide/gear" style="margin-top:14px"><span class="ge">📚</span><span class="tx"><b>고르는 법 글 먼저 보기</b><small>아기띠 · 카시트 · 집 안 안전 · 장난감 · 캠핑 · 초등</small></span></a>')
+          : shopReady())     // 아래의 '고르는 법 글 먼저 보기'는 뺐다(11-13 운영자)
         + '</section>';
       window.scrollTo(0, 0);
       return;
@@ -1320,7 +1325,7 @@
     // '추천받기'로 온 사람에게 무엇을 보고 고르는지부터 보여 준다(글의 points 세 줄)
     const crit = gearGuide && gearGuide.points
       ? '<div class="critbox"><b>아빠가 고르는 기준</b><ul>' + gearGuide.points.map(p => '<li>' + esc(p) + '</li>').join('') + '</ul><a class="lk2" href="#/g/' + esc(gearGuide.id) + '">고르는 법 자세히 보기 ›</a></div>'
-      : '<a class="grow" href="#/guide/gear" style="margin-top:14px"><span class="ge">📚</span><span class="tx"><b>고르는 법 먼저 보기</b><small>아빠 가이드 · 용품</small></span></a>';
+      : '';     // 고르는 법 글이 없는 카테고리는 기준 상자 없이(11-13 '고르는 법 먼저 보기' 단추를 뺌)
     view.innerHTML = '<section class="pad">' + pageHead(c.e, c.name, shopSubs(c)) + (all.length ? SHOP_NOTE : '')
       + crit
       + (all.length && (c.subs || []).length ? '<div class="chips" id="shopSubs"><button type="button" class="chip' + (shopSub ? '' : ' on') + '" data-sub="">전체</button>' + c.subs.map(s => '<button type="button" class="chip' + (s === shopSub ? ' on' : '') + '" data-sub="' + esc(s) + '">' + esc(s) + '</button>').join('') + '</div>' : '')
@@ -1342,7 +1347,7 @@
     const c = catOf(p.cat), n = p.comments || 0;
     return '<a class="pcard qcard" href="#/p/' + p.id + '" data-keep="1"><div class="meta"><span class="badges"><span class="badge c-' + esc(catCls(p.cat)) + '">' + c.e + ' ' + esc(c.name) + '</span>' + (AGE[p.age] ? '<span class="agetag">' + esc(AGE[p.age].name) + '</span>' : '') + (n ? '' : '<span class="badge c-wait">답을 기다려요</span>') + '</span><span class="time">' + ago(p.created) + '</span></div>'
       + '<h3><span class="qm">Q</span><span class="t">' + esc(p.title) + '</span></h3><p>' + esc(p.preview || '') + '</p>'
-      + '<div class="foot">' + who(p.nick, p.badge, p.rank) + '<span class="cmt">답 ' + n + '</span></div></a>';
+      + '<div class="foot">' + who(p.nick, p.badge, p.rank) + '<span class="cmt">' + (p.views ? '조회 ' + p.views + ' · ' : '') + '답 ' + n + '</span></div></a>';
   }
   const BOARD_HEAD = () => pageHead('🙋', '질문게시판', '아빠끼리 묻고 답해요');
   // 커뮤니티 잠금: 인증 전에는 목록·글·검색을 열지 않고, 왜 닫혀 있는지와 인증하는 길을 보여 준다
@@ -1485,7 +1490,9 @@
     window.scrollTo(0, 0);
     let r;
     const seq = renderSeq;
-    try { r = await api('getPost', id); if (seq !== renderSeq) return; }
+    // 조회수(11-13): 이 기기에서 처음 여는 질문만 센다(새로고침으로 오르지 않게). 본 글 번호는 이 기기에만 300개까지
+    const seen = store.get('seenPosts', []), first = Array.isArray(seen) && seen.indexOf(id) < 0;
+    try { r = await api('getPost', id, first); if (seq !== renderSeq) return; if (first) store.set('seenPosts', seen.concat(id).slice(-300)); }
     catch (e) {
       if (seq !== renderSeq) return;
       if (readDenied(e)) { lockPost(); return; }
@@ -1502,7 +1509,7 @@
     const ph = !me ? '가입하면 답을 쓸 수 있어요' : canWrite() ? '답 쓰기' : '아빠 인증을 하면 답을 쓸 수 있어요';
     view.innerHTML = '<section class="pad">'
       + '<article class="post qitem"><div class="meta"><span class="badges"><span class="badge c-' + esc(catCls(p.cat)) + '">' + c.e + ' ' + esc(c.name) + '</span>' + (AGE[p.age] ? '<span class="agetag">' + esc(AGE[p.age].name) + '</span>' : '') + '</span><span class="time">' + ago(p.created) + '</span></div>'
-      + '<h1><span class="qm">Q</span><span>' + esc(p.title) + '</span></h1><div class="byline">' + who(p.nick, p.badge, p.rank) + '<span>' + ymd(p.created) + '</span></div>'
+      + '<h1><span class="qm">Q</span><span>' + esc(p.title) + '</span></h1><div class="byline">' + who(p.nick, p.badge, p.rank) + '<span>' + ymd(p.created) + (p.views ? ' · 조회 ' + p.views : '') + '</span></div>'
       + '<div class="body">' + rich(p.body) + '</div></article>'
       + '<div class="sec"><h2>답 <span id="cmtN">' + r.comments.length + '</span></h2><small class="note">아빠들이 쓴 답이에요</small></div>'
       + '<div class="cmts" id="cmts">' + (r.comments.length ? r.comments.map(cmtItem).join('') : empty('답을 기다려요', '경험이 있다면 첫 답을 남겨 주세요')) + '</div>'
@@ -1790,6 +1797,10 @@
     if (ap && ap.status === 'pending') return '<div class="vstate wait"><span><b>인증 신청을 확인하고 있어요.</b><br>승인되면 여기에 바로 표시돼요. 초대 코드가 생기면 먼저 쓸 수도 있어요.</span><button type="button" class="edit" id="doVerify">코드 넣기</button></div>';
     return '<div class="vstate"><span><b>아직 인증 전이에요.</b><br>질문게시판은 인증한 아빠만 읽고 쓸 수 있어요.' + (ap && ap.status === 'rejected' ? ' 지난 신청은 승인되지 않았어요. 다시 신청할 수 있어요.' : '') + '</span><button type="button" class="edit" id="doVerify">인증하기</button></div>';
   }
+  // MY 닉네임 왼쪽 그림(11-13 운영자 "프로필은 계급표시로 해주고 관리자는 '관'이라고 표기"): 회원은 계급장, 관리자는 '관', 그 밖(계급을 아직 모를 때)은 닉네임 첫 글자
+  const profilePic = r => r.user.role === 'admin' ? '<span class="big adm" role="img" aria-label="관리자">관</span>'
+    : RANKS[r.rank] ? '<span class="big rkbig" role="img" aria-label="' + RANKS[r.rank].name + '">' + rankMark(r.rank) + '</span>'
+    : '<span class="big">' + esc(first(r.user.nick)) + '</span>';
   // 내 계급과 전체 계급표(11-05 휴먼쌤 "현재 나는 전체 계급중에 어디에 해당하는지"). 점수 얻는 법은 접어 둔다. r.rank === null이면 운영 계정
   const FOLD_EXTRA = true;     // 11-12 운영 방향 1단계: 외출증 · 초대 링크를 화면에서 접는다(코드와 서버는 그대로)
   const rankReq = (label, have, need, unit) => '<div class="rkreq"><span>' + label + '</span><div class="rkbar"><i style="width:' + Math.min(100, Math.round(have / need * 100)) + '%"></i></div><b>' + (have >= need ? '충족' : have + ' / ' + need + unit) + '</b></div>';
@@ -1906,7 +1917,7 @@
     shellNoteMe(r);
     if (r.new_comments) api('seen').catch(() => {});      // 이 화면에 보였으니 다음에는 안 뜬다
     view.innerHTML = '<section class="pad">' + pageHead('😊', 'MY')
-      + '<div class="profile" style="margin-top:12px"><span class="big">' + esc(first(r.user.nick)) + '</span><div class="tx"><b>' + esc(r.user.nick) + '</b><small>' + ymd(r.user.created) + '부터 육아맨 · 질문 ' + r.posts.length + ' · 답 ' + r.comments.length + '</small></div><button type="button" class="edit" id="editNick">닉네임 바꾸기</button></div>'
+      + '<div class="profile" style="margin-top:12px">' + profilePic(r) + '<div class="tx"><b>' + esc(r.user.nick) + '</b><small>' + ymd(r.user.created) + '부터 육아맨 · 질문 ' + r.posts.length + ' · 답 ' + r.comments.length + '</small></div><button type="button" class="edit" id="editNick">닉네임 바꾸기</button></div>'
       + statusBox(r)
       + (canWrite() ? rankBox(r) : '')
       + (r.user.role === 'admin' ? '<a class="glink" href="#/admin"><span>🛠️ 관리자 화면: 신고 · 제보 · 질문 · 회원</span><span>→</span></a>' : '')
@@ -2433,7 +2444,7 @@
     const n = r.name;
     if (n === 'guide' || n === 'calc' || n === 'library' || n === 'garticle') {
       const g = n === 'garticle' ? GD.items.find(x => x.id === r.id) : null;
-      return { top: 'guide', sub: n === 'calc' ? 'calc' : n === 'library' ? 'library' : g ? g.cat : r.cat || 'leave' };
+      return { top: 'guide', sub: n === 'calc' ? 'calc' : n === 'library' ? 'library' : g ? g.cat : r.cat || GUIDE_DEFAULT };
     }
     if (n === 'community' || n === 'post' || n === 'write') return { top: 'community', sub: n === 'community' ? (r.cat || 'all') : '' };
     if (n === 'shop') return { top: 'shop', sub: r.cat || 'all' };

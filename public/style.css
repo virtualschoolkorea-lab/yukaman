@@ -79,7 +79,7 @@ svg { display: block; }
             display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .pcard p { margin: 5px 0 0; font-size: 14px; color: var(--sub); line-height: 1.5; overflow-wrap: anywhere;
            display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
-#homeList .pcard p { display: none; }
+#homeList .pcard p, .homelist .pcard p { display: none; }
 .pcard .foot { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; font-size: 13px; color: var(--sub); font-weight: 700; }
 .pcard .foot .cmt { display: inline-flex; align-items: center; gap: 4px; color: var(--pri); }
 .pcard .foot .cmt svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; }
@@ -137,6 +137,9 @@ svg { display: block; }
 .sec { display: flex; justify-content: space-between; align-items: baseline; margin: 28px 2px 12px; }
 .sec h2 { margin: 0; font-size: 19px; font-weight: 900; letter-spacing: -.02em; }
 .sec span { font-size: 13.5px; color: var(--sub); font-weight: 700; }
+/* 홈 소제목 음영 띠(11-13 운영자 "소 타이틀에는 음영을 넣어서 제목 구분이 가도록"). 노랑은 제목, 파랑은 누르는 것 */
+.sec.shade { align-items: center; margin: 28px 0 12px; padding: 10px 14px; border-radius: 14px; background: var(--but-l); box-shadow: inset 4px 0 0 var(--but); }
+.sec.shade h2 { font-size: 18px; }
 
 /* 글 상세 */
 .post { background: var(--card); border-radius: var(--r); padding: 18px 18px 16px; box-shadow: var(--shadow); margin-top: 4px; }
@@ -199,6 +202,9 @@ textarea.inp { min-height: 180px; resize: none; line-height: 1.6; }
 /* 내 정보 */
 .profile { display: flex; align-items: center; gap: 14px; background: var(--card); border-radius: var(--r); padding: 16px; box-shadow: var(--shadow); margin-top: 4px; }
 .profile .big { flex: none; width: 56px; height: 56px; border-radius: 50%; background: var(--pri-l); color: var(--pri); display: grid; place-items: center; font-size: 24px; font-weight: 900; }
+.profile .big.rkbig { background: none; border-radius: 0; }      /* 계급장 그대로(11-13) */
+.profile .big.rkbig .rk { width: 52px; height: 52px; }
+.profile .big.adm { border-radius: 16px; background: var(--ink); color: var(--bg); font-size: 26px; }   /* 관리자 '관' */
 .profile .tx { flex: 1; min-width: 0; }
 .profile b { display: block; font-size: 18px; font-weight: 900; letter-spacing: -.02em; }
 .profile small { display: block; margin-top: 2px; font-size: 13px; color: var(--sub); font-weight: 600; }
@@ -800,7 +806,7 @@ a.btn { text-align: center; }
   .tile .tag { position: absolute; right: 14px; top: 14px; font-size: 12.5px; padding: 3px 9px; }
   .tiles.center { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .tiles.center .tile:last-child:nth-child(odd) { grid-column: auto; }
-  #homeList { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 0; }
+  #homeList, .homelist { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 0; }
   .glist { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin-top: 14px; }
   .grow small { white-space: normal; }
   .lawbox { margin-top: 14px; }

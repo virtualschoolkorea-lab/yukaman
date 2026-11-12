@@ -42,6 +42,8 @@ MIGRATIONS = [
     "CREATE TRIGGER IF NOT EXISTS posts_ad AFTER DELETE ON posts BEGIN INSERT INTO posts_fts(posts_fts, rowid, title, body) VALUES ('delete', old.id, old.title, old.body); END",
     "CREATE TRIGGER IF NOT EXISTS posts_au AFTER UPDATE OF title, body ON posts BEGIN INSERT INTO posts_fts(posts_fts, rowid, title, body) VALUES ('delete', old.id, old.title, old.body); INSERT INTO posts_fts(rowid, title, body) VALUES (new.id, new.title, new.body); END",
     "INSERT INTO posts_fts(posts_fts) VALUES ('rebuild')",  # 기존 글을 색인에 채운다(몇 번 돌려도 그대로)
+    'ALTER TABLE posts ADD COLUMN views INTEGER NOT NULL DEFAULT 0',   # 2026-11-13 조회수(홈 '많이 본 질문'). 누가 봤는지는 저장하지 않는다
+    'CREATE INDEX IF NOT EXISTS posts_views ON posts (deleted, views)',
 ]
 SEEDS = [os.path.join('seed', 'official.sql'), os.path.join('seed', 'official-update.sql')]
 ID_KEY_FILE = 'yukaman-vsk-id-hash-key.txt'      # 회원번호 해시 열쇠. Pages 비밀 값 ID_HASH_KEY와 같은 값(옛 앱의 열쇠와 다른 파일)

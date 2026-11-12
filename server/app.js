@@ -2,8 +2,8 @@
 // 약속: 응답은 늘 JSON — {ok:true, …} 또는 {ok:false, error:'이름'}(HTTP 상태도 함께). 글자는 모두 다듬어(trim) 길이 한도를 넘기면 거절.
 // 쓰기와 '내 정보'는 머리글 Authorization: Bearer <기기 토큰>. 토큰은 폰이 만든 임의 글자(16~80자)이고, 서버는 SHA-256 해시만 둔다.
 // 커뮤니티는 읽기(목록·글·검색)도 쓰기도 '인증 아빠'만(verified = 1. 2026-11-04 휴먼쌤 "인증 아빠만"). 인증 길 둘: 초대 코드(바로) · 신청서(관리자 승인).
-//  GET    /api/posts?cat=&q=&before=&limit=   글 목록(최신순, 인증 아빠만). before = 이 번호보다 작은 글부터(더 보기). 응답 next = 다음 before 값(없으면 null)
-//  GET    /api/posts/<id>                      글 하나 + 댓글(인증 아빠만)
+//  GET    /api/posts?cat=&q=&before=&limit=   글 목록(최신순, 인증 아빠만). before = 이 번호보다 작은 글부터(더 보기). 응답 next = 다음 before 값(없으면 null). sort=views면 많이 본 순(한 번이라도 열린 글만, next 없음)
+//  GET    /api/posts/<id>[?v=1]                글 하나 + 댓글(인증 아빠만). v=1이면 조회수 +1(글쓴이 본인은 빼고, 화면이 그 기기에서 처음 열 때만 붙인다)
 //  POST   /api/join {nick, invite?, terms:true} 닉네임 정하기(기기 토큰 등록). 새 가입은 약관 동의(terms)가 있어야 한다. 코드가 맞으면 바로 인증. 이미 등록된 토큰이면 그 사용자(existing:true).
 //                                              새 가입이면 복구 코드(recovery, 12자)를 한 번만 돌려준다 — 서버는 해시만 둔다.
 //  POST   /api/recover {code}                  복구 코드로 이 기기(새 토큰)를 그 계정에 붙인다. 이전 기기의 토큰은 그 자리에서 끊기고, 새 복구 코드를 돌려준다(한 번 쓰면 바뀜)
@@ -144,7 +144,7 @@ export async function handleApi(request, env) {
       if (m === 'POST') return ask(request, env);
     }
     if (seg[0] === 'posts' && isId(seg[1]) && !seg[2]) {
-      if (m === 'GET') return getPost(request, env, +seg[1]);
+      if (m === 'GET') return getPost(request, env, +seg[1], u.searchParams);
       if (m === 'DELETE') return deletePost(request, env, +seg[1]);
     }
     if (seg[0] === 'posts' && isId(seg[1]) && seg[2] === 'comments' && !seg[3] && m === 'POST') return addComment(request, env, +seg[1]);
@@ -232,7 +232,7 @@ const ipKey = async request => 'ip:' + (await sha256('ip|' + (request.headers.ge
 
 const BADGE = "CASE WHEN u.role = 'official' THEN 'official' WHEN u.role = 'admin' THEN 'admin' WHEN u.verified = 1 THEN 'dad' ELSE '' END AS badge";
 const badgeOf = u => (u.role === 'official' ? 'official' : u.role === 'admin' ? 'admin' : u.verified === 1 ? 'dad' : '');
-const rowPost = r => ({ id: r.id, cat: r.cat, age: r.age || '', title: r.title, preview: r.preview, created: r.created, comments: r.comment_count, nick: r.nick, uid: r.uid, badge: r.badge || '', rank: r.rank == null ? null : r.rank });
+const rowPost = r => ({ id: r.id, cat: r.cat, age: r.age || '', title: r.title, preview: r.preview, created: r.created, comments: r.comment_count, views: r.views || 0, nick: r.nick, uid: r.uid, badge: r.badge || '', rank: r.rank == null ? null : r.rank });
 const pubUser = u => ({ id: u.id, nick: u.nick, created: u.created, verified: u.verified === 1 && !u.blocked, role: u.role, how: u.verified_how || '', blocked: !!u.blocked, kakao: !!u.kakao_hash, naver: !!u.naver_hash, terms: !!u.terms_at });
 
 // ----- 계급(11-05 휴먼쌤 "1안 좋아 … 짝대기부터해서"): 이병·일병·상병·병장·예비군·민방위. 재미로만 쓰고 권한 차이는 없다 -----
@@ -269,10 +269,13 @@ async function listPosts(request, env, sp) {
   const where = ['p.deleted IS NULL', "u.role != 'official'", 'p.user_id NOT IN (SELECT blocked_id FROM user_blocks WHERE user_id = ?)'], args = [a.user.id];
   if (cat && CATS.includes(cat)) { where.push('p.cat = ?'); args.push(cat); }
   if (age && AGES.includes(age)) { where.push('p.age = ?'); args.push(age); }
-  const words = q ? q.split(/\s+/).filter(Boolean).slice(0, 5) : [];
-  if (before) { where.push('p.id < ?'); args.push(before); }
-  const head = 'SELECT p.id, p.cat, p.age, p.title, substr(p.body, 1, 140) AS preview, p.created, p.comment_count, u.nick, u.id AS uid, ' + BADGE + ' FROM posts p JOIN users u ON u.id = p.user_id WHERE ';
-  const tail = ' ORDER BY p.id DESC LIMIT ?';
+  // sort=views: 많이 본 질문(11-13 홈). 한 번이라도 열린 글만, 다음 쪽 없이 limit개만
+  const byViews = sp.get('sort') === 'views';
+  const words = byViews ? [] : q ? q.split(/\s+/).filter(Boolean).slice(0, 5) : [];
+  if (byViews) where.push('p.views > 0');
+  else if (before) { where.push('p.id < ?'); args.push(before); }
+  const head = 'SELECT p.id, p.cat, p.age, p.title, substr(p.body, 1, 140) AS preview, p.created, p.comment_count, p.views, u.nick, u.id AS uid, ' + BADGE + ' FROM posts p JOIN users u ON u.id = p.user_id WHERE ';
+  const tail = byViews ? ' ORDER BY p.views DESC, p.id DESC LIMIT ?' : ' ORDER BY p.id DESC LIMIT ?';
   let rows = null;
   // 검색 색인(FTS5 trigram, 검수 27): 세 글자 이상인 낱말은 색인으로, 짧은 낱말이나 색인이 없을 때는 LIKE로(글 전체를 훑음)
   if (words.length && words.every(w => Array.from(w).length >= 3)) {
@@ -295,7 +298,7 @@ async function listPosts(request, env, sp) {
   const more = rows.length > limit;
   if (more) rows.pop();
   const ranks = await ranksOf(db, rows.map(x => x.uid));
-  return json({ ok: true, posts: rows.map(x => rowPost({ ...x, rank: rankIn(ranks, x.uid) })), next: more ? rows[rows.length - 1].id : null });
+  return json({ ok: true, posts: rows.map(x => rowPost({ ...x, rank: rankIn(ranks, x.uid) })), next: more && !byViews ? rows[rows.length - 1].id : null });
 }
 
 // 지금 뜨는 글(11-05 휴먼쌤 "핫한 글이 있으면 상위로"): 최근 7일 안에 글쓴이가 아닌 사람 2명 이상이 댓글을 단 글. 혼자 댓글을 달아 올릴 수 없게 사람 수로 센다
@@ -328,20 +331,22 @@ async function ask(request, env) {
   return json({ ok: true });
 }
 
-async function getPost(request, env, id) {
+async function getPost(request, env, id, sp) {
   const a = await reader(request, env.DB);
   if (a.err) return a.err;
   const db = env.DB;
-  const p = await db.prepare('SELECT p.id, p.cat, p.age, p.title, p.body, p.created, p.comment_count, u.nick, u.id AS uid, ' + BADGE + ' '
+  const p = await db.prepare('SELECT p.id, p.cat, p.age, p.title, p.body, p.created, p.comment_count, p.views, u.nick, u.id AS uid, ' + BADGE + ' '
     + 'FROM posts p JOIN users u ON u.id = p.user_id WHERE p.id = ?1 AND p.deleted IS NULL').bind(id).first();
   if (!p) return no('not_found', 404);
   if (await db.prepare('SELECT 1 AS x FROM user_blocks WHERE user_id = ?1 AND blocked_id = ?2').bind(a.user.id, p.uid).first()) return no('user_blocked', 403);
+  // 조회수(11-13): 글쓴이가 아닌 회원이 그 기기에서 처음 열 때(화면이 v=1을 붙인다)만 1 올린다. 누가 봤는지는 남기지 않는다
+  if (sp && sp.get('v') === '1' && p.uid !== a.user.id) { await db.prepare('UPDATE posts SET views = views + 1 WHERE id = ?1').bind(id).run(); p.views = (p.views || 0) + 1; }
   const cs = await db.prepare('SELECT c.id, c.body, c.created, u.nick, u.id AS uid, ' + BADGE + ' FROM comments c JOIN users u ON u.id = c.user_id '
     + 'WHERE c.post_id = ?1 AND c.deleted IS NULL AND c.user_id NOT IN (SELECT blocked_id FROM user_blocks WHERE user_id = ?2) ORDER BY c.id').bind(id, a.user.id).all();
   const list = cs.results || [];
   const ranks = await ranksOf(db, [p.uid].concat(list.map(c => c.uid)));
   return json({ ok: true,
-    post: { id: p.id, cat: p.cat, age: p.age || '', title: p.title, body: p.body, created: p.created, comments: p.comment_count, nick: p.nick, uid: p.uid, badge: p.badge || '', rank: rankIn(ranks, p.uid) },
+    post: { id: p.id, cat: p.cat, age: p.age || '', title: p.title, body: p.body, created: p.created, comments: p.comment_count, views: p.views || 0, nick: p.nick, uid: p.uid, badge: p.badge || '', rank: rankIn(ranks, p.uid) },
     comments: list.map(c => ({ id: c.id, body: c.body, created: c.created, nick: c.nick, uid: c.uid, badge: c.badge || '', rank: rankIn(ranks, c.uid) })) });
 }
 

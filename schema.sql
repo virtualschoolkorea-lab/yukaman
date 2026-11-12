@@ -83,7 +83,8 @@ CREATE TABLE IF NOT EXISTS posts (
   body          TEXT NOT NULL,
   created       TEXT NOT NULL,
   comment_count INTEGER NOT NULL DEFAULT 0,
-  deleted       TEXT
+  deleted       TEXT,
+  views         INTEGER NOT NULL DEFAULT 0   -- 조회수(11-13). 글쓴이가 아닌 회원이 그 기기에서 처음 열 때만 1 올린다. 누가 봤는지는 저장하지 않는다. 기존 표에는 MIGRATIONS로 더함
 );
 CREATE INDEX IF NOT EXISTS posts_list ON posts (deleted, id);
 CREATE INDEX IF NOT EXISTS posts_cat  ON posts (cat, deleted, id);
