@@ -40,7 +40,7 @@ r = await call('GET', '/posts?q=' + encodeURIComponent('육아휴직'));
 ok(r.status === 401 && !r.data.posts, '토큰 없으면 검색 401');
 r = await call('GET', '/posts?limit=2', rnd());
 ok(r.status === 401 && r.data.error === 'unknown_user' && !r.data.posts, '모르는 기기 401');
-r = await call('POST', '/posts', null, { cat: 'tip', title: '제목입니다', body: '내용' });
+r = await call('POST', '/posts', null, { cat: 'etc', title: '제목입니다', body: '내용' });
 ok(r.status === 401 && r.data.error === 'login', '토큰 없으면 401');
 
 // 닉네임
@@ -68,7 +68,7 @@ r = await call('GET', '/posts/1', A);
 ok(r.status === 403 && r.data.error === 'verify' && !r.data.post && !r.data.comments, '인증 전 글 금지');
 r = await call('GET', '/posts?q=' + encodeURIComponent('육아휴직'), A);
 ok(r.status === 403 && !r.data.posts, '인증 전 검색 금지');
-r = await call('POST', '/posts', A, { cat: 'tip', title: '제목입니다', body: '내용' });
+r = await call('POST', '/posts', A, { cat: 'etc', title: '제목입니다', body: '내용' });
 ok(r.status === 403 && r.data.error === 'verify', '인증 전 글쓰기 금지');
 r = await call('POST', '/posts/1/comments', A, { body: '댓글' });
 ok(r.status === 403 && r.data.error === 'verify', '인증 전 댓글 금지');
@@ -101,24 +101,24 @@ r = await call('GET', '/posts?q=' + encodeURIComponent('낱말'), A);
 ok(r.data.posts.some(p => p.id === pid), '두 글자 검색(색인 대신 LIKE)');
 r = await call('GET', '/posts?cat=etc&limit=50', A);
 ok(r.data.posts.every(p => p.cat === 'etc') && r.data.posts.length > 0, '분류');
-for (const cat of ['leave', 'play', 'gear', 'question', 'tip', 'vent']) {
+for (const cat of ['leave', 'money', 'care', 'gear', 'play', 'mind', 'etc']) {
   r = await call('POST', '/posts', A, { cat, title: '분류 시험 ' + cat + stamp, body: '분류 시험 내용' });
   ok(r.data.ok && r.data.post.cat === cat, '새 분류 ' + cat);
 }
 r = await call('POST', '/posts', A, { cat: 'daily', title: '없어진 분류 ' + stamp, body: '없어진 분류' });
 ok(!r.data.ok && r.data.error === 'cat', '없어진 분류는 거절');
 // 아이 나이 칸(11-04 UI 3안): 글에 붙이면 또래 글로 거른다
-r = await call('POST', '/posts', A, { cat: 'question', age: 'baby', title: '나이 글 ' + stamp, body: '아이 나이 칸 시험' });
+r = await call('POST', '/posts', A, { cat: 'care', age: 'baby', title: '나이 글 ' + stamp, body: '아이 나이 칸 시험' });
 ok(r.data.ok && r.data.post.age === 'baby', '아이 나이 칸으로 글쓰기');
 const apid = r.data.id;
 r = await call('GET', '/posts?age=baby&limit=50', A);
 ok(r.data.posts.some(p => p.id === apid) && r.data.posts.every(p => p.age === 'baby'), '아이 나이로 거르기');
 r = await call('GET', '/posts?age=kid&limit=50', A);
 ok(r.data.posts.every(p => p.id !== apid), '다른 나이에는 안 나옴');
-r = await call('POST', '/posts', A, { cat: 'question', age: 'adult', title: '나이 틀림 ' + stamp, body: '틀린 값' });
+r = await call('POST', '/posts', A, { cat: 'care', age: 'adult', title: '나이 틀림 ' + stamp, body: '틀린 값' });
 ok(r.data.error === 'age', '모르는 나이 값은 거절');
 r = await call('GET', `/posts/${apid}`, A);
-ok(r.data.post.age === 'baby' && r.data.post.cat === 'question', '글 하나에도 나이 칸');
+ok(r.data.post.age === 'baby' && r.data.post.cat === 'care', '글 하나에도 나이 칸');
 r = await call('GET', '/posts?limit=50', A);
 ok(r.data.posts.some(p => p.id === pid && p.age === ''), '나이 없는 글은 빈 값');
 r = await call('POST', `/posts/${pid}/comments`, A, { body: '<script>alert(1)</script> 댓글' });
@@ -199,7 +199,7 @@ ok(r.status === 403, '일반 회원은 관리자 화면 금지');
 r = await call('POST', '/join', ADMIN, { terms: true, nick: N('시험관' + stamp), invite: 'TESTADMN' });
 ok(r.data.user.role === 'admin' && r.data.user.verified === true, '관리자 코드');
 const recAdmin = r.data.recovery;
-r = await call('POST', '/posts', ADMIN, { cat: 'tip', title: '운영 안내 ' + stamp, body: '운영 글' });
+r = await call('POST', '/posts', ADMIN, { cat: 'etc', title: '운영 안내 ' + stamp, body: '운영 글' });
 ok(r.data.post.badge === 'admin', '관리자 글에 운영 표시');
 await call('DELETE', `/posts/${r.data.id}`, ADMIN);
 // 신고함: 대상별로 묶임, 그대로 두기 · 숨기기
@@ -237,7 +237,7 @@ r = await call('POST', '/admin/user', ADMIN, { user_id: uid, action: 'block' });
 ok(r.data.ok, '막기');
 r = await call('POST', '/join', rnd(), { terms: true, nick: N('새기기' + stamp), invite: cCode });
 ok(r.data.invite_error === 'code_bad' && r.data.user.verified === false, '막힌 회원의 안 쓴 초대 코드는 폐기됨');
-r = await call('POST', '/posts', C, { cat: 'tip', title: '제목입니다', body: '내용' });
+r = await call('POST', '/posts', C, { cat: 'etc', title: '제목입니다', body: '내용' });
 ok(r.status === 403 && r.data.error === 'blocked', '막힌 회원 글 금지');
 r = await call('GET', '/posts?limit=1', C);
 ok(r.status === 403 && r.data.error === 'blocked' && !r.data.posts, '막힌 회원 읽기 금지');
@@ -261,7 +261,7 @@ ok(r.status === 404, '지운 글 404');
 r = await call('GET', '/posts?q=' + encodeURIComponent('독특한낱말' + stamp), A);
 ok(r.data.posts.length === 0, '지운 글은 색인 검색에도 없음');
 // 그 회원 글 모두 숨김
-r = await call('POST', '/posts', A, { cat: 'tip', title: '숨길 글 ' + stamp, body: '숨길내용' + stamp });
+r = await call('POST', '/posts', A, { cat: 'etc', title: '숨길 글 ' + stamp, body: '숨길내용' + stamp });
 const aid = (await call('GET', '/me', A)).data.user.id;
 r = await call('POST', '/admin/user', ADMIN, { user_id: aid, action: 'hide_all' });
 ok(r.data.ok, '모두 숨김');
@@ -373,7 +373,7 @@ r = await call('GET', '/posts/hot');
 ok(r.status === 401, '인기 글도 인증 아빠만');
 r = await call('GET', '/posts/hot', G);
 ok(r.status === 403, '인증 전 인기 글 금지');
-r = await call('POST', '/posts', ADMIN, { cat: 'tip', title: '뜨는 글 ' + stamp, body: '뜨는 글 내용' });
+r = await call('POST', '/posts', ADMIN, { cat: 'etc', title: '뜨는 글 ' + stamp, body: '뜨는 글 내용' });
 const hid = r.data.id;
 const H1 = rnd(), H2 = rnd();
 for (const [t, nm] of [[H1, '인기하'], [H2, '인기둘']]) {
@@ -404,12 +404,12 @@ for (const [t, nm] of [[R1, '계급하'], [R2, '계급둘'], [R3, '계급셋']])
 }
 const pts = async t => { const x = await call('GET', '/me', t); return [x.data.points, x.data.rank]; };
 assert.deepStrictEqual(await pts(R1), [0, 0]); n++;      // 입대: 이병 0점
-r = await call('POST', '/posts', R1, { cat: 'tip', title: '계급 글 하나', body: '내용입니다' });
+r = await call('POST', '/posts', R1, { cat: 'etc', title: '계급 글 하나', body: '내용입니다' });
 const rp1 = r.data.id;
 ok(r.data.post.rank === 0, '글 하나로는 아직 이병');
 assert.deepStrictEqual(await pts(R1), [3, 0]); n++;
-const rp2 = (await call('POST', '/posts', R1, { cat: 'tip', title: '계급 글 둘', body: '내용입니다' })).data.id;
-await call('POST', '/posts', R1, { cat: 'tip', title: '계급 글 셋', body: '내용입니다' });
+const rp2 = (await call('POST', '/posts', R1, { cat: 'etc', title: '계급 글 둘', body: '내용입니다' })).data.id;
+await call('POST', '/posts', R1, { cat: 'etc', title: '계급 글 셋', body: '내용입니다' });
 assert.deepStrictEqual(await pts(R1), [6, 0], '글은 하루 2개까지'); n++;
 await call('POST', `/posts/${rp1}/comments`, R1, { body: '내 글에 내 댓글' });
 assert.deepStrictEqual(await pts(R1), [6, 0], '내 글에 내 댓글은 0점'); n++;
@@ -437,13 +437,13 @@ for (const [t, nm] of [[R4, '계급넷'], [R5, '계급닷']]) {
   await call('POST', '/admin/user', ADMIN, { user_id: r.data.user.id, action: 'verify' });
 }
 const rpFill = [];
-for (const w of ['넷', '다섯', '여섯']) rpFill.push((await call('POST', '/posts', R1, { cat: 'tip', title: '계급 글 ' + w, body: '내용입니다' })).data.id);   // 글은 오늘 2개까지라 글 점수는 그대로
+for (const w of ['넷', '다섯', '여섯']) rpFill.push((await call('POST', '/posts', R1, { cat: 'etc', title: '계급 글 ' + w, body: '내용입니다' })).data.id);   // 글은 오늘 2개까지라 글 점수는 그대로
 for (const t of [R2, R3, R4, R5]) await call('POST', `/posts/${rpFill[0]}/comments`, t, { body: '댓글입니다' });     // 4점
 for (const t of [R4, R5]) { await call('POST', `/posts/${rpFill[1]}/comments`, t, { body: '댓글입니다' }); await call('POST', `/posts/${rpFill[2]}/comments`, t, { body: '댓글입니다' }); }   // 4점
 assert.deepStrictEqual(await pts(R1), [18, 0]); n++;
 await call('POST', `/posts/${rpFill[0]}/comments`, R3, { body: '또 댓글' });
 assert.deepStrictEqual(await pts(R1), [18, 0], '같은 사람 같은 글은 한 번'); n++;
-const rp5 = (await call('POST', '/posts', R2, { cat: 'tip', title: '계급 남의 글', body: '내용입니다' })).data.id;
+const rp5 = (await call('POST', '/posts', R2, { cat: 'etc', title: '계급 남의 글', body: '내용입니다' })).data.id;
 await call('POST', `/posts/${rp5}/comments`, R1, { body: '남의 글 댓글' });
 assert.deepStrictEqual(await pts(R1), [20, 1], '20점 + 복무 7일이면 일병'); n++;
 r = await call('GET', '/posts?limit=20', R1);
@@ -466,12 +466,12 @@ const R6 = rnd();
 r = await call('POST', '/join', R6, { terms: true, nick: N('계급여' + stamp) });
 await call('POST', '/admin/user', ADMIN, { user_id: r.data.user.id, action: 'verify' });
 const six = [];
-for (let i = 0; i < 6; i++) six.push((await call('POST', '/posts', R5, { cat: 'tip', title: '댓글 상한 글 ' + i, body: '내용입니다' })).data.id);
+for (let i = 0; i < 6; i++) six.push((await call('POST', '/posts', R5, { cat: 'etc', title: '댓글 상한 글 ' + i, body: '내용입니다' })).data.id);
 for (const id of six) await call('POST', `/posts/${id}/comments`, R6, { body: '댓글입니다' });
 assert.deepStrictEqual((await pts(R6))[0], 10, '남의 글 댓글은 하루 5개까지'); n++;
 r = await call('GET', '/me', ADMIN);
 ok(r.data.rank === null && r.data.ref === null, '운영 계정은 계급과 초대 링크 없음');
-r = await call('POST', '/posts', ADMIN, { cat: 'tip', title: '운영 글 계급', body: '내용입니다' });
+r = await call('POST', '/posts', ADMIN, { cat: 'etc', title: '운영 글 계급', body: '내용입니다' });
 ok(r.data.post.rank === null, '운영 글에 계급 없음');
 await call('DELETE', `/posts/${r.data.id}`, ADMIN);
 
@@ -501,28 +501,28 @@ ok(r.joined === 2 && r.counted === 0, '들어왔어도 활동 전에는 점수 �
 assert.deepStrictEqual(await pts(IV), [0, 0], '가입만으로는 0점'); n++;
 await call('POST', '/admin/user', ADMIN, { user_id: iv1, action: 'verify' });
 assert.deepStrictEqual(await pts(IV), [0, 0], '인증만으로도 0점'); n++;
-r = await call('POST', '/posts', iv1Tok, { cat: 'tip', title: '후임의 첫 글', body: '내용입니다' });
+r = await call('POST', '/posts', iv1Tok, { cat: 'etc', title: '후임의 첫 글', body: '내용입니다' });
 const ivPost = r.data.id;
 assert.deepStrictEqual(await pts(IV), [10, 0], '후임이 글을 쓰면 10점'); n++;
 r = await refOf(IV);
 ok(r.joined === 2 && r.counted === 1, '점수 인정 1명');
 await call('DELETE', `/posts/${ivPost}`, iv1Tok);
 assert.deepStrictEqual(await pts(IV), [0, 0], '후임이 글을 지우면 점수도 빠짐'); n++;
-r = await call('POST', '/posts', iv1Tok, { cat: 'tip', title: '후임의 다시 쓴 글', body: '내용입니다' });
+r = await call('POST', '/posts', iv1Tok, { cat: 'etc', title: '후임의 다시 쓴 글', body: '내용입니다' });
 assert.deepStrictEqual(await pts(IV), [10, 0]); n++;
 await call('POST', '/admin/user', ADMIN, { user_id: iv1, action: 'block' });
 assert.deepStrictEqual(await pts(IV), [0, 0], '막힌 후임은 점수에서 빠짐'); n++;
 await call('POST', '/admin/user', ADMIN, { user_id: iv1, action: 'unblock' });
 await call('POST', '/admin/user', ADMIN, { user_id: iv1, action: 'verify' });
 await call('POST', '/admin/user', ADMIN, { user_id: iv2, action: 'verify' });
-await call('POST', '/posts', iv2Tok, { cat: 'tip', title: '후임둘의 글', body: '내용입니다' });
+await call('POST', '/posts', iv2Tok, { cat: 'etc', title: '후임둘의 글', body: '내용입니다' });
 assert.deepStrictEqual((await pts(IV))[0], 20, '후임 2명 20점'); n++;
 backdate(ivId, 7);
 assert.deepStrictEqual(await pts(IV), [20, 1], '초대 점수로도 진급, 복무는 그대로 필요'); n++;
 // 11명 들어와도 10명까지(가입 횟수 제한을 피해 시험 DB에 바로 넣는다)
 const fakeAt = new Date().toISOString(), fakeIds = Array.from({ length: 11 }, (_, i) => 900000 + i);
 localSql(fakeIds.map(id => `INSERT INTO users (id, nick, nick_key, token_hash, created, verified, invited_by) VALUES (${id}, '가짜${id}/청주/24', '가짜${id}/청주/24', 'fake${id}', '${fakeAt}', 1, ${ivId})`).join('; ')
-  + '; ' + fakeIds.map(id => `INSERT INTO posts (user_id, cat, title, body, created) VALUES (${id}, 'tip', '가짜 글', '내용', '${fakeAt}')`).join('; '));
+  + '; ' + fakeIds.map(id => `INSERT INTO posts (user_id, cat, title, body, created) VALUES (${id}, 'etc', '가짜 글', '내용', '${fakeAt}')`).join('; '));
 r = await call('GET', '/me', IV);
 ok(r.data.points === 100 && r.data.ref.joined === 13 && r.data.ref.counted === 13, '초대 점수는 10명까지(100점)');
 ok(r.data.rank === 1, '100점이어도 복무 7일이면 일병');
@@ -544,9 +544,9 @@ ok(r.data.invite_error === 'code_bad', '막힌 회원의 초대 링크는 폐기
 await call('POST', '/admin/user', ADMIN, { user_id: ivId, action: 'unblock' });
 
 // 비속어: 글·댓글·닉네임을 서버에서 막고, 육아 글에 흔한 말은 통과시킨다(자세한 목록은 test/badwords-test.mjs)
-r = await call('POST', '/posts', R1, { cat: 'tip', title: '시1발 제목입니다', body: '내용입니다' });
+r = await call('POST', '/posts', R1, { cat: 'etc', title: '시1발 제목입니다', body: '내용입니다' });
 ok(r.status === 400 && r.data.error === 'bad_word' && r.data.word, '제목 욕설 막기');
-r = await call('POST', '/posts', R1, { cat: 'tip', title: '평범한 제목', body: '진짜 ㅅㅂ 힘들어요' });
+r = await call('POST', '/posts', R1, { cat: 'etc', title: '평범한 제목', body: '진짜 ㅅㅂ 힘들어요' });
 ok(r.status === 400 && r.data.error === 'bad_word', '본문 욕설 막기');
 r = await call('POST', `/posts/${rp1}/comments`, R2, { body: '이 새끼 뭐야' });
 ok(r.status === 400 && r.data.error === 'bad_word', '댓글 욕설 막기');
@@ -713,7 +713,7 @@ const rvId = r.data.user.id;
 r = await call('GET', '/posts?limit=1', RV);
 ok(r.status === 200 && Array.isArray(r.data.posts), '심사용 계정은 커뮤니티를 읽는다');
 // 약관 전에 만든 계정(terms_at 없음)은 첫 글·댓글 때 막히고, 동의하면 된다
-r = await call('POST', '/posts', RV, { cat: 'tip', title: '심사 글입니다', body: '내용' });
+r = await call('POST', '/posts', RV, { cat: 'etc', title: '심사 글입니다', body: '내용' });
 ok(r.status === 403 && r.data.error === 'terms', '동의 전 글쓰기 막힘');
 r = await call('POST', '/me/terms', RV, {});
 ok(r.data.error === 'terms', 'agree 없으면 동의 안 됨');
@@ -721,7 +721,7 @@ r = await call('POST', '/me/terms', null, { agree: true });
 ok(r.status === 401, '동의도 로그인이 있어야 한다');
 r = await call('POST', '/me/terms', RV, { agree: true });
 ok(r.data.ok && r.data.user.terms === true, '약관 동의');
-r = await call('POST', '/posts', RV, { cat: 'tip', title: '심사 글입니다', body: '내용' });
+r = await call('POST', '/posts', RV, { cat: 'etc', title: '심사 글입니다', body: '내용' });
 ok(r.data.ok && r.data.id, '동의 뒤 글쓰기');
 const rvPost = r.data.id;
 const RV2 = rnd();
@@ -741,13 +741,13 @@ const bbId = r.data.user.id;
 r = await call('POST', '/login/review', BA, { code: REVIEW });
 ok(r.status === 409 && r.data.error === 'token_in_use', '심사 입구: 다른 계정이 있는 기기는 거절');
 const bbWord = '차단시험글' + stamp;
-r = await call('POST', '/posts', BB, { cat: 'tip', title: bbWord, body: '상대가 쓴 글' });
+r = await call('POST', '/posts', BB, { cat: 'etc', title: bbWord, body: '상대가 쓴 글' });
 const bbPost = r.data.id;
 await call('POST', `/posts/${bbPost}/comments`, BA, { body: '내 댓글' });
 await call('POST', `/posts/${bbPost}/comments`, RV2, { body: '심사 계정 댓글' });
 r = await call('POST', `/posts/${rvPost}/comments`, BB, { body: '상대 댓글' });
 const bbCmt = r.data.comment.id;
-r = await call('POST', '/posts', BA, { cat: 'tip', title: '내가 쓴 글입니다', body: '내 글' });
+r = await call('POST', '/posts', BA, { cat: 'etc', title: '내가 쓴 글입니다', body: '내 글' });
 const baPost = r.data.id;
 await call('POST', '/me/seen', BA);
 await new Promise(done => setTimeout(done, 5));
@@ -862,7 +862,7 @@ const NE = rnd(), nbRef = (await call('GET', '/me', NB)).data.ref;
 await call('POST', '/login/naver', NE, NV('n4'));
 r = await call('POST', '/join', NE, { terms: true, nick: N('네후임' + stamp), invite: nbRef.code });
 ok(r.data.invite_error === '' && r.data.user.how === 'naver', '초대 링크로 네이버 가입, 인증 방법은 네이버 그대로');
-await call('POST', '/posts', NE, { cat: 'tip', title: '네이버 후임의 글', body: '내용입니다' });
+await call('POST', '/posts', NE, { cat: 'etc', title: '네이버 후임의 글', body: '내용입니다' });
 r = await call('GET', '/me', NB);
 ok(r.data.points === 10 && r.data.ref.joined === 1 && r.data.ref.counted === 1, '초대한 아빠에게 10점');
 // 네이버 없이 가입한 옛 계정

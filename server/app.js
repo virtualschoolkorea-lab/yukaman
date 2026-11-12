@@ -48,7 +48,9 @@
 
 import { findBadWord } from './badwords.js';
 
-const CATS = ['leave', 'play', 'gear', 'question', 'tip', 'vent', 'etc'];           // public/app.js CATS와 같게(11-05 휴먼쌤: 육아휴직 / 나들이 / 용품 / 질문 / 정보 / 하소연 / 기타)
+// public/app.js CATS와 같게. 질문게시판의 질문 주제(2026-11-12 운영 방향 1단계): 육아휴직 / 돈·지원 / 아기 돌보기 / 용품 / 놀이·나들이 / 아빠 마음 / 기타.
+// 그 전 분류(question · tip · vent, 11-05)로 이미 올라간 글은 그대로 읽히고, 새 글에만 이 목록을 쓴다
+const CATS = ['leave', 'money', 'care', 'gear', 'play', 'mind', 'etc'];
 const AGES = ['expect', 'baby', 'kid', 'low', 'high', 'teen'];   // 아이 나이 칸(public/app.js AGES와 같게). 글에 붙이면 또래 아빠들 글로 거른다(11-04 UI 3안 '아이 나이 길')
 const STAGES = ['raising', 'expecting'];
 const LIM = { title: [2, 60], body: [1, 3000], comment: [1, 1000], answer: [20, 500], ask: [5, 300], qa: [2, 1000], list: 20, listMax: 50 };
