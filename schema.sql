@@ -141,3 +141,12 @@ CREATE TABLE IF NOT EXISTS acts (
   at   INTEGER NOT NULL
 );
 CREATE INDEX IF NOT EXISTS acts_who ON acts (who, kind, at);
+
+-- 누른 수(2026-11-12): 육아템으로 가는 단추(cta)와 판매처로 나가는 상품 링크(out)를 날짜별 숫자로만 센다. 누가 눌렀는지는 없다
+CREATE TABLE IF NOT EXISTS clicks (
+  day  TEXT NOT NULL,
+  kind TEXT NOT NULL,
+  k    TEXT NOT NULL,
+  n    INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (day, kind, k)
+);

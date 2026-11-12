@@ -66,7 +66,7 @@ ok('아이 칸이 제목 띠 안에', await q(`!!document.querySelector('.phead 
 // 메뉴
 await q(`[...document.querySelectorAll('#side .sv')].find(x => x.textContent.includes('심리')).click()`); await sleep(300);
 ok('메뉴 → 심리', (await q('location.hash')) === '#/guide/mind' && await q(`document.querySelector('#side .sv.on').textContent.includes('심리')`));
-ok('메뉴 다섯(홈 · 가이드 · 질문 · 육아템 · MY)', await q(`[...document.querySelectorAll('#side .nv')].map(x => x.textContent.trim()).join(',') === '홈,가이드,질문,육아템,MY'`));
+ok('메뉴 다섯(홈 · 가이드 · 육아템 · 질문 · MY)', await q(`[...document.querySelectorAll('#side .nv')].map(x => x.textContent.trim()).join(',') === '홈,가이드,육아템,질문,MY'`));
 await q(`[...document.querySelectorAll('#side .nv')].find(x => x.textContent.includes('질문')).click()`); await sleep(500);
 ok('질문 주제 8칸', await q(`document.querySelectorAll('#side .subs .sv').length === 8`));
 await q(`[...document.querySelectorAll('#side .sv')].find(x => x.textContent.includes('아기 돌보기')).click()`); await sleep(500);
@@ -77,7 +77,7 @@ ok('본문에 뜨는 글 중복 없음', await q(`document.querySelector('#hotBo
 ok('메뉴에 계급', await q(`document.querySelector('.meb').textContent.includes('이병')`));
 // 아빠 육아템
 await q(`[...document.querySelectorAll('#side .nv')].find(x => x.textContent.includes('육아템')).click()`); await sleep(400);
-ok('육아템 카테고리 여섯과 표시 줄', (await q('location.hash')) === '#/shop' && await q(`document.querySelectorAll('#view .cat').length === 6 && !!document.querySelector('#view .paynote')`));
+ok('육아템 카테고리 여섯(상품이 없으면 광고 표시 줄도 없음)', (await q('location.hash')) === '#/shop' && await q(`document.querySelectorAll('#view .cat').length === 6 && !document.querySelector('#view .paynote')`));
 ok('육아템 메뉴 하위 7칸', await q(`document.querySelectorAll('#side .subs .sv').length === 7`));
 await q(`location.hash = '#/shop/out'`); await sleep(400);
 ok('카테고리: 상품 준비 중', await q(`document.querySelector('#shopList').textContent.includes('상품을 준비하고 있어요')`));

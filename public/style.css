@@ -349,6 +349,21 @@ button.notice.vcta { display: flex; width: 100%; text-align: left; font: inherit
 /* '육아템 추천받기' 큰 파란 단추(11-12 운영자): 용품 글과 용품 칸의 맨 위. 글 안의 링크 색과 밑줄을 덮는다. 이름은 ad로 시작하지 않게 */
 .btn.shopgo { display: block; text-align: center; margin-top: 16px; padding: 18px 16px; font-size: 18px; color: #fff !important; text-decoration: none !important; box-shadow: var(--shadow); }
 .btn.gobig { margin-top: 16px; text-align: center; }
+/* 사는 길 잇기(11-12): 홈 '이 나이에 챙길 용품' · 글의 닿는 용품 · 작은 제목의 세부 칸 줄 · 질문게시판 용품 줄 · 육아템 기준 상자 */
+.shopchips { margin-top: 12px; }
+.btn.gomore { margin-top: 16px; text-align: center; text-decoration: none; }
+.gearrel { margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); }
+.gearrel > b { display: block; font-size: 15px; font-weight: 800; }
+.gearrel .glist { margin-top: 10px; gap: 10px; }
+.garticle .gearrel a.grow { color: var(--ink); text-decoration: none; }
+.gearrel.qgear { border-top: 0; padding-top: 0; }
+.garticle h2 .hsub { float: right; margin: 3px 0 0 8px; font-size: 13px; font-weight: 700; text-decoration: none; letter-spacing: 0; }
+.gearbar { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+.gearbar .btn { margin-top: 0; text-align: center; text-decoration: none; }
+.critbox { margin-top: 14px; padding: 14px 16px; border-radius: 16px; background: var(--card); box-shadow: var(--shadow); }
+.critbox > b { font-size: 15px; font-weight: 800; }
+.critbox ul { margin: 8px 0 2px; padding-left: 18px; font-size: 14.5px; line-height: 1.6; color: var(--sub); font-weight: 600; }
+.rail .rbox .btn.small { display: block; text-align: center; text-decoration: none; }
 .btn.gobig .nw { white-space: nowrap; }
 .tiles.center .tile { align-items: center; text-align: center; }
 /* 근거 법령과 시행일(11-05 휴먼쌤 "실제 법령의 명칭과 유효일자") */
@@ -773,6 +788,7 @@ a.btn { text-align: center; }
   .tli .go { order: 3; flex: none; margin-top: 0; font-size: 14px; }
   .tli .pill { order: 4; padding: 4px 10px; border-radius: 9px; font-size: 13px; }
   .btn.gobig { display: none; }
+  .btn.gomore { display: none; }
   .jobhint { margin: -4px 2px 10px; }
 
   /* 글 카드와 타일 */

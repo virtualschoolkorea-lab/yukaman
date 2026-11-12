@@ -6,6 +6,7 @@
 #   python -X utf8 deploy.py admin-code                    공개 D1에 첫 관리자 코드 하나를 만들어 화면에 보여 준다(한 번 쓰면 끝. 저장소에 남기지 않는다)
 #   python -X utf8 deploy.py logout-user <회원 번호>        공개 D1에서 그 회원의 기기 토큰을 끊는다(폰을 잃은 관리자 등. 복구 코드로만 돌아온다)
 #   python -X utf8 deploy.py backup                        공개 D1 표를 암호화해 backups/yukaman-YYYYMMDD-HHMM.json.enc로 내려받는다(gitignore, 백업 열쇠 필요). 시점 되돌리기는 wrangler d1 time-travel
+#   python -X utf8 deploy.py clicks [일수]                 공개 D1의 누른 수(육아템으로 가는 단추 · 판매처로 나간 상품 링크)를 많은 순으로 본다. 기본 30일
 #   python -X utf8 deploy.py logs                          공개 서버 오류를 실시간으로 본다(wrangler pages deployment tail, Ctrl+C로 끝)
 #   python -X utf8 deploy.py deploy                        Pages에 올리기(휴먼쌤이 시킨 때만)
 #   python -X utf8 deploy.py keys                          처음 한 번: 회원번호 해시 열쇠와 백업 열쇠를 회사 PC 비밀 값 폴더(위쪽 폴더 어딘가의 tools/secrets)에 만든다. 이미 있으면 그대로
@@ -328,6 +329,14 @@ def main():
             if time.time() - os.path.getmtime(old) > 30 * 86400:
                 os.remove(old)
                 print('30일 지난 백업 지움:', os.path.basename(old), flush=True)
+    elif what == 'clicks':
+        days = int(sys.argv[2]) if len(sys.argv) > 2 and sys.argv[2].isdigit() else 30
+        rows = d1_rows("SELECT kind, k, SUM(n) AS n FROM clicks WHERE day >= date('now', '-%d day') GROUP BY kind, k ORDER BY n DESC LIMIT 100" % days, '--remote')
+        print('지난 %d일 누른 수(cta = 육아템으로 가는 단추, out = 판매처로 나간 상품 링크)' % days, flush=True)
+        for r in rows:
+            print('%6d  %-4s %s' % (r['n'], r['kind'], r['k']), flush=True)
+        if not rows:
+            print('아직 없어요', flush=True)
     elif what == 'logs':
         sys.exit(wrangler('pages', 'deployment', 'tail', '--project-name', PROJECT))
     elif what == 'logout-user':

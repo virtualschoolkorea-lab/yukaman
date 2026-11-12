@@ -42,6 +42,7 @@
 //  POST   /api/login/naver {code, state, redirect_uri}  네이버 로그인: 있던 회원이면 이 기기를 그 계정에 붙이고, 처음이면 남성인지 보고 need_nick. 남성이 아니면 naver_not_dad, 성별을 못 받으면 naver_gender
 //  POST   /api/me/leave-naver {code, state, redirect_uri}  네이버 회원 탈퇴: 같은 네이버 계정인지 확인하고 연동을 끊은 뒤 지운다
 //  GET·POST /api/kakao/unlink?user_id=…        카카오 연결 해제 웹훅(사용자가 카카오 쪽에서 끊었을 때 카카오가 부른다. 머리글 Authorization: KakaoAK <대표 어드민 키>). 탈퇴와 같게 지운다
+//  POST   /api/count                           누른 수 세기 { e: 'cta' | 'out', k: 무엇을 }. 날짜별 숫자만 남긴다(누가 눌렀는지 없음)
 //  GET    /api/health                          살아 있나 + 회원번호 해시 열쇠 확인값 idk(열쇠가 없으면 '', 열쇠 자체는 드러나지 않는다)
 // 저장하는 개인정보: 닉네임 · 기기 토큰 해시 · 복구 코드 해시 · 쓴 글·댓글 · 대기 중인 신청 답변(결정 뒤 지움) · 누가 초대했는지 · 마지막 접속 시각.
 //   약관 동의 시각 · 차단한 회원 목록도 둔다. 횟수 제한용 기기 주소(IP)는 해시 16자로 짧게(가입·코드·복구 시도에만, 이틀 안에 지움). 지운 글·댓글은 내용을 비우고 시각만 남긴다. 탈퇴하면 계정 줄을 지운다.
@@ -56,7 +57,8 @@ const STAGES = ['raising', 'expecting'];
 const LIM = { title: [2, 60], body: [1, 3000], comment: [1, 1000], answer: [20, 500], ask: [5, 300], qa: [2, 1000], list: 20, listMax: 50 };
 const RATE = {                                        // [횟수, 기간 ms]
   join: [20, 600000], post: [10, 3600000], comment: [60, 3600000], nick: [1, 7 * 86400000],   // 닉네임은 7일에 1번(사칭 방어, 검수 16)
-  code: [10, 600000], apply: [3, 86400000], invite: [10, 86400000], recover: [10, 600000], report: [10, 86400000], ask: [5, 86400000], identity: [10, 600000], kakao: [30, 600000], naver: [30, 600000], block: [60, 86400000], review: [10, 600000]
+  code: [10, 600000], apply: [3, 86400000], invite: [10, 86400000], recover: [10, 600000], report: [10, 86400000], ask: [5, 86400000], identity: [10, 600000], kakao: [30, 600000], naver: [30, 600000], block: [60, 86400000], review: [10, 600000],
+  count: [300, 3600000]                               // 누른 수 세기: 한 기기 주소에서 한 시간에 300번까지만 센다
 };
 const INVITE_MAX = 3;                                 // 인증 아빠 한 사람이 만들 수 있는 초대 코드
 // 운영진처럼 보이는 이름 막기(검수 16). 띄어쓰기·특수문자를 지우고 닮은 글자(0→o, 1→i, 3→e, 5→s)를 접은 뒤 본다.
@@ -132,6 +134,7 @@ export async function handleApi(request, env) {
       if (m === 'POST') return createPost(request, env);
     }
     if (seg[0] === 'posts' && seg[1] === 'hot' && !seg[2] && m === 'GET') return hotPosts(request, env);
+    if (seg[0] === 'count' && !seg[1] && m === 'POST') return countHit(request, env);
     if (seg[0] === 'qna' && !seg[1]) {
       if (m === 'GET') return qnaList(env);
       if (m === 'POST') return ask(request, env);
@@ -373,6 +376,22 @@ async function deletePost(request, env, id) {
     env.DB.prepare("UPDATE posts SET deleted = ?1, title = '', body = '' WHERE id = ?2").bind(at, id),
     env.DB.prepare("UPDATE comments SET body = '', deleted = COALESCE(deleted, ?1) WHERE post_id = ?2").bind(at, id)
   ]);
+  return json({ ok: true });
+}
+
+// ----- 누른 수 세기(2026-11-12 운영자 "상품 구매를 유도하도록 … 고쳐서") -----
+// 육아템으로 가는 단추(cta)와 판매처로 나가는 상품 링크(out)를 날짜별 숫자로만 센다. 누가 눌렀는지는 저장하지 않는다(회원 번호 · 기기 주소 없음).
+// 장난으로 숫자를 부풀리지 못하게 기기 주소의 짧은 해시로 횟수만 제한한다(acts, 다른 횟수 제한과 같은 방식이고 곧 지워진다). 넘으면 세지 않고 조용히 넘어간다.
+// 보는 법: python -X utf8 deploy.py clicks
+const COUNT_KINDS = ['out', 'cta'];
+async function countHit(request, env) {
+  const b = await readJson(request);
+  if (!b) return no('bad_json');
+  const kind = COUNT_KINDS.includes(b.e) ? b.e : '';
+  const key = str(b.k, 200).replace(/[^\p{L}\p{N} ·|/_.#-]/gu, '').slice(0, 120);
+  if (!kind || !key) return no('bad_json');
+  if (!(await allow(env.DB, await ipKey(request), 'count'))) return json({ ok: true });
+  await env.DB.prepare('INSERT INTO clicks (day, kind, k, n) VALUES (?1, ?2, ?3, 1) ON CONFLICT(day, kind, k) DO UPDATE SET n = n + 1').bind(nowIso().slice(0, 10), kind, key).run();
   return json({ ok: true });
 }
 

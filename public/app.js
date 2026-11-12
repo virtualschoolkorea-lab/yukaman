@@ -382,6 +382,16 @@
 
   // ----- 알림 -----
   let toastTimer = 0;
+  // 누른 수 세기(11-12 운영자 "상품 구매를 유도하도록 … 고쳐서"): 육아템으로 가는 단추(data-cta)와 판매처로 나가는 상품 링크를 날짜별 숫자로만 센다(server /api/count).
+  // 누가 눌렀는지는 보내지 않는다. 시험 모드에서는 세지 않는다. 세지 못해도 화면은 그대로 간다
+  function countHit(e, k) {
+    if (mode !== 'server' || !CFG.API_URL || !k) return;
+    try {
+      const body = JSON.stringify({ e, k: String(k).slice(0, 120) });
+      if (navigator.sendBeacon) navigator.sendBeacon(CFG.API_URL + '/count', new Blob([body], { type: 'application/json' }));
+      else fetch(CFG.API_URL + '/count', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true }).catch(() => {});
+    } catch (err) { /* 그대로 간다 */ }
+  }
   function toast(msg, kind) { const t = $('#toast'); t.textContent = msg; t.className = 'toast show' + (kind ? ' ' + kind : ''); clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.className = 'toast'; }, 2600); }
   // 진급 알림: 이 기기에서 마지막으로 본 계급보다 오르면 한 번. 알렸으면 true. 처음 보는 기기는 조용히 적어만 둔다
   function noteRank(level) {
@@ -446,7 +456,7 @@
     if (s[0] === 'g' && s[1]) return { name: 'garticle', id: s[1] };
     if (s[0] === 'calc') return { name: 'calc', tab: CALC_TABS.some(t => t.key === s[1]) ? s[1] : 'leave' };
     if (s[0] === 'library') return { name: 'library' };
-    if (s[0] === 'shop') return { name: 'shop', cat: s[1] && SHOP_CAT[s[1]] ? s[1] : '' };
+    if (s[0] === 'shop') return { name: 'shop', cat: s[1] && SHOP_CAT[s[1]] ? s[1] : '', sub: s[2] || '' };
     if (s[0] === 'community') return { name: 'community', cat: s[1] && CAT[s[1]] ? s[1] : '' };
     if (s[0] === 'p' && /^\d+$/.test(s[1] || '')) return { name: 'post', id: +s[1] };
     if (s[0] === 'write') return { name: 'write' };
@@ -469,7 +479,7 @@
       else if (r.name === 'garticle') renderGuideItem(r.id);
       else if (r.name === 'calc') renderCalc(r.tab);
       else if (r.name === 'library') await renderLibrary();
-      else if (r.name === 'shop') renderShop(r.cat);
+      else if (r.name === 'shop') renderShop(r.cat, r.sub);
       else if (r.name === 'community') await renderCommunity(r.cat);
       else if (r.name === 'post') await renderPost(r.id);
       else if (r.name === 'write') renderWrite();
@@ -738,10 +748,25 @@
   // 질문게시판이 비어 있을 때: 솔직하게 아직 질문이 없다고 말한다(검수 15)
   const emptyCommunity = () => '<div class="lockbox recruit"><div class="lk">🙋</div><h2>아직 질문이 없어요</h2><p>궁금한 것을 먼저 물어보세요. 가입한 아빠들이 보고 답해요.</p>'
     + '<a class="btn primary" href="#/write">질문하기</a>' + (socialOn() ? '' : '<a class="btn line" href="#/me">초대 코드 보내기</a>') + '<a class="btn ghost" href="#/guide/faq">자주 묻는 질문은 가이드 Q&amp;A에</a></div>';
-  // 홈의 아빠 육아템 칸: 카테고리 타일 넷과 전체 보기(11-12 시안 1)
-  const HOME_SHOP = ['out', 'car', 'trip', 'play'];
-  const homeShop = () => '<div class="sec"><h2>아빠 육아템</h2><a class="all" href="#/shop">전체 보기 →</a></div>'
-    + '<div class="tiles center" style="margin-top:0">' + HOME_SHOP.map(k => SHOP_CAT[k]).filter(Boolean).map(c => tile(c.e, c.name, '#/shop/' + c.key)).join('') + '</div>';
+  // 홈의 '이 나이에 챙길 용품'(11-12 운영자 "상품 구매를 유도하도록 … 모두 반영해서 고쳐서"): 지금 챙길 것 바로 아래에 둔다(예전에는 맨 아래 타일 넷).
+  // 고른 나이에 맞는 용품 글(g)과 육아템 카테고리(c). 나이를 안 골랐으면 ''
+  const AGE_GEAR = {
+    '': { g: ['gear-car', 'gear-out'], c: ['out', 'car', 'home', 'play', 'trip', 'school'] },
+    expect: { g: ['gear-car', 'gear-out'], c: ['car', 'out', 'home'] },
+    baby: { g: ['gear-home', 'gear-out'], c: ['out', 'home', 'play', 'car'] },
+    kid: { g: ['gear-play', 'gear-trip'], c: ['play', 'trip', 'car', 'out'] },
+    low: { g: ['gear-school', 'gear-play'], c: ['school', 'play', 'trip'] },
+    high: { g: ['gear-school', 'gear-trip'], c: ['school', 'trip', 'play'] },
+    teen: { g: ['gear-trip'], c: ['trip', 'play'] }
+  };
+  const shopChips = keys => '<div class="chips shopchips">' + keys.map(k => SHOP_CAT[k]).filter(Boolean).map(c => '<a class="chip" data-cta="chip" href="#/shop/' + esc(c.key) + '"><span class="e">' + esc(c.e) + '</span>' + esc(c.name) + '</a>').join('') + '</div>';
+  function homeGear(key) {
+    const a = AGE_GEAR[key] || AGE_GEAR[''], rows = a.g.map(id => GD.items.find(x => x.id === id)).filter(Boolean);
+    return '<div class="sec"><h2>' + (AGE[key] ? '이 나이에 챙길 용품' : '아빠가 고르는 용품') + '</h2><a class="all" href="#/guide/gear">고르는 법 전체 →</a></div>'
+      + '<div class="glist" style="margin-top:0">' + rows.map(grow).join('') + '</div>'
+      + shopChips(a.c)
+      + shopGo('');
+  }
   async function renderHome() {
     setTab('home');
     bar(brandBar());
@@ -758,11 +783,12 @@
       + '<div class="sec"><h2>' + (a ? esc(a.name) + ', 지금 챙길 것' : '지금 챙길 것') + '</h2>' + (a ? '<span>순서대로</span>' : '') + '</div>'
       + (a && calcS.job !== 'worker' ? '<a class="jobhint" href="#/g/leave-job">회사원 등 고용보험 기준이에요. <b>다른 직종 보기 ›</b></a>' : '')
       + timeline(key, d)
-      + '<a class="btn primary gobig" href="#/guide">가이드 탭에서 더 많은 정보를 <span class="nw">확인하세요 →</span></a>'
+      + homeGear(key)
       + '<div class="sec"><h2>' + (a ? '이 나이에 맞는 글' : '아빠 가이드') + '</h2>' + (!a ? '<a class="all" href="#/guide">전체 보기 →</a>' : picks.length > (isWide() ? 3 : 4) ? '<a class="all" href="#/guide/age/' + key + '">전체 보기 →</a>' : '') + '</div>'
       + '<div class="tiles" style="margin-top:0">' + (isWide() ? picks.slice(0, 3).map(wideTile) : picks.slice(0, 4).map(g => tile(g.e, g.title, '#/g/' + g.id))).join('') + '</div>'
+      // 가이드로 가는 단추(11-05 휴먼쌤 "홈 타일 대신 가이드로 가는 큰 버튼")는 남기되, 글 타일 아래에 테두리 단추로 둔다. 홈에서 가장 큰 파란 단추는 '육아템 추천받기'
+      + '<a class="btn line gomore" href="#/guide">가이드 탭에서 더 많은 정보 보기 →</a>'
       + '<div id="homeCom">' + (canRead() ? '<div class="sec"><h2>' + (a ? '또래 아빠들 질문' : '질문게시판') + '</h2><a class="all" href="#/community">전체 보기 →</a></div><div class="loading">불러오는 중…</div>' : '') + '</div>'
-      + homeShop()
       + '<p class="foot-note"><a href="terms.html">이용약관</a> · <a href="privacy.html">개인정보 처리방침</a></p>'
       + '</section>';
     window.scrollTo(0, 0);
@@ -854,7 +880,7 @@
     } catch (e) { /* 끊겨도 저장된 Q&A는 보인다 */ }
   }
   // '육아템 추천받기' 큰 파란 단추(11-12 운영자 "크게 '육아템 추천받기' 넣어주고 누르면 '육아템' 탭으로" · "파란색 버튼"): 용품 글과 용품 칸의 맨 위. key가 육아템 카테고리면 그 카테고리로 간다
-  const shopGo = key => '<a class="btn primary shopgo" href="#/shop' + (key && SHOP_CAT[key] ? '/' + esc(key) : '') + '">육아템 추천받기 →</a>';
+  const shopGo = key => '<a class="btn primary shopgo" data-cta="go" href="#/shop' + (key && SHOP_CAT[key] ? '/' + esc(key) : '') + '">육아템 추천받기 →</a>';
   function renderGuide(cat) {
     if (!cat) cat = 'leave';
     if (cat === 'faq') { renderQna(); return; }
@@ -883,8 +909,10 @@
     view.innerHTML = '<section class="pad">' + pageHead('📖', a.name, '이 나이에 맞는 글') + '<div class="glist">' + items.map(grow).join('') + '</div></section>';
     window.scrollTo(0, 0);
   }
-  function blocks(b) {
-    return (b || []).map(x => x.h ? '<h2>' + esc(x.h) + '</h2>' : x.p ? '<p>' + rich(x.p) + '</p>'
+  function blocks(b, g) {
+    // 용품 글의 작은 제목(sub = 육아템 세부 칸)에는 그 칸으로 가는 줄을 붙인다
+    const hsub = x => (g && g.shop && x.sub ? '<a class="hsub" data-cta="sub" href="#/shop/' + esc(g.shop) + '/' + encodeURIComponent(x.sub) + '">육아템에서 보기 ›</a>' : '');
+    return (b || []).map(x => x.h ? '<h2>' + esc(x.h) + hsub(x) + '</h2>' : x.p ? '<p>' + rich(x.p) + '</p>'
       : x.ul ? '<ul>' + x.ul.map(i => '<li>' + rich(i) + '</li>').join('') + '</ul>' : x.ol ? '<ol>' + x.ol.map(i => '<li>' + rich(i) + '</li>').join('') + '</ol>'
       : x.tip ? '<div class="tipbox">💡 ' + rich(x.tip) + '</div>' : x.tpl ? '<pre class="tpl">' + esc(x.tpl) + '</pre>'
       : x.go ? '<a class="btn primary golink" href="' + esc(x.go) + '">' + esc(x.t) + '</a>' : '').join('');
@@ -896,15 +924,18 @@
     const c = GCAT[g.cat] || {};
     bar(backBtn('#/guide/' + g.cat) + '<div class="fill atitle">아빠 가이드 · ' + esc(c.name || '') + '</div>');
     const laws = lawsFor([g]);
+    const related = (g.gear || []).map(id => GD.items.find(x => x.id === id)).filter(Boolean);     // 이 글과 닿는 용품 글(guide-data.js gear)
     const note = g.status === '공식 근거' ? '<div class="draft"><span>✅</span><span>' + dotd(g.updated) + ' 법령과 정부 안내로 확인. 내 경우는 1350이나 고용센터에 문의</span></div>'
       : g.status === '공식 안내' ? '<div class="draft"><span>✅</span><span>' + dotd(g.updated) + ' 정부 안내로 확인. 번호와 조건은 바뀔 수 있어요</span></div>'
       : g.status === '일반 조언' ? '<div class="draft"><span>✍️</span><span>일반적인 조언이에요. 집마다 다를 수 있어요.</span></div>'
       : g.status === '자료 정리' ? '<div class="draft"><span>🗂️</span><span>' + dotd(g.updated) + ' 출처가 있는 자료로 정리. 내 경우는 1350이나 고용센터에 문의</span></div>'
-      : g.status === '용품 기준' ? '<div class="draft"><span>✍️</span><span>직접 써 보고 쓴 글이 아니에요. ' + dotd(g.updated) + ' 공공 자료와 전문 기관 안내로 고르는 기준을 정리했어요.</span></div>' : '';
+      : g.status === '용품 기준' ? '<div class="draft"><span>✅</span><span>' + dotd(g.updated) + ' 공공 자료와 전문 기관 안내로 확인한 기준이에요. 써 본 후기는 아니에요.</span></div>' : '';
     view.innerHTML = '<section class="pad"><article class="garticle">'
       + '<div class="meta"><span class="badge c-etc">' + esc(c.e || '') + ' ' + esc(c.name || '') + '</span>' + (g.tag ? '<span class="tag ' + tagCls(g.tag) + '">' + esc(g.tag) + '</span>' : '') + '</div>'
       + '<h1>' + esc(g.title) + '</h1><p class="gsub">' + esc(g.sub) + '</p>' + (g.shop ? shopGo(g.shop) : '') + lawWarn(g, laws) + note
-      + blocks(g.body)
+      + blocks(g.body, g)
+      + (g.shop ? shopGo(g.shop) : '')     // 다 읽은 뒤에도 한 번 더(읽고 난 뒤가 누를 마음이 가장 클 때)
+      + (related.length ? '<div class="gearrel"><b>이 글과 닿는 용품</b><div class="glist">' + related.map(grow).join('') + '</div><a class="lk2" data-cta="rel" href="#/shop">육아템 추천받기 ›</a></div>' : '')
       + lawBox(laws)
       + (g.sources && g.sources.length ? '<div class="srcs"><b>출처</b><ul>' + g.sources.map(s => '<li><a href="' + esc(s.u) + '" target="_blank" rel="noopener">' + esc(s.t) + '</a></li>').join('') + '</ul></div>' : '')
       + fixBtn(g.id)
@@ -1256,25 +1287,28 @@
   // 상품 한 칸. 링크는 누른 사람만 판매처로 간다(새 창). 판매처 이름은 데이터에 적힌 대로
   function prodCard(p) {
     const c = SHOP_CAT[p.cat] || {};
-    return '<a class="prod" href="' + esc(p.url) + '" target="_blank" rel="noopener sponsored nofollow"><span class="ppic" aria-hidden="true">' + esc(c.e || '🛍️') + '</span><b>' + esc(p.name) + '</b>'
+    return '<a class="prod" data-k="' + esc([p.cat, p.sub || '', p.seller || '', p.name].join('|')) + '" href="' + esc(p.url) + '" target="_blank" rel="noopener sponsored nofollow"><span class="ppic" aria-hidden="true">' + esc(c.e || '🛍️') + '</span><b>' + esc(p.name) + '</b>'
       + (p.sub ? '<small>' + esc(p.sub) + '</small>' : '') + '<span class="pgo">' + esc(p.seller || '판매처') + '에서 보기 ›</span></a>';
   }
   const shopItems = key => (SHOP.items || []).filter(p => p && p.cat === key && /^https:\/\//.test(p.url || '') && p.name);
   let shopSub = '';
-  function renderShop(key) {
+  // 광고 · 제휴 표시와 가격 안내는 상품이 있을 때만 보인다(11-12: 상품이 없는데 "수수료를 받아요"가 크게 떠 있었다). 상품이 있으면 꼭 보인다
+  function renderShop(key, sub) {
     setTab('shop');
     const c = SHOP_CAT[key];
     if (!c) {
       bar(brandBar());
       const any = SHOP_CATS.some(x => shopItems(x.key).length);
-      view.innerHTML = '<section class="pad">' + pageHead('🛍️', '아빠 육아템', '아빠가 고르는 육아용품') + SHOP_NOTE
+      view.innerHTML = '<section class="pad">' + pageHead('🛍️', '아빠 육아템', '아빠가 고르는 육아용품') + (any ? SHOP_NOTE : '')
         + '<div class="cats">' + SHOP_CATS.map(x => '<a class="cat" href="#/shop/' + esc(x.key) + '"><span class="ge">' + esc(x.e) + '</span><b>' + esc(x.name) + '</b><small>' + esc(shopSubs(x)) + '</small></a>').join('') + '</div>'
-        + (any ? SHOP_CATS.map(x => { const list = shopItems(x.key); return list.length ? '<div class="sec"><h2>' + esc(x.name) + '</h2><a class="all" href="#/shop/' + esc(x.key) + '">전체 보기 →</a></div><div class="prods">' + list.slice(0, 2).map(prodCard).join('') + '</div>' : ''; }).join('') : shopReady())
-        + SHOP_NOTES() + '</section>';
+        + (any ? SHOP_CATS.map(x => { const list = shopItems(x.key); return list.length ? '<div class="sec"><h2>' + esc(x.name) + '</h2><a class="all" href="#/shop/' + esc(x.key) + '">전체 보기 →</a></div><div class="prods">' + list.slice(0, 2).map(prodCard).join('') + '</div>' : ''; }).join('') + SHOP_NOTES()
+          : shopReady() + '<a class="grow" href="#/guide/gear" style="margin-top:14px"><span class="ge">📚</span><span class="tx"><b>고르는 법 글 먼저 보기</b><small>아기띠 · 카시트 · 집 안 안전 · 장난감 · 캠핑 · 초등</small></span></a>')
+        + '</section>';
       window.scrollTo(0, 0);
       return;
     }
     bar(backBtn('#/shop') + '<div class="fill atitle">아빠 육아템 · ' + esc(c.name) + '</div>');
+    if (sub && (c.subs || []).indexOf(sub) >= 0) shopSub = sub;      // 용품 글의 작은 제목에서 세부 칸으로 바로 온 경우
     if (shopSub && (c.subs || []).indexOf(shopSub) < 0) shopSub = '';
     const all = shopItems(key);
     const gearGuide = GD.items.find(g => g.cat === 'gear' && g.shop === key);     // 이 카테고리의 고르는 법 글(guide-data.js)
@@ -1282,12 +1316,17 @@
       const list = shopSub ? all.filter(p => p.sub === shopSub) : all;
       const box = $('#shopList'); if (box) box.innerHTML = list.length ? '<div class="prods">' + list.map(prodCard).join('') + '</div>' : shopReady();
     };
-    view.innerHTML = '<section class="pad">' + pageHead(c.e, c.name, shopSubs(c)) + SHOP_NOTE
+    // '추천받기'로 온 사람에게 무엇을 보고 고르는지부터 보여 준다(글의 points 세 줄)
+    const crit = gearGuide && gearGuide.points
+      ? '<div class="critbox"><b>아빠가 고르는 기준</b><ul>' + gearGuide.points.map(p => '<li>' + esc(p) + '</li>').join('') + '</ul><a class="lk2" href="#/g/' + esc(gearGuide.id) + '">고르는 법 자세히 보기 ›</a></div>'
+      : '<a class="grow" href="#/guide/gear" style="margin-top:14px"><span class="ge">📚</span><span class="tx"><b>고르는 법 먼저 보기</b><small>아빠 가이드 · 용품</small></span></a>';
+    view.innerHTML = '<section class="pad">' + pageHead(c.e, c.name, shopSubs(c)) + (all.length ? SHOP_NOTE : '')
+      + crit
       + (all.length && (c.subs || []).length ? '<div class="chips" id="shopSubs"><button type="button" class="chip' + (shopSub ? '' : ' on') + '" data-sub="">전체</button>' + c.subs.map(s => '<button type="button" class="chip' + (s === shopSub ? ' on' : '') + '" data-sub="' + esc(s) + '">' + esc(s) + '</button>').join('') + '</div>' : '')
-      + (gearGuide ? '<a class="grow" href="#/g/' + esc(gearGuide.id) + '" style="margin-top:14px"><span class="ge">📚</span><span class="tx"><b>고르는 법 먼저 보기</b><small>' + esc(gearGuide.title) + '</small></span></a>'
-        : '<a class="grow" href="#/guide/gear" style="margin-top:14px"><span class="ge">📚</span><span class="tx"><b>고르는 법 먼저 보기</b><small>아빠 가이드 · 용품</small></span></a>')
       + '<div id="shopList" style="margin-top:16px"></div>'
-      + SHOP_NOTES() + '</section>';
+      + (all.length ? SHOP_NOTES() : '')
+      + '<a class="grow" href="#/community/gear" style="margin-top:14px"><span class="ge">🙋</span><span class="tx"><b>써 본 아빠들에게 물어보기</b><small>질문게시판 용품 칸</small></span></a>'
+      + '</section>';
     paint();
     const subs = $('#shopSubs');
     if (subs) subs.addEventListener('click', ev => { const b = ev.target.closest('[data-sub]'); if (!b) return; shopSub = b.dataset.sub; $$('#shopSubs .chip').forEach(x => x.classList.toggle('on', x === b)); paint(); });
@@ -1358,13 +1397,14 @@
       // 나이 드롭다운과 검색창을 한 줄에 절반씩(11-05 휴먼쌤 "2줄로 하지 말고 칸을 절반씩 해서 1줄로"). 칸이 좁아 안내 글자를 줄였다
       + '<div class="findrow"><label class="agesel"><select id="ageSel" aria-label="아이 나이로 거르기"><option value="">전체 나이</option>' + AGES.map(x => '<option value="' + x.key + '"' + (x.key === listState.age ? ' selected' : '') + '>' + esc(x.name) + '</option>').join('') + '</select></label>'
       + '<div class="searchbar" id="searchbar"><input id="q" type="search" placeholder="키워드 검색" aria-label="키워드로 질문 찾기" enterkeyhint="search" autocomplete="off" value="' + esc(q) + '"><button type="button" class="sx" id="qx" aria-label="검색 지우기">✕</button><button type="button" class="sgo" id="qgo">찾기</button></div></div>'
+      + (cat === 'gear' ? GEAR_BAR : '')
       + (mode === 'local' ? mockBadge() : '')
       + '<div id="hotBox"></div>'
       + '<div class="list" id="list"></div><button type="button" class="more" id="more" hidden>더 보기</button>'
       + '</section>';
     const syncClear = () => { $('#qx').hidden = !$('#q').value; };     // 지울 글자가 있을 때만 ✕
     syncClear();
-    const doSearch = () => { listState.q = $('#q').value.trim(); $('#q').blur(); loadList(false); };
+    const doSearch = () => { const v = $('#q').value.trim(); if (!v && !listState.q) { toast('찾을 말을 적어 주세요'); $('#q').focus(); return; } listState.q = v; $('#q').blur(); loadList(false); };
     $('#q').addEventListener('input', syncClear);
     $('#q').addEventListener('keydown', ev => { if (ev.key === 'Enter' && !ev.isComposing) { ev.preventDefault(); doSearch(); } });
     $('#qgo').addEventListener('click', doSearch);
@@ -1414,6 +1454,17 @@
     if (btn) btn.hidden = !listState.next;
   }
 
+  // 질문게시판에서 육아템으로(11-12): 용품 이야기를 하는 자리에서 고르는 법 글과 육아템으로 간다
+  const GEAR_BAR = '<div class="gearbar"><a class="btn line small" href="#/guide/gear">📚 용품 고르는 법 글</a><a class="btn primary small" data-cta="board" href="#/shop">🛍️ 육아템 추천받기</a></div>';
+  // 질문의 주제가 용품이거나 제목 · 본문에 품목 낱말이 있으면 그 품목의 글과 육아템 카테고리를 붙인다
+  const GEAR_WORDS = [['out', /아기띠|힙시트|유모차|기저귀\s*가방/], ['car', /카시트|차량용/], ['school', /책가방|입학|헬멧|안전모/], ['trip', /캠핑|텐트|차박/], ['play', /장난감|킥보드|자전거|블록|그림책/], ['home', /안전문|모서리|침대|젖병|소독기/]];
+  function gearFor(p) {
+    const text = (p.title || '') + ' ' + (p.body || ''), hit = GEAR_WORDS.find(w => w[1].test(text));
+    if (!hit && p.cat !== 'gear') return '';
+    const g = hit ? GD.items.find(x => x.cat === 'gear' && x.shop === hit[0]) : null;
+    return '<div class="gearrel qgear"><b>용품을 고르는 중이라면</b><div class="glist">' + (g ? grow(g) : '<a class="grow" href="#/guide/gear"><span class="ge">📚</span><span class="tx"><b>용품 고르는 법 글</b><small>아기띠 · 카시트 · 집 안 안전 · 장난감 · 캠핑 · 초등</small></span></a>') + '</div>' + shopGo(hit ? hit[0] : '') + '</div>';
+  }
+
   // ----- 글 하나 + 댓글 -----
   const cmtDrafts = {};
   function cmtItem(c) {
@@ -1454,6 +1505,7 @@
       + '<div class="body">' + rich(p.body) + '</div></article>'
       + '<div class="sec"><h2>답 <span id="cmtN">' + r.comments.length + '</span></h2><small class="note">아빠들이 쓴 답이에요</small></div>'
       + '<div class="cmts" id="cmts">' + (r.comments.length ? r.comments.map(cmtItem).join('') : empty('답을 기다려요', '경험이 있다면 첫 답을 남겨 주세요')) + '</div>'
+      + gearFor(p)
       + '<div class="about qnote">아빠들의 경험과 의견이에요. 육아맨이 확인한 정보는 가이드에 있어요. 아이가 아프면 소아과나 119에 먼저 물어보세요.<br><b>욕설 · 비하 · 혐오 표현과 광고는 올릴 수 없어요.</b> 돌려 쓰거나 띄어 써도 걸러져요.</div>'
       + '</section>'
       + '<form class="composer" id="composer"><textarea id="cbody" rows="1" placeholder="' + esc(ph) + '" maxlength="1000"></textarea><button class="send" type="submit" aria-label="보내기">' + ICON.send + '</button></form>';
@@ -1465,7 +1517,7 @@
       const body = ta.value.trim();
       if (!me) { openSheet(submit); return; }
       if (!canWrite()) { openVerify(submit); return; }
-      if (!body) return;
+      if (!body) { toast('답을 적어 주세요'); ta.focus(); return; }
       const btn = $('.send', form); btn.disabled = true;
       try {
         const rr = await api('addComment', id, body);
@@ -1593,7 +1645,8 @@
       + POST_TPLS.map(t => '<button type="button" class="wtpl" data-tpl="' + t.key + '"><span class="e">' + t.e + '</span>' + esc(t.name) + '</button>').join('')
       + '<button type="button" class="wtpl" data-tpl="free"><span class="e">✏️</span>직접 쓰기</button></div></div>'
       + '<div id="wMain" hidden><div class="tplhead" id="tplHead"></div><div id="tplFields"></div>'
-      + '<div id="catWrap"><span class="lbl">' + (ASK_ONLY ? '무엇에 대한 질문인가요' : '분류') + '</span><div class="catpick" id="catpick">' + CATS.map(c => '<button type="button" class="chip' + (d.cat === c.key ? ' on' : '') + '" data-pick="' + c.key + '"><span class="e">' + c.e + '</span>' + esc(c.name) + '</button>').join('') + '</div></div>'
+      + '<div id="catWrap"><span class="lbl">' + (ASK_ONLY ? '무엇에 대한 질문인가요' : '분류') + '</span><div class="catpick" id="catpick">' + CATS.map(c => '<button type="button" class="chip' + (d.cat === c.key ? ' on' : '') + '" data-pick="' + c.key + '"><span class="e">' + c.e + '</span>' + esc(c.name) + '</button>').join('') + '</div>'
+      + '<a class="notice vcta" id="gearHint" href="#/guide/gear"' + (d.cat === 'gear' ? '' : ' hidden') + '><span class="e">📚</span><span>묻기 전에 <b>용품 고르는 법 글</b>을 먼저 봐도 좋아요. 쓰던 질문은 이 기기에 남아요.</span></a></div>'
       + '<span class="lbl">아이 나이 <small style="font-weight:600">(또래 아빠들이 찾기 쉬워요)</small></span><div class="catpick" id="agepick">' + AGES.map(x => '<button type="button" class="chip' + ((d.age || currentAge()) === x.key ? ' on' : '') + '" data-age="' + x.key + '">' + esc(x.name) + '</button>').join('') + '</div>'
       + '<div class="tplprev" id="tplPrev" hidden></div>'
       + '<details id="wText"><summary id="wTextSum">제목·내용 직접 고치기</summary>'
@@ -1632,6 +1685,7 @@
       $('#wTextSum').hidden = !t;
       wText.open = !t || touched;
       $$('#catpick .chip').forEach(x => x.classList.toggle('on', x.dataset.pick === picked));
+      $('#gearHint').hidden = picked !== 'gear';
       paintPrev();
     };
     $('#tplPick').addEventListener('click', ev => {
@@ -1659,7 +1713,7 @@
       applyTpl();
     });
     wText.addEventListener('toggle', paintPrev);
-    $('#catpick').addEventListener('click', ev => { const b = ev.target.closest('[data-pick]'); if (!b) return; picked = b.dataset.pick; $$('#catpick .chip').forEach(x => x.classList.toggle('on', x === b)); saveDraft(); });
+    $('#catpick').addEventListener('click', ev => { const b = ev.target.closest('[data-pick]'); if (!b) return; picked = b.dataset.pick; $$('#catpick .chip').forEach(x => x.classList.toggle('on', x === b)); $('#gearHint').hidden = picked !== 'gear'; saveDraft(); });
     $('#agepick').addEventListener('click', ev => { const b = ev.target.closest('[data-age]'); if (!b) return; age = age === b.dataset.age ? '' : b.dataset.age; $$('#agepick .chip').forEach(x => x.classList.toggle('on', x.dataset.age === age)); saveDraft(); });
     const onText = () => { if (POST_TPL[tpl]) touched = true; saveDraft(); };
     title.addEventListener('input', onText); body.addEventListener('input', onText);
@@ -1829,7 +1883,7 @@
         + (pendingInvite ? '<div class="notice vcta" style="margin-top:12px"><span class="e">🎟️</span><span>' + (socialOn() ? '<b>초대받아 오셨군요.</b> ' + LN() + '로 시작하면 바로 질문게시판을 쓸 수 있어요.' : '받은 초대 코드 <b>' + esc(pendingInvite) + '</b>가 있어요. 시작하기를 누르면 바로 인증돼요.') + '</span></div>' : '')
         + (socialOn() ? '<div style="margin-top:12px">' + loginBtn('startBtn', startWord()) + '</div>' : '<button type="button" class="btn primary" id="startBtn" style="margin-top:12px">시작하기</button>')
         + '<button type="button" class="btn ghost" id="recoverBtn">' + (socialOn() ? '복구 코드가 있어요' : '다른 폰에서 쓰던 닉네임이 있어요 (복구 코드)') + '</button>' + themeBox() + installBox() + aboutBox()
-        + (CFG.NAVER_LOGIN && mode === 'server' ? '<p class="foot-note"><button type="button" class="textlink" id="kakaoOld">카카오로 가입한 회원이에요</button></p>' : '')
+        + (CFG.NAVER_LOGIN && CFG.KAKAO_LOGIN && mode === 'server' ? '<p class="foot-note"><button type="button" class="textlink" id="kakaoOld">카카오로 가입한 회원이에요</button></p>' : '')
         // '앱 심사용 입구'는 뺐다(11-12 웹서비스로만 운영). openReview와 서버 /login/review는 그대로 남아 있다
         + '</section>';
       bindTheme();
@@ -2073,7 +2127,7 @@
     showSheet('<div class="sheet" role="dialog" aria-modal="true" aria-label="' + L + '로 시작하기"><div class="grip"></div><h2>' + (me ? L + '를 연결해요' : L + '로 시작해요') + '</h2>'
       + '<p>' + (me ? L + '를 연결하면 바로 질문게시판을 쓸 수 있어요.' : '질문게시판은 가입한 아빠만 읽고 쓸 수 있어요.') + '</p>' + (CFG.NAVER_LOGIN ? GENDER_HINT : '') + '<div style="margin-top:16px">' + loginBtn('kkGo', me ? L + ' 연결하기' : startWord()) + '</div>'
       + '<button type="button" class="btn ghost" id="kkNo">둘러보기만 할래요</button>'
-      + (CFG.NAVER_LOGIN && !me ? '<p class="foot-note" style="margin:4px 0 0"><button type="button" class="textlink" id="kkOld">카카오로 가입한 회원이에요</button></p>' : '') + '</div>', after);
+      + (CFG.NAVER_LOGIN && CFG.KAKAO_LOGIN && !me ? '<p class="foot-note" style="margin:4px 0 0"><button type="button" class="textlink" id="kkOld">카카오로 가입한 회원이에요</button></p>' : '') + '</div>', after);
     $('#kkGo').addEventListener('click', loginGo);
     const old = $('#kkOld'); if (old) old.addEventListener('click', kakaoOldGo);
     $('#kkNo').addEventListener('click', () => { invitePrompted = true; closeSheet(); });
@@ -2312,6 +2366,8 @@
   document.addEventListener('click', ev => {
     if (!ev.target || !ev.target.closest) return;
     const keep = ev.target.closest('a[data-keep]'); if (keep) { listState.keep = true; listState.scroll = window.scrollY; }
+    const ct = ev.target.closest('[data-cta]'); if (ct) countHit('cta', ct.dataset.cta + '|' + (location.hash.replace(/^#\/?/, '') || 'home'));
+    const pr = ev.target.closest('a.prod'); if (pr) countHit('out', pr.dataset.k || '');
     const b = ev.target.closest('[data-back]'); if (b) { ev.preventDefault(); back(b.dataset.back); return; }
     const dc = ev.target.closest('[data-del-cmt]'); if (dc) { delComment(+dc.dataset.delCmt); }
     const rb = ev.target.closest('[data-report]'); if (rb) { reportFlow(rb.dataset.report, +rb.dataset.rid); }
@@ -2387,12 +2443,12 @@
     const shop = '<div class="subs">' + [{ key: '', name: '전체', e: '🛍️' }].concat(SHOP_CATS).map(c => '<a class="sv' + (at.sub === (c.key || 'all') ? ' on' : '') + '" href="#/shop' + (c.key ? '/' + c.key : '') + '"><span class="e">' + c.e + '</span>' + esc(c.name) + '</a>').join('') + '</div>';
     const open = at.top === 'community' ? 'community' : at.top === 'shop' ? 'shop' : 'guide', dotHidden = $('#meDot') ? $('#meDot').hidden : true, side = $('#side');
     const focused = side.contains(document.activeElement) ? document.activeElement.getAttribute('href') : null;     // 다시 그려도 키보드 자리를 잃지 않게
-    // 메뉴는 아래 탭과 같은 다섯(11-12): 홈 · 가이드 · 질문 · 육아템 · MY
+    // 메뉴는 아래 탭과 같은 다섯(11-12): 홈 · 가이드 · 육아템 · 질문 · MY(육아템을 가운데로)
     side.innerHTML = '<a class="sbrand" href="#/"><span class="logo">' + DAD + '</span><span class="bt"><span class="wm" role="img" aria-label="육아맨">' + WORDMARK + '</span><small>아빠 육아의 모든 정보</small></span></a>'
       + nv('home', '#/', '홈')
       + nv('guide', '#/guide', '가이드') + (open === 'guide' ? guide : '')
-      + nv('community', '#/community', '질문') + (open === 'community' ? com : '')
       + nv('shop', '#/shop', '육아템') + (open === 'shop' ? shop : '')
+      + nv('community', '#/community', '질문') + (open === 'community' ? com : '')
       + nv('me', '#/me', 'MY', '<i class="dot" id="sideDot" aria-label="새 답"' + (dotHidden ? ' hidden' : '') + '></i>')
       + '<div class="fill"></div>'
       + (canWrite() ? '<a class="wbtn" href="#/write">' + ($('#fab svg') ? $('#fab svg').outerHTML : '') + '질문하기</a><a class="meb" href="#/me">' + who(me.nick, me.role === 'admin' ? 'admin' : 'dad', lv) + '</a>'
@@ -2400,6 +2456,9 @@
     if (focused) { const el = side.querySelector('a[href="' + focused + '"]'); if (el) el.focus(); }
   }
   const railCalcTiles = () => '<section class="rbox"><h2>계산기</h2><div class="rtiles">' + CALC_TABS.map(t => '<a class="rt" href="#/calc/' + t.key + '"><span class="ge">' + t.e + '</span>' + esc(t.name) + '</a>').join('') + '</div></section>';
+  // 오른쪽 칸의 육아템 상자(11-12): 예전에는 계산기와 계급만 있었다. 육아템 화면에서는 고르는 법 글을 보여 준다
+  const railShop = () => '<section class="rbox"><h2>아빠 육아템</h2><div class="rlinks">' + SHOP_CATS.map(c => '<a data-cta="rail" href="#/shop/' + esc(c.key) + '"><span class="e">' + esc(c.e) + '</span><span>' + esc(c.name) + '</span></a>').join('') + '</div><a class="btn primary small" data-cta="rail" href="#/shop">육아템 추천받기 →</a></section>';
+  const railGear = () => '<section class="rbox"><h2>고르는 법 글</h2><div class="rlinks">' + GD.items.filter(g => g.cat === 'gear').map(g => '<a href="#/g/' + esc(g.id) + '"><span class="e">' + esc(g.e) + '</span><span>' + esc(g.title) + '</span></a>').join('') + '</div></section>';
   function railSameCat(id) {
     const g = GD.items.find(x => x.id === id); if (!g) return '';
     const rest = GD.items.filter(x => x.cat === g.cat && x.id !== g.id).slice(0, 6), c = GCAT[g.cat] || {};
@@ -2441,10 +2500,11 @@
     const guest = canRead() ? '' : '<section class="rbox"><h2>질문게시판</h2><p class="rnote">' + (socialOn() ? '가입한' : '인증한') + ' 아빠끼리 묻고 답해요.</p><a class="btn line small" href="#/community">질문게시판 보기</a></section>';
     rail.innerHTML = n === 'calc' ? '<div id="railCalc"></div>'
       : n === 'me' ? (me ? '<div id="railMe"></div>' : railCalcTiles())
-      : n === 'community' || n === 'post' ? (canRead() ? '<div id="railHot"></div><div id="railRank"></div>' : railCalcTiles())
-      : n === 'garticle' ? railSameCat(r.id) + railCalcTiles()
-      : n === 'home' ? railCalcTiles() + '<div id="railRank"></div><div id="railHot"></div>' + guest
-      : railCalcTiles() + '<div id="railHot"></div>' + guest;
+      : n === 'community' || n === 'post' ? (canRead() ? '<div id="railHot"></div><div id="railRank"></div>' + railShop() : railCalcTiles() + railShop())
+      : n === 'garticle' ? railSameCat(r.id) + railShop() + railCalcTiles()
+      : n === 'shop' ? railGear() + railCalcTiles()
+      : n === 'home' ? railShop() + railCalcTiles() + '<div id="railRank"></div><div id="railHot"></div>' + guest
+      : railCalcTiles() + railShop() + '<div id="railHot"></div>' + guest;
     paintRailRank();
     fillRailHot();
   }
