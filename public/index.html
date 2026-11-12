@@ -42,9 +42,10 @@
   <header class="appbar" id="appbar"></header>
   <main id="view" class="view" aria-live="polite"></main>
   <aside class="rail" id="rail" aria-label="함께 보기" hidden></aside>
-  <a href="#/write" class="fab" id="fab" hidden aria-label="글쓰기">
-    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="m13 7 4 4"/></svg><span>글쓰기</span>
+  <a href="#/write" class="fab" id="fab" hidden aria-label="질문하기">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="m13 7 4 4"/></svg><span>질문하기</span>
   </a>
+  <!-- 아래 탭 다섯(2026-11-12 운영 방향 1단계): 홈 · 가이드 · 질문 · 육아템 · MY. 질문 탭의 주소와 칸 이름은 옛 커뮤니티 그대로(#/community, data-tab=community) -->
   <nav class="tabbar" id="tabbar" aria-label="아래 탭">
     <a href="#/" class="tab" data-tab="home">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
@@ -56,11 +57,15 @@
     </a>
     <a href="#/community" class="tab" data-tab="community">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-8l-5 4v-4H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/></svg>
-      <span>커뮤니티</span>
+      <span>질문</span>
+    </a>
+    <a href="#/shop" class="tab" data-tab="shop">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 7V6a4 4 0 0 1 8 0v1h3a1 1 0 0 1 1 1l-1 12a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1L4 8a1 1 0 0 1 1-1zm2 0h4V6a2 2 0 0 0-4 0z"/></svg>
+      <span>육아템</span>
     </a>
     <a href="#/me" class="tab" data-tab="me">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm-8 8.5c0-4 3.6-7 8-7s8 3 8 7V21H4z"/></svg>
-      <span>MY</span><i class="dot" id="meDot" hidden aria-label="새 댓글"></i>
+      <span>MY</span><i class="dot" id="meDot" hidden aria-label="새 답"></i>
     </a>
   </nav>
   <div class="sheet-wrap" id="sheet" hidden></div>
@@ -71,6 +76,7 @@
 <script src="guide-data.js"></script>
 <script src="official-data.js"></script>
 <script src="law-data.js"></script>
+<script src="shop-data.js"></script>
 <script src="calc.js"></script>
 <script src="app.js"></script>
 </body>

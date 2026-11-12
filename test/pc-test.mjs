@@ -48,7 +48,7 @@ await open('');
 // 로그인한 아빠 + 아이 날짜(이 기기 localStorage에만)
 await q(`(() => {
   const S = window.YK_SAMPLE, at = h => new Date(Date.now() - (h || 0) * 3600e3).toISOString(), T = 'testtoken-pc-layout-0001';
-  localStorage.setItem('yk.local', JSON.stringify({ v: 3, seq: { user: 200, post: 100, comment: 100 }, invites: [],
+  localStorage.setItem('yk.local', JSON.stringify({ v: 4, seq: { user: 200, post: 100, comment: 100 }, invites: [],
     users: S.users.map(u => ({ id: u.id, nick: u.nick + '/청주/25', created: at(u.h), token: null, verified: true })).concat([{ id: 101, nick: '시험아빠/청주/26', created: at(288), token: T, verified: true }]),
     posts: S.posts.map(p => ({ id: p.id, user_id: p.user_id, cat: p.cat, age: p.age || '', title: p.title, body: p.body, created: at(p.h), deleted: null })),
     comments: S.comments.map(c => ({ id: c.id, post_id: c.post_id, user_id: c.user_id, body: c.body, created: at(c.h), deleted: null })) }));
@@ -66,14 +66,21 @@ ok('아이 칸이 제목 띠 안에', await q(`!!document.querySelector('.phead 
 // 메뉴
 await q(`[...document.querySelectorAll('#side .sv')].find(x => x.textContent.includes('심리')).click()`); await sleep(300);
 ok('메뉴 → 심리', (await q('location.hash')) === '#/guide/mind' && await q(`document.querySelector('#side .sv.on').textContent.includes('심리')`));
-await q(`[...document.querySelectorAll('#side .nv')].find(x => x.textContent.includes('커뮤니티')).click()`); await sleep(500);
-ok('커뮤니티 분류 8칸', await q(`document.querySelectorAll('#side .subs .sv').length === 8`));
-await q(`[...document.querySelectorAll('#side .sv')].find(x => x.textContent.includes('질문')).click()`); await sleep(500);
-ok('분류 거르기', await q(`(() => { const b = [...document.querySelectorAll('#list .badge')]; return b.length > 0 && b.every(x => x.textContent.includes('질문')); })()`));
-ok('오른쪽 뜨는 글', await q(`document.querySelectorAll('#railHot .hotrow').length > 0`));
+ok('메뉴 다섯(홈 · 가이드 · 질문 · 육아템 · MY)', await q(`[...document.querySelectorAll('#side .nv')].map(x => x.textContent.trim()).join(',') === '홈,가이드,질문,육아템,MY'`));
+await q(`[...document.querySelectorAll('#side .nv')].find(x => x.textContent.includes('질문')).click()`); await sleep(500);
+ok('질문 주제 8칸', await q(`document.querySelectorAll('#side .subs .sv').length === 8`));
+await q(`[...document.querySelectorAll('#side .sv')].find(x => x.textContent.includes('아기 돌보기')).click()`); await sleep(500);
+ok('주제 거르기', await q(`(() => { const b = [...document.querySelectorAll('#list .badge:not(.c-wait)')]; return b.length > 0 && b.every(x => x.textContent.includes('아기 돌보기')); })()`));
+ok('지금 뜨는 글 접음', await q(`!document.querySelector('#railHot .hotrow')`));
 ok('오른쪽 계급', await q(`!!document.querySelector('#railRank .rkhead')`));
 ok('본문에 뜨는 글 중복 없음', await q(`document.querySelector('#hotBox').innerHTML === ''`));
 ok('메뉴에 계급', await q(`document.querySelector('.meb').textContent.includes('이병')`));
+// 아빠 육아템
+await q(`[...document.querySelectorAll('#side .nv')].find(x => x.textContent.includes('육아템')).click()`); await sleep(400);
+ok('육아템 카테고리 여섯과 표시 줄', (await q('location.hash')) === '#/shop' && await q(`document.querySelectorAll('#view .cat').length === 6 && !!document.querySelector('#view .paynote')`));
+ok('육아템 메뉴 하위 7칸', await q(`document.querySelectorAll('#side .subs .sv').length === 7`));
+await q(`location.hash = '#/shop/out'`); await sleep(400);
+ok('카테고리: 상품 준비 중', await q(`document.querySelector('#shopList').textContent.includes('상품을 준비하고 있어요')`));
 // 계산기: 일반과 6+6을 나란히(월 통상임금 400만원, 12개월)
 await q(`location.hash = '#/calc/leave'`); await sleep(500);
 const cards = () => q(`[...document.querySelectorAll('.rescard strong')].map(x => x.textContent)`);
@@ -98,8 +105,7 @@ ok('Esc로 닫힘', await q(`document.querySelector('#sheet').hidden`));
 // 글쓰기 · 댓글
 await q(`document.querySelector('#side .wbtn').click()`); await sleep(300);
 ok('글쓰기는 오른쪽 칸 없음', (await q('location.hash')) === '#/write' && await q(`document.querySelector('#rail').hidden`));
-await q(`document.querySelector('[data-tpl=free]').click()`); await sleep(200);
-await q(`(() => { const set = (s, v) => { const i = document.querySelector(s); i.value = v; i.dispatchEvent(new Event('input', { bubbles: true })); }; document.querySelector('#catpick [data-pick=tip]').click(); set('#wtitle', 'PC에서 쓴 시험 글입니다'); set('#wbody', 'PC 화면 시험 내용입니다.'); document.querySelector('#wform button[type=submit]').click(); })()`); await sleep(700);
+await q(`(() => { const set = (s, v) => { const i = document.querySelector(s); i.value = v; i.dispatchEvent(new Event('input', { bubbles: true })); }; document.querySelector('#catpick [data-pick=care]').click(); set('#wtitle', 'PC에서 쓴 시험 글입니다'); set('#wbody', 'PC 화면 시험 내용입니다.'); document.querySelector('#wform button[type=submit]').click(); })()`); await sleep(700);
 ok('글 올리기', /^#\/p\/\d+/.test(await q('location.hash')));
 await q(`(() => { const t = document.querySelector('#cbody'); t.value = 'PC 댓글 시험'; t.dispatchEvent(new Event('input', { bubbles: true })); document.querySelector('#composer button[type=submit]').click(); })()`); await sleep(500);
 ok('댓글 달림', await q(`document.querySelector('#cmts').textContent.includes('PC 댓글 시험')`));
@@ -121,7 +127,7 @@ ok('1440폭으로 돌아옴', await q(`!document.querySelector('#side').hidden &
 // 폭마다 가로 넘침 없음
 for (const w of [1100, 1280, 1366, 1440, 1920]) {
   await viewport(w, 900); await sleep(300);
-  for (const h of ['#/', '#/guide/leave', '#/calc/leave', '#/community', '#/me']) { await q(`location.hash = '${h}'`); await sleep(350); ok(`${w}폭 ${h} 가로 넘침 없음`, await q('document.documentElement.scrollWidth <= innerWidth')); }
+  for (const h of ['#/', '#/guide/leave', '#/guide/gear', '#/calc/leave', '#/community', '#/shop', '#/shop/out', '#/me']) { await q(`location.hash = '${h}'`); await sleep(350); ok(`${w}폭 ${h} 가로 넘침 없음`, await q('document.documentElement.scrollWidth <= innerWidth')); }
 }
 ok('화면 오류 없음', errors.length === 0);
 if (errors.length) console.log([...new Set(errors)].slice(0, 5));
