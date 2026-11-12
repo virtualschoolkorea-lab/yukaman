@@ -1,7 +1,7 @@
 /* 육아맨 — 모바일 앱 화면(2026-11-04). 휴대폰 기준(375px부터), 1100px보다 좁은 창에서는 폰 폭(480px)을 가운데에 둔다. 1100px부터는 파일 끝 'PC 화면' 절. 글꼴 Pretendard.
    짜임: 위 앱 바(sticky) · 가로 칩 · 둥근 카드 · 아래 탭 3개(가운데 글쓰기 단추) · 바텀시트(닉네임) · 토스트 */
 :root {
-  /* 색감 4 '버터와 하늘'(11-04 휴먼쌤 선택 — 처음 3번이라 했다가 4번으로 고침). sub·mute는 흰 바탕과 배경색에서 대비 4.5:1 이상(검수 17).
+  /* 색감 4 '버터와 하늘'(11-04 운영자 선택 — 처음 3번이라 했다가 4번으로 고침). sub·mute는 흰 바탕과 배경색에서 대비 4.5:1 이상(검수 17).
      --pri(채움, 흰 글자 4.7:1) · --pri-d(작은 글자·링크 6.8:1) · --but(버터, 강조 칸) */
   --ink: #1B1F2A; --sub: #5F6675; --mute: #6A7080; --line: #EDE8DA; --line-s: #D9D2BF; --bg: #FFFBF0; --card: #FFFFFF;
   --pri: #2F6FE0; --pri-d: #1F56B8; --pri-l: #E6EEFF; --but: #FFD66B; --but-l: #FFF4D6;
@@ -15,7 +15,7 @@
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; background: #F3EFE4; }
-/* word-break: 한국어가 단어 중간에서 끊기지 않게(11-04 휴먼쌤 "한글원샷의 가독성"). 긴 주소 등은 overflow-wrap이 받는다 */
+/* word-break: 한국어가 단어 중간에서 끊기지 않게(11-04 운영자 "한글원샷의 가독성"). 긴 주소 등은 overflow-wrap이 받는다 */
 body { margin: 0; color: var(--ink); line-height: 1.5; word-break: keep-all; overflow-wrap: break-word; -webkit-font-smoothing: antialiased; -webkit-tap-highlight-color: transparent;
        font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", sans-serif; }
 a { color: inherit; text-decoration: none; }
@@ -85,7 +85,7 @@ svg { display: block; }
 .pcard .foot .cmt svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2; }
 .nick { display: inline-flex; align-items: center; gap: 5px; }
 .avatar { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--pri-l); color: var(--pri); font-size: 11px; font-weight: 900; }
-/* 계급(11-05 휴먼쌤 "짝대기부터"). 닉네임이 길면 한 줄 안에서 줄임표로 */
+/* 계급(11-05 운영자 "짝대기부터"). 닉네임이 길면 한 줄 안에서 줄임표로 */
 .nick { min-width: 0; }
 .nick .avatar, .nick .vb { flex: none; }
 .nick .nn { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
@@ -263,7 +263,7 @@ textarea.inp { min-height: 180px; resize: none; line-height: 1.6; }
 
 .foot-note { margin: 22px 0 0; text-align: center; font-size: 12.5px; color: var(--mute); font-weight: 600; line-height: 1.7; }
 
-/* 커뮤니티 아이 나이 드롭다운(11-05 휴먼쌤). 그림 주소를 쓰지 않고 꺾쇠를 CSS로 그린다 */
+/* 커뮤니티 아이 나이 드롭다운(11-05 운영자). 그림 주소를 쓰지 않고 꺾쇠를 CSS로 그린다 */
 .agesel { position: relative; display: block; margin-top: 4px; }
 .agesel select { display: block; width: 100%; -webkit-appearance: none; appearance: none; border: 1.5px solid var(--line); border-radius: 14px; background: var(--card); color: var(--ink); padding: 11px 40px 11px 14px; font: inherit; font-size: 16px; font-weight: 700; outline: none; }
 .agesel select:focus { border-color: var(--pri); }
@@ -345,13 +345,13 @@ button.notice.vcta { display: flex; width: 100%; text-align: left; font: inherit
 .qrows > span + span { border-top: 1px solid var(--line); }
 .qrows i { font-style: normal; }
 .qrows b { color: var(--ink); font-weight: 800; }
-/* 개조식 안내(11-05 휴먼쌤) */
+/* 개조식 안내(11-05 운영자) */
 .nlist { margin: 12px 2px 0; padding: 0; list-style: none; text-align: left; font-size: 13.5px; font-weight: 600; line-height: 1.45; color: var(--sub); }
 .nlist li { position: relative; padding-left: 12px; }
 .nlist li + li { margin-top: 3px; }
 .nlist li:before { content: ""; position: absolute; left: 2px; top: .58em; width: 4px; height: 4px; border-radius: 50%; background: var(--mute); }
 .nlist a { color: var(--pri-d); text-decoration: underline; }
-/* 홈에서 가이드로 가는 큰 버튼 · 커뮤니티 잠금 아래 타일 가운데 정렬(11-05 휴먼쌤) */
+/* 홈에서 가이드로 가는 큰 버튼 · 커뮤니티 잠금 아래 타일 가운데 정렬(11-05 운영자) */
 /* '육아템 추천받기' 큰 파란 단추(11-12 운영자): 용품 글과 용품 칸의 맨 위. 글 안의 링크 색과 밑줄을 덮는다. 이름은 ad로 시작하지 않게 */
 .btn.shopgo { display: block; text-align: center; margin-top: 16px; padding: 18px 16px; font-size: 18px; color: #fff !important; text-decoration: none !important; box-shadow: var(--shadow); }
 .btn.gobig { margin-top: 16px; text-align: center; }
@@ -372,7 +372,7 @@ button.notice.vcta { display: flex; width: 100%; text-align: left; font: inherit
 .rail .rbox .btn.small { display: block; text-align: center; text-decoration: none; }
 .btn.gobig .nw { white-space: nowrap; }
 .tiles.center .tile { align-items: center; text-align: center; }
-/* 근거 법령과 시행일(11-05 휴먼쌤 "실제 법령의 명칭과 유효일자") */
+/* 근거 법령과 시행일(11-05 운영자 "실제 법령의 명칭과 유효일자") */
 .lawbox { margin-top: 18px; padding: 14px 16px; border-radius: 16px; background: var(--card); box-shadow: var(--shadow); }
 .lawbox > b { display: block; font-size: 14.5px; font-weight: 900; }
 .lawbox ul { margin: 8px 0 0; padding: 0; list-style: none; }
@@ -408,15 +408,15 @@ button.notice.vcta { display: flex; width: 100%; text-align: left; font: inherit
 .hotrow i { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--ink); color: var(--bg); font-style: normal; font-size: 12px; font-weight: 900; }
 .hotrow b { flex: 1; min-width: 0; font-size: 14.5px; font-weight: 800; letter-spacing: -.02em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .hotrow span { flex: none; font-size: 12.5px; font-weight: 800; color: var(--pri-d); }
-/* 칩 줄 양쪽에 더 있다는 표시(11-05 휴먼쌤). 왼쪽은 눌러서 돌아가는 자리라 움직이지 않는다 */
+/* 칩 줄 양쪽에 더 있다는 표시(11-05 운영자). 왼쪽은 눌러서 돌아가는 자리라 움직이지 않는다 */
 .hs { position: relative; }
 .hsmore { position: absolute; top: 0; bottom: 0; right: -16px; display: flex; align-items: center; justify-content: flex-end; width: 62px; padding: 0 8px 0 0; border: 0; background: linear-gradient(to right, transparent, var(--bg) 60%); }
 .hsmore.prev { right: auto; left: -16px; justify-content: flex-start; padding: 0 0 0 8px; background: linear-gradient(to left, transparent, var(--bg) 60%); }
 .hsmore span { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--ink); color: var(--bg); font-size: 19px; line-height: 1; font-weight: 800; padding-bottom: 2px; animation: hsnudge 1.2s ease-in-out 2; }
 .hsmore.prev span { animation: none; }
-/* 계산기 네 종류는 밀지 않고 2열 2행으로(11-05 휴먼쌤) */
-.calcgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 4px 0 8px; }
-.calcgrid .chip { justify-content: center; padding: 10px 6px; }
+/* 계산기 네 종류는 밀지 않고 2열 2행으로(11-05 운영자) */
+.calcgrid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 4px 0 8px; }     /* 11-13 계산기가 셋이라 한 줄 */
+.calcgrid .chip { flex-direction: column; justify-content: center; gap: 3px; padding: 9px 4px; border-radius: 16px; font-size: 13.5px; line-height: 1.25; text-align: center; white-space: normal; }     /* 셋이 한 줄이라 그림 위 · 이름 아래(11-13) */
 @keyframes hsnudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(3px); } }
 @media (prefers-reduced-motion: reduce) { .hsmore span { animation: none; } }
 /* 카카오 단추(카카오 디자인 가이드 색) */
@@ -426,7 +426,7 @@ button.notice.vcta { display: flex; width: 100%; text-align: left; font: inherit
 .btn.naver { display: flex; align-items: center; justify-content: center; gap: 10px; background: #03C75A; color: #fff; }
 .btn.naver svg { flex: none; width: 16px; height: 16px; fill: #fff; }
 .btn.naver:disabled { opacity: .6; }
-/* 닉네임 세 칸(11-05 휴먼쌤) */
+/* 닉네임 세 칸(11-05 운영자) */
 .nick3 { display: grid; grid-template-columns: 1.1fr 1fr 1.05fr; gap: 8px; align-items: end; }   /* 칸 이름이 두 줄이 되어도 입력칸 높이를 맞춘다 */
 .nick3 label { display: block; min-width: 0; font-size: 12.5px; font-weight: 800; color: var(--sub); }
 .nick3 .inp { margin-top: 4px; padding: 10px; min-width: 0; }
@@ -473,7 +473,7 @@ input[type=date].inp { -webkit-appearance: none; appearance: none; min-height: 4
 .fab svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .fab:active { background: var(--acc-d); }
 
-/* 탭 제목 띠(11-05 휴먼쌤 "눈에 잘 안띄어"): 홈·가이드·자료실·커뮤니티·MY 맨 위. 파랑은 누르는 것, 노랑은 제목으로 나눈다 */
+/* 탭 제목 띠(11-05 운영자 "눈에 잘 안띄어"): 홈·가이드·자료실·커뮤니티·MY 맨 위. 파랑은 누르는 것, 노랑은 제목으로 나눈다 */
 .phead { position: relative; display: flex; align-items: center; gap: 13px; margin-top: 4px; padding: 15px 16px; border-radius: 22px; background: var(--hd); color: var(--hd-ink); overflow: hidden; }
 .phead:before { content: ""; position: absolute; right: -34px; top: -46px; width: 130px; height: 130px; border-radius: 50%; background: rgba(255,255,255,.26); }
 [data-theme=dark] .phead:before { background: rgba(255,255,255,.05); }
@@ -507,7 +507,7 @@ input[type=date].inp { -webkit-appearance: none; appearance: none; min-height: 4
 .calctbl tr:first-child td { border-top: 0; }
 .calctbl tr.sum td { background: var(--pri-l); color: var(--pri-d); font-weight: 900; }
 .calcnote { margin: 12px 2px 0; font-size: 13px; color: var(--sub); line-height: 1.5; font-weight: 600; }
-.glist { display: flex; flex-direction: column; gap: 16px; margin-top: 16px; }   /* 11-04 휴먼쌤 "지금의 2배로 넉넉하게"(8 → 16) */
+.glist { display: flex; flex-direction: column; gap: 16px; margin-top: 16px; }   /* 11-04 운영자 "지금의 2배로 넉넉하게"(8 → 16) */
 .grow { display: flex; align-items: center; gap: 12px; background: var(--card); border-radius: 16px; padding: 13px 14px; box-shadow: var(--shadow); }
 .grow:active { transform: scale(.985); }
 .grow .ge, .tile .ge { flex: none; width: 42px; height: 42px; border-radius: 13px; background: var(--but-l); display: grid; place-items: center; font-size: 22px; line-height: 1; }
@@ -598,7 +598,7 @@ html[data-theme=dark] { background: #0D1119; }
 [data-theme=dark] .pill.soon { color: #14213D; }
 [data-theme=dark] .qm { background: #2F6FE0; }     /* 질문 글의 Q 표시: 다른 파란 단추와 같은 진하기로(흰 글자 대비) */
 
-/* 색감 4 '버터와 하늘'(11-04 휴먼쌤 선택): 작은 글자·링크는 짙은 하늘(--pri-d)로 대비 4.5:1 이상, 채움은 --pri, 강조 칸은 버터(--but). 색을 직접 쓴 곳을 덮는다 */
+/* 색감 4 '버터와 하늘'(11-04 운영자 선택): 작은 글자·링크는 짙은 하늘(--pri-d)로 대비 4.5:1 이상, 채움은 --pri, 강조 칸은 버터(--but). 색을 직접 쓴 곳을 덮는다 */
 .pcard .foot .cmt, .body a, .tab.on, .vb.of, .notice.vcta b, .dt summary, .six, .calcnote a, .sec a.all, .gcalc .fold, .gcalc .big em, .tag, .garticle a, .srcs a, .glink span:last-child, .foot-note a, .chk a, .lk2, .avatar, .reccode, .result > strong, .gcalc .big strong, .calctbl tr.sum td, .jobhint b { color: var(--pri-d); }
 .fab { box-shadow: 0 8px 20px rgba(27,31,42,.28); }
 .seg { background: #ECEAE2; }
@@ -619,7 +619,7 @@ html[data-theme=dark] { background: #0D1119; }
 .jobnote p + .jobgo, .jobnote b + .jobgo { margin-top: 10px; }
 .offi { display: flex; align-items: center; justify-content: center; min-height: 44px; margin-top: 10px; padding: 9px 12px; border: 1.5px solid var(--line); border-radius: 12px; background: var(--card); color: var(--pri-d); font-size: 13.5px; font-weight: 800; text-align: center; }
 .qnote .offi { display: none; }
-/* 어떤 직종 기준인지(11-05 휴먼쌤 "더 가시적으로"): 하늘색 칸에 그림 + 직종 + 기준 + 바꾸기 */
+/* 어떤 직종 기준인지(11-05 운영자 "더 가시적으로"): 하늘색 칸에 그림 + 직종 + 기준 + 바꾸기 */
 .jobline { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; padding: 10px 12px; border-radius: 14px; background: var(--pri-l); text-align: left; }
 .jobline .je { flex: none; font-size: 26px; line-height: 1; }
 .jobline .tx { flex: 1; min-width: 0; }
@@ -635,14 +635,14 @@ html[data-theme=dark] { background: #0D1119; }
 [data-theme=dark] .jobnote .lk2 { color: #FDE68A; }
 [data-theme=dark] .jobgo { background: var(--card); border-color: #5A4A1E; }
 
-/* 로고(띠 로고 1, 11-04 휴먼쌤 확정): 타일 + 앱 바 글자 로고(글자색 currentColor, 깎는 선은 --bg) */
+/* 로고(띠 로고 1, 11-04 운영자 확정): 타일 + 앱 바 글자 로고(글자색 currentColor, 깎는 선은 --bg) */
 .brand .wm { display: inline-flex; align-items: center; color: var(--ink); }
 .brand .wm svg { display: block; height: 24px; width: auto; }
 
-/* 앱 바 부제(11-04 휴먼쌤): 글자 로고 옆에 세로줄을 두고 한 줄 */
+/* 앱 바 부제(11-04 운영자): 글자 로고 옆에 세로줄을 두고 한 줄 */
 .brand .tagline { padding-left: 9px; border-left: 2px solid var(--but); font-size: 13.5px; line-height: 1.25; font-weight: 800; letter-spacing: -.02em; color: var(--ink); white-space: nowrap; }
 
-/* 홈 아이 나이 길(UI 3안, 11-04 휴먼쌤 선택): 나이 칸 → 우리 아이 → 지금 챙길 것(시간순, D-데이) */
+/* 홈 아이 나이 길(UI 3안, 11-04 운영자 선택): 나이 칸 → 우리 아이 → 지금 챙길 것(시간순, D-데이) */
 /* 아이가 둘 이상일 때(11-05): 나이 칩과 헷갈리지 않게 칸 모양으로 고른다 */
 .kidrow { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
 .kidrow .seg { flex: 1; min-width: 0; margin: 0; }
@@ -718,7 +718,7 @@ a.btn { text-align: center; }
 .prod .pgo { margin-top: 5px; font-size: 13px; font-weight: 800; color: var(--pri-d); }
 .about.shopwait { margin-top: 16px; text-align: center; font-weight: 700; }
 
-/* PC 화면(11-06 휴먼쌤 "A안으로 제작해줘"). 창이 1100px 이상일 때만 적용돼 폰 화면은 바뀌지 않는다. 왼쪽 메뉴 + 본문, 1280px부터 오른쪽 칸 */
+/* PC 화면(11-06 운영자 "A안으로 제작해줘"). 창이 1100px 이상일 때만 적용돼 폰 화면은 바뀌지 않는다. 왼쪽 메뉴 + 본문, 1280px부터 오른쪽 칸 */
 @media (min-width: 1100px) {
   html, html[data-theme=dark] { background: var(--bg); }
   .app { display: grid; grid-template-columns: 252px minmax(0, 1fr); grid-template-rows: auto 1fr; grid-template-areas: "side bar" "side view"; max-width: 1560px; padding: 0; overflow: visible; background: transparent; box-shadow: none; }
@@ -833,7 +833,7 @@ a.btn { text-align: center; }
   .pcard p { -webkit-line-clamp: 2; font-size: 14.5px; }
 
   /* 계산기 */
-  .calcgrid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 14px 0; padding: 5px; border-radius: 16px; background: var(--gy-l); }
+  .calcgrid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 14px 0; padding: 5px; border-radius: 16px; background: var(--gy-l); }
   .calcgrid .chip { justify-content: center; min-height: 44px; padding: 0 6px; border: 0; border-radius: 12px; background: transparent; color: var(--sub); font-size: 15px; font-weight: 800; }
   .calcgrid .chip.on { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(28,35,51,.1); }
   .jobflat { margin-top: 0; }

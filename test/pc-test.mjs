@@ -61,7 +61,7 @@ await open('#/');
 // 틀과 홈
 ok('왼쪽 메뉴', await q(`getComputedStyle(document.querySelector('#side')).display !== 'none'`));
 ok('아래 탭 숨음', await q(`getComputedStyle(document.querySelector('#tabbar')).display === 'none'`));
-ok('지금 챙길 것 7개', await q(`[...document.querySelectorAll('.tli')].filter(x => !x.hidden).length === 7 && !document.querySelector('#tlMore')`));
+ok('지금 챙길 것 9개', await q(`[...document.querySelectorAll('.tli')].filter(x => !x.hidden).length === 9 && !document.querySelector('#tlMore')`));     // 11-13 BCG · 건강검진 1차를 홈으로 옮겨 7 → 9
 ok('아이 칸이 제목 띠 안에', await q(`!!document.querySelector('.phead .kidseg') && !!document.querySelector('.phead #kidAdd')`));
 // 메뉴
 await q(`[...document.querySelectorAll('#side .sv')].find(x => x.textContent.includes('심리')).click()`); await sleep(300);

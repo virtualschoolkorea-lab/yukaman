@@ -58,7 +58,9 @@ const LIM = { title: [2, 60], body: [1, 3000], comment: [1, 1000], answer: [20, 
 const RATE = {                                        // [횟수, 기간 ms]
   join: [20, 600000], post: [10, 3600000], comment: [60, 3600000], nick: [1, 7 * 86400000],   // 닉네임은 7일에 1번(사칭 방어, 검수 16)
   code: [10, 600000], apply: [3, 86400000], invite: [10, 86400000], recover: [10, 600000], report: [10, 86400000], ask: [5, 86400000], identity: [10, 600000], kakao: [30, 600000], naver: [30, 600000], block: [60, 86400000], review: [10, 600000],
-  count: [300, 3600000]                               // 누른 수 세기: 한 기기 주소에서 한 시간에 300번까지만 센다
+  count: [300, 3600000],                              // 누른 수 세기: 한 기기 주소에서 한 시간에 300번까지만 센다
+  count1: [1, 86400000],                              // 같은 기기 주소 · 같은 단추는 하루 한 번(11-13)
+  view: [1, 86400000]                                 // 같은 회원 · 같은 질문의 조회수는 하루 한 번(11-13)
 };
 const INVITE_MAX = 3;                                 // 인증 아빠 한 사람이 만들 수 있는 초대 코드
 // 운영진처럼 보이는 이름 막기(검수 16). 띄어쓰기·특수문자를 지우고 닮은 글자(0→o, 1→i, 3→e, 5→s)를 접은 뒤 본다.
@@ -339,8 +341,12 @@ async function getPost(request, env, id, sp) {
     + 'FROM posts p JOIN users u ON u.id = p.user_id WHERE p.id = ?1 AND p.deleted IS NULL').bind(id).first();
   if (!p) return no('not_found', 404);
   if (await db.prepare('SELECT 1 AS x FROM user_blocks WHERE user_id = ?1 AND blocked_id = ?2').bind(a.user.id, p.uid).first()) return no('user_blocked', 403);
-  // 조회수(11-13): 글쓴이가 아닌 회원이 그 기기에서 처음 열 때(화면이 v=1을 붙인다)만 1 올린다. 누가 봤는지는 남기지 않는다
-  if (sp && sp.get('v') === '1' && p.uid !== a.user.id) { await db.prepare('UPDATE posts SET views = views + 1 WHERE id = ?1').bind(id).run(); p.views = (p.views || 0) + 1; }
+  // 조회수(11-13): 글쓴이가 아닌 회원이 그 기기에서 처음 열 때(화면이 v=1을 붙인다)만 올린다. 스크립트로 되풀이해도 같은 회원 · 같은 질문은 하루 한 번.
+  // 그 확인에는 회원 번호와 질문 번호를 알아볼 수 없게 바꾼 값만 acts에 하루 두고(이틀 안에 지움), 질문에는 숫자만 남는다
+  if (sp && sp.get('v') === '1' && p.uid !== a.user.id) {
+    const raw = 'view|' + a.user.id + '|' + id, vk = 'v:' + (idKey(env) ? await hmacHex(idKey(env), raw) : await sha256(raw)).slice(0, 24);
+    if (await allow(db, vk, 'view')) { await db.prepare('UPDATE posts SET views = views + 1 WHERE id = ?1').bind(id).run(); p.views = (p.views || 0) + 1; }
+  }
   const cs = await db.prepare('SELECT c.id, c.body, c.created, u.nick, u.id AS uid, ' + BADGE + ' FROM comments c JOIN users u ON u.id = c.user_id '
     + 'WHERE c.post_id = ?1 AND c.deleted IS NULL AND c.user_id NOT IN (SELECT blocked_id FROM user_blocks WHERE user_id = ?2) ORDER BY c.id').bind(id, a.user.id).all();
   const list = cs.results || [];
@@ -393,13 +399,20 @@ async function deletePost(request, env, id) {
 // 장난으로 숫자를 부풀리지 못하게 기기 주소의 짧은 해시로 횟수만 제한한다(acts, 다른 횟수 제한과 같은 방식이고 곧 지워진다). 넘으면 세지 않고 조용히 넘어간다.
 // 보는 법: python -X utf8 deploy.py clicks
 const COUNT_KINDS = ['out', 'cta'];
+// 11-13 보완: 봇 · 스크립트 이름표와 다른 사이트에서 부른 요청은 세지 않고, 같은 기기 주소에서 같은 단추는 하루 한 번만 센다(되풀이해 불러도 숫자가 오르지 않게)
+const BOT_UA = /bot|crawl|spider|slurp|curl|wget|python|scrapy|httpclient|okhttp|java\/|go-http|headless|phantom|node-fetch|axios|libwww|postman/i;
+const foreignOrigin = request => { const o = request.headers.get('Origin'); if (!o || o === 'null') return false; try { return new URL(o).host !== new URL(request.url).host; } catch (e) { return true; } };
 async function countHit(request, env) {
   const b = await readJson(request);
   if (!b) return no('bad_json');
   const kind = COUNT_KINDS.includes(b.e) ? b.e : '';
   const key = str(b.k, 200).replace(/[^\p{L}\p{N} ·|/_.#-]/gu, '').slice(0, 120);
   if (!kind || !key) return no('bad_json');
-  if (!(await allow(env.DB, await ipKey(request), 'count'))) return json({ ok: true });
+  const ua = request.headers.get('User-Agent') || '';
+  if (!ua || BOT_UA.test(ua) || foreignOrigin(request)) return json({ ok: true });     // 세지 않고 조용히 넘어간다
+  const ip = await ipKey(request);
+  if (!(await allow(env.DB, ip, 'count'))) return json({ ok: true });
+  if (!(await allow(env.DB, 'c:' + (await sha256(ip + '|' + kind + '|' + key)).slice(0, 24), 'count1'))) return json({ ok: true });
   await env.DB.prepare('INSERT INTO clicks (day, kind, k, n) VALUES (?1, ?2, ?3, 1) ON CONFLICT(day, kind, k) DO UPDATE SET n = n + 1').bind(nowIso().slice(0, 10), kind, key).run();
   return json({ ok: true });
 }

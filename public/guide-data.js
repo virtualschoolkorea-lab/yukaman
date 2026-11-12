@@ -1,4 +1,4 @@
-// 육아맨 '아빠 가이드' 글(2026-11-04, 앱개발부). 서버 없이 저장소 안의 이 파일이 정본이다. 계산 기준은 calc.js.
+// 육아맨 '아빠 가이드' 글(2026-11-04). 서버 없이 저장소 안의 이 파일이 정본이다. 계산 기준은 calc.js.
 // status: '공식 근거' = 법령 원문·고용노동부 자료로 2026-11-04 확인(연구부\자료실\근거대장 89~106번) · '일반 조언' = 근거를 따로 대지 않는 생활 조언 · 경험담 인용은 출처를 단다.
 // 법령은 2026-09-18 시행본 기준. 2026-11-27 시행 개정(난임치료휴가, 성희롱 주체 등)은 이 글의 숫자를 바꾸지 않는다.
 (function () {
@@ -27,7 +27,7 @@
     moelNov: { t: '고용노동부 2026-11-03 시행령 개정 보도자료', u: 'https://www.moel.go.kr/news/enews/report/enewsView.do?news_seq=20188' },
     korea2026: { t: '정책브리핑 2026 일·가정양립 지원제도', u: 'https://www.korea.kr/news/policyNewsView.do?newsId=148958223' },
     korea10: { t: '정책브리핑 새해 육아기 10시 출근 지원', u: 'https://www.korea.kr/news/policyNewsView.do?newsId=148957375' },
-    // 심리 글(11-05 휴먼쌤 "'심리'부분이 너무 약해서 여기도 좀 추가해줘 더 풍성하게")
+    // 심리 글(11-05 운영자 "'심리'부분이 너무 약해서 여기도 좀 추가해줘 더 풍성하게")
     mohwMh: { t: '보건복지부 정신건강상담전화 안내', u: 'https://www.mohw.go.kr/menu.es?mid=a10706040100' },
     mohw109: { t: '보건복지부 자살예방 상담전화 109 통합 보도자료', u: 'https://www.mohw.go.kr/board.es?mid=a10503010100&bid=0027&act=view&list_no=1479607&tag=&nPage=1' },
     korea2606: { t: '정책브리핑 "당신은 혼자가 아닙니다"', u: 'https://www.korea.kr/news/policyNewsView.do?newsId=148966728' },
@@ -131,9 +131,9 @@
   window.YK_GUIDES = {
     cats: [
       { key: 'leave', name: '육아휴직', e: '💼' },
-      { key: 'faq', name: 'Q&A', e: '🙋' },       // 11-05 휴먼쌤 "'육아휴직' 오른쪽에 'Q&A'". 글은 official-data.js, 관리자가 답한 질문은 서버에서
+      { key: 'faq', name: 'Q&A', e: '🙋' },       // 11-05 운영자 "'육아휴직' 오른쪽에 'Q&A'". 글은 official-data.js, 관리자가 답한 질문은 서버에서
       { key: 'gear', name: '용품', e: '🎒' },      // 11-12 운영 방향: 용품 고르는 법 글(육아템 카테고리마다 한 편, 맨 아래 '용품' 절). 상품은 육아템 탭
-      { key: 'outing', name: '나들이', e: '🎡' },    // 11-05 휴먼쌤 "'계산기' 다음에 '나들이'를 넣어주고 그다음에 '놀이'". 가이드 상단 버튼 순서는 app.js GUIDE_BTNS
+      { key: 'outing', name: '나들이', e: '🎡' },    // 11-05 운영자 "'계산기' 다음에 '나들이'를 넣어주고 그다음에 '놀이'". 가이드 상단 버튼 순서는 app.js GUIDE_BTNS
       { key: 'play', name: '놀이', e: '🎮' },
       { key: 'mind', name: '심리', e: '🧠' },
       { key: 'policy', name: '정책', e: '📢' },
@@ -165,7 +165,7 @@
             '아동수당: 2026년부터 9세 미만. 수도권 월 10만원, 비수도권 10만 5천원, 인구감소지역은 11만~12만원이에요. 해마다 한 살씩 넓어져요.',
             '배우자 출산휴가 급여(우선지원대상기업): 휴가가 끝난 날부터 12개월 안에 고용24에서 신청해요.'
           ] },
-          { go: '#/calc/dates', t: '내 아이 날짜로 기한 계산하기' },
+          { go: '#/', t: '홈 \'우리 아이\'에서 기한 보기' },
           { tip: '아내가 회복하는 동안 서류는 아빠 몫이에요. 출생증명서는 여러 장 받아 두면 편해요. 금액과 조건은 바뀔 수 있으니 신청 전에 복지로나 주민센터에서 확인해 주세요.' }
         ],
         sources: [L.famReg44, L.easyBirth, L.efamily, L.koreaParent, L.govFirst, L.koreaChild, L.nhisDep, L.nip, L.nhisCheck, L.eq182, L.dec11, L.gov31] },

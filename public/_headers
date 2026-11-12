@@ -3,9 +3,19 @@
 # 글꼴은 cdn.jsdelivr.net(Pretendard)만. 화면 코드가 style="…"을 쓰므로 style-src에 'unsafe-inline'이 필요하다(인라인 <script>는 없다).
 # api.github.com은 관리자 화면 '최신화 점검'이 자동 점검 이슈 수를 읽는 데만 쓴다(토큰을 보내지 않음).
 # static.cloudflareinsights.com은 Cloudflare가 넣어 주는 방문 통계 스크립트다(2026-11-12 켬. 쿠키 · 기기 저장소를 쓰지 않는다. 보고는 같은 주소의 /cdn-cgi/rum으로).
+# 2026-11-13 보완: HTTPS 고정(HSTS) · Cloudflare가 정적 파일에 기본으로 붙이는 '누구나 읽어도 됨'(Access-Control-Allow-Origin: *) 떼기 · 옆문 주소(*.pages.dev) 검색 제외
 /*
+  Strict-Transport-Security: max-age=31536000
+  ! Access-Control-Allow-Origin
   Content-Security-Policy: default-src 'self'; script-src 'self' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; font-src 'self' https://cdn.jsdelivr.net; img-src 'self' data:; connect-src 'self' https://api.github.com https://cloudflareinsights.com; manifest-src 'self'; worker-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'
   X-Frame-Options: DENY
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+
+# 임시 주소와 올릴 때마다 생기는 미리 보기 주소는 검색에 내지 않는다(본 주소는 육아맨.com). Cloudflare 문서의 예시 꼴
+https://:project.pages.dev/*
+  X-Robots-Tag: noindex
+
+https://:version.:project.pages.dev/*
+  X-Robots-Tag: noindex
