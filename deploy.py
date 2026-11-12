@@ -313,7 +313,7 @@ def main():
         bkey = key_file(BACKUP_KEY_FILE)
         os.makedirs(os.path.join(HERE, 'backups'), exist_ok=True)
         data = {}
-        for t in ('users', 'user_blocks', 'invites', 'applications', 'posts', 'comments', 'reports', 'qna'):
+        for t in ('users', 'user_blocks', 'invites', 'applications', 'posts', 'comments', 'reports', 'qna', 'clicks'):
             r = subprocess.run(wrangler_cmd() + ['d1', 'execute', DB, '--remote', '--json', '--command', 'SELECT * FROM ' + t], cwd=HERE, capture_output=True, text=True, encoding='utf-8', errors='replace')
             if r.returncode:
                 if 'no such table' in r.stdout + r.stderr:      # 아직 migrate 전이라 표가 없는 경우
