@@ -774,7 +774,7 @@
   // 용품 칸은 글 두 편만(11-13 운영자: '고르는 법 전체' · 육아템 카테고리 칩 · '육아템 추천받기' 단추를 홈에서 뺌. 카테고리 c는 남겨 둔다)
   function homeGear(key) {
     const a = AGE_GEAR[key] || AGE_GEAR[''], rows = a.g.map(id => GD.items.find(x => x.id === id)).filter(Boolean);
-    return homeSec(AGE[key] ? '이 나이에 챙길 용품' : '아빠가 고르는 용품')
+    return homeSec(AGE[key] ? '우리 아이 나이에 챙길 용품' : '아빠가 고르는 용품')     // 11-13 운영자 "'이 나이에' 대신 '우리 아이 나이에'로"
       + '<div class="glist" style="margin-top:0">' + rows.map(grow).join('') + '</div>';
   }
   async function renderHome() {
@@ -794,7 +794,7 @@
       + (a && calcS.job !== 'worker' ? '<a class="jobhint" href="#/g/leave-job">회사원 등 고용보험 기준. <b>다른 직종 보기 ›</b></a>' : '')
       + timeline(key, d)
       + homeGear(key)
-      + homeSec(a ? '이 나이에 맞는 글' : '아빠 가이드', !a ? '<a class="all" href="#/guide">전체 보기 →</a>' : picks.length > (isWide() ? 3 : 4) ? '<a class="all" href="#/guide/age/' + key + '">전체 보기 →</a>' : '')
+      + homeSec(a ? '우리 아이 나이에 맞는 글' : '아빠 가이드', !a ? '<a class="all" href="#/guide">전체 보기 →</a>' : picks.length > (isWide() ? 3 : 4) ? '<a class="all" href="#/guide/age/' + key + '">전체 보기 →</a>' : '')
       + '<div class="tiles" style="margin-top:0">' + (isWide() ? picks.slice(0, 3).map(wideTile) : picks.slice(0, 4).map(g => tile(g.e, g.title, '#/g/' + g.id))).join('') + '</div>'
       // '가이드 탭에서 더 많은 정보 보기' 단추는 뺐다(11-13 운영자). 가이드는 아래 탭과 위 '전체 보기'로 간다
       + '<div id="homeCom">' + (canRead() ? homeSec('최근 질문', '<a class="all" href="#/community">전체 보기 →</a>') + '<div class="loading">불러오는 중…</div>' : '') + '</div>'
@@ -918,9 +918,9 @@
   // 이 나이에 맞는 글 전체(홈의 '전체 보기', 11-05 운영자 "그냥 아빠가이드가 나오는데 이건 아니니까")
   function renderGuideAge(key) {
     setTab('home');
-    bar(backBtn('#/') + '<div class="fill atitle">이 나이에 맞는 글</div>');
+    bar(backBtn('#/') + '<div class="fill atitle">우리 아이 나이에 맞는 글</div>');
     const a = AGE[key], items = a.ids.map(id => GD.items.find(g => g.id === id)).filter(Boolean);
-    view.innerHTML = '<section class="pad">' + pageHead('📖', a.name, '이 나이에 맞는 글') + '<div class="glist">' + items.map(grow).join('') + '</div></section>';
+    view.innerHTML = '<section class="pad">' + pageHead('📖', a.name, '우리 아이 나이에 맞는 글') + '<div class="glist">' + items.map(grow).join('') + '</div></section>';
     window.scrollTo(0, 0);
   }
   function blocks(b, g) {
@@ -1441,7 +1441,7 @@
     const list = $('#list'), btn = $('#more'); if (!list) return;
     const q = listState.q;
     list.innerHTML = (q ? '<div class="sec" style="margin:4px 2px 2px"><h2 style="font-size:15px">"' + esc(q) + '" 검색 결과</h2><span>' + listState.posts.length + (listState.next ? '+' : '') + '개</span></div>' : '')
-      + (listState.posts.length ? listState.posts.map(pcard).join('') : (q ? empty('검색 결과 없음', '다른 말로 찾아보기') : listState.age ? empty('이 나이대 질문 아직 없음', '첫 질문 남기기!') : listState.cat ? empty('이 주제 질문 아직 없음', '첫 질문 남기기!') : emptyCommunity()));
+      + (listState.posts.length ? listState.posts.map(pcard).join('') : (q ? empty('검색 결과 없음', '다른 말로 찾아보기') : listState.age ? empty('우리 아이 나이대 질문 아직 없음', '첫 질문 남기기!') : listState.cat ? empty('이 주제 질문 아직 없음', '첫 질문 남기기!') : emptyCommunity()));
     if (btn) btn.hidden = !listState.next;
   }
 
