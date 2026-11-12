@@ -83,7 +83,8 @@ ok('육아템 메뉴 하위 7칸', await q(`document.querySelectorAll('#side .su
 await q(`location.hash = '#/shop/out'`); await sleep(400);
 ok('카테고리: 상품 링크는 새 창 · sponsored', await q(`[...document.querySelectorAll('#shopList .prod')].length > 0 && [...document.querySelectorAll('#shopList .prod')].every(a => a.target === '_blank' && /sponsored/.test(a.rel) && a.href.startsWith('https://'))`));
 await q(`[...document.querySelectorAll('#shopSubs .chip')].find(c => c.textContent === '아기띠').click()`); await sleep(300);
-ok('상품이 없는 세부 칸: 상품 준비 중', await q(`document.querySelector('#shopList').textContent.includes('상품을 준비하고 있어요')`));
+ok('상품이 없는 세부 칸: 상품 준비 중', await q(`document.querySelector('#shopList').textContent.includes('상품 준비 중')`));     // 11-13 문구를 개조식으로
+ok('사이트 아래 운영자 표시', await q(`document.querySelector('#sitefoot').textContent.includes('사업자등록번호 465-09-03231') && !!document.querySelector('#sitefoot a.pp[href="privacy.html"]')`));
 // 계산기: 일반과 6+6을 나란히(월 통상임금 400만원, 12개월)
 await q(`location.hash = '#/calc/leave'`); await sleep(500);
 const cards = () => q(`[...document.querySelectorAll('.rescard strong')].map(x => x.textContent)`);
