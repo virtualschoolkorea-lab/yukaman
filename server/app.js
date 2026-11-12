@@ -1,0 +1,1134 @@
+// 육아맨 서버(2026-11-04) — Cloudflare Pages Functions + D1. 화면(public/)과 같은 주소라 따로 허용(CORS)할 것이 없다.
+// 약속: 응답은 늘 JSON — {ok:true, …} 또는 {ok:false, error:'이름'}(HTTP 상태도 함께). 글자는 모두 다듬어(trim) 길이 한도를 넘기면 거절.
+// 쓰기와 '내 정보'는 머리글 Authorization: Bearer <기기 토큰>. 토큰은 폰이 만든 임의 글자(16~80자)이고, 서버는 SHA-256 해시만 둔다.
+// 커뮤니티는 읽기(목록·글·검색)도 쓰기도 '인증 아빠'만(verified = 1. 2026-11-04 휴먼쌤 "인증 아빠만"). 인증 길 둘: 초대 코드(바로) · 신청서(관리자 승인).
+//  GET    /api/posts?cat=&q=&before=&limit=   글 목록(최신순, 인증 아빠만). before = 이 번호보다 작은 글부터(더 보기). 응답 next = 다음 before 값(없으면 null)
+//  GET    /api/posts/<id>                      글 하나 + 댓글(인증 아빠만)
+//  POST   /api/join {nick, invite?, terms:true} 닉네임 정하기(기기 토큰 등록). 새 가입은 약관 동의(terms)가 있어야 한다. 코드가 맞으면 바로 인증. 이미 등록된 토큰이면 그 사용자(existing:true).
+//                                              새 가입이면 복구 코드(recovery, 12자)를 한 번만 돌려준다 — 서버는 해시만 둔다.
+//  POST   /api/recover {code}                  복구 코드로 이 기기(새 토큰)를 그 계정에 붙인다. 이전 기기의 토큰은 그 자리에서 끊기고, 새 복구 코드를 돌려준다(한 번 쓰면 바뀜)
+//  POST   /api/recovery/new                    복구 코드 새로 만들기(이전 코드는 무효)
+//  POST   /api/logout                          이 기기의 토큰 끊기(계정은 남고, 복구 코드로만 돌아온다)
+//  GET    /api/me                              내 정보(인증 상태·신청 상태·초대 코드·복구 코드 있는지·계급과 점수·복무일·아빠 초대 링크) + 내 글 + 내 댓글
+//  PATCH  /api/me {nick}                       닉네임 바꾸기(7일에 1번)
+//  DELETE /api/me {confirm:true}               탈퇴: 내 글·댓글 내용을 비우고 계정 줄을 지운다(관리자·자료실 계정은 안 됨)
+//  POST   /api/verify/code {code}              초대 코드로 인증
+//  POST   /api/verify/apply {stage,answer,pledge}  신청서(관리자가 읽고 승인)
+//  POST   /api/invites                         초대 코드 만들기(인증 아빠 3개, 관리자 제한 없음)
+//  POST   /api/posts {cat,title,body}          글쓰기(한 시간 10개)
+//  DELETE /api/posts/<id>                      내 글 지우기(관리자는 모두). deleted에 시각을 적고 제목·본문과 달린 댓글 내용을 비운다(11-04 검수 5)
+//  POST   /api/posts/<id>/comments {body}      댓글(한 시간 60개)
+//  DELETE /api/comments/<id>                   내 댓글 지우기(관리자는 모두). 내용을 비운다
+//  POST   /api/reports {kind, id, reason}      글·댓글 신고(인증 아빠, 하루 10건, 같은 대상은 한 번). 관리자 화면 신고함에 쌓인다
+//  POST   /api/me/seen                         내 글의 새 댓글을 봤다고 표시(MY 배지 끄기)
+//  POST   /api/me/terms {agree:true}           약관 동의(가입 전에 만든 계정은 첫 글·댓글 때. 동의 전 글·댓글은 terms 403)
+//  POST   /api/blocks {user_id}                사용자 차단(그 사람의 글·댓글이 내 화면에서 사라진다. 운영·자료실 계정은 안 됨). 차단 목록은 /api/me의 blocks
+//  DELETE /api/blocks/<user_id>                차단 풀기
+//  POST   /api/login/review {code}             앱 심사용 입구: 코드(비밀 값 REVIEW_CODE)가 맞으면 이 기기를 심사용 계정에 붙인다(없으면 만든다). 비밀 값이 없으면 review_off
+//  GET    /api/admin/queue                     관리자: 대기 신청서 + 신고함 + 최근 회원
+//  POST   /api/admin/decide {id, approve}      관리자: 승인·거절(답변은 지움)
+//  POST   /api/admin/report {id, action}       관리자: hide(대상 글·댓글 숨기기 = 내용 비움) · keep(그대로 둠). 같은 대상의 신고는 함께 처리
+//  POST   /api/admin/user {user_id, action}    관리자: unverify(인증 해제) · block(해제 + 재신청 막기 + 안 쓴 초대 코드 폐기) · unblock · verify · logout(기기 토큰 끊기) · hide_all(그 회원의 글·댓글 모두 숨김)
+//  POST   /api/admin/invites {count, note}     관리자: 운영 초대 코드 만들기
+//  GET    /api/posts/hot                       지금 뜨는 글(최근 7일 다른 사람 2명 이상이 댓글, 인증 아빠만, 3개까지)
+//  GET    /api/qna                             답이 올라간 Q&A(누구나)
+//  POST   /api/qna {kind, ref, text}           질문하기(kind=question) · 가이드 글 제보(kind=fix, ref=글 번호). 누구나, 기기 주소당 하루 5건. 관리자 화면에 쌓인다
+//  POST   /api/admin/qna {id, action, question, answer}  관리자: answer(답을 올려 공개) · delete(지움)
+//  POST   /api/verify/identity {id}            본인인증(포트원 조회 결과로 만 19세 이상 남성 확인, 1인 1계정). PORTONE_API_SECRET이 없으면 identity_off
+//  GET    /api/login/kakao/start               카카오 동의 화면 주소(화면이 redirect_uri와 state를 붙여 이동). KAKAO_REST_KEY가 없으면 kakao_off
+//  POST   /api/login/kakao {code, redirect_uri}  카카오 로그인: 있던 회원이면 이 기기를 그 계정에 붙이고, 처음이면 need_nick(이어서 /join으로 닉네임). 인증 전 계정이면 카카오를 연결해 인증
+//  POST   /api/me/leave-kakao {code, redirect_uri}  카카오 회원 탈퇴: 같은 카카오 계정인지 확인하고 연결을 끊은 뒤 지운다(카카오 정책)
+//  GET    /api/login/naver/start               네이버 동의 화면 주소(화면이 redirect_uri와 state를 붙여 이동). NAVER_CLIENT_ID가 없으면 naver_off
+//  POST   /api/login/naver {code, state, redirect_uri}  네이버 로그인: 있던 회원이면 이 기기를 그 계정에 붙이고, 처음이면 남성인지 보고 need_nick. 남성이 아니면 naver_not_dad, 성별을 못 받으면 naver_gender
+//  POST   /api/me/leave-naver {code, state, redirect_uri}  네이버 회원 탈퇴: 같은 네이버 계정인지 확인하고 연동을 끊은 뒤 지운다
+//  GET·POST /api/kakao/unlink?user_id=…        카카오 연결 해제 웹훅(사용자가 카카오 쪽에서 끊었을 때 카카오가 부른다. 머리글 Authorization: KakaoAK <대표 어드민 키>). 탈퇴와 같게 지운다
+//  GET    /api/health                          살아 있나 + 회원번호 해시 열쇠 확인값 idk(열쇠가 없으면 '', 열쇠 자체는 드러나지 않는다)
+// 저장하는 개인정보: 닉네임 · 기기 토큰 해시 · 복구 코드 해시 · 쓴 글·댓글 · 대기 중인 신청 답변(결정 뒤 지움) · 누가 초대했는지 · 마지막 접속 시각.
+//   약관 동의 시각 · 차단한 회원 목록도 둔다. 횟수 제한용 기기 주소(IP)는 해시 16자로 짧게(가입·코드·복구 시도에만, 이틀 안에 지움). 지운 글·댓글은 내용을 비우고 시각만 남긴다. 탈퇴하면 계정 줄을 지운다.
+
+import { findBadWord } from './badwords.js';
+
+const CATS = ['leave', 'play', 'gear', 'question', 'tip', 'vent', 'etc'];           // public/app.js CATS와 같게(11-05 휴먼쌤: 육아휴직 / 나들이 / 용품 / 질문 / 정보 / 하소연 / 기타)
+const AGES = ['expect', 'baby', 'kid', 'low', 'high', 'teen'];   // 아이 나이 칸(public/app.js AGES와 같게). 글에 붙이면 또래 아빠들 글로 거른다(11-04 UI 3안 '아이 나이 길')
+const STAGES = ['raising', 'expecting'];
+const LIM = { title: [2, 60], body: [1, 3000], comment: [1, 1000], answer: [20, 500], ask: [5, 300], qa: [2, 1000], list: 20, listMax: 50 };
+const RATE = {                                        // [횟수, 기간 ms]
+  join: [20, 600000], post: [10, 3600000], comment: [60, 3600000], nick: [1, 7 * 86400000],   // 닉네임은 7일에 1번(사칭 방어, 검수 16)
+  code: [10, 600000], apply: [3, 86400000], invite: [10, 86400000], recover: [10, 600000], report: [10, 86400000], ask: [5, 86400000], identity: [10, 600000], kakao: [30, 600000], naver: [30, 600000], block: [60, 86400000], review: [10, 600000]
+};
+const INVITE_MAX = 3;                                 // 인증 아빠 한 사람이 만들 수 있는 초대 코드
+// 운영진처럼 보이는 이름 막기(검수 16). 띄어쓰기·특수문자를 지우고 닮은 글자(0→o, 1→i, 3→e, 5→s)를 접은 뒤 본다.
+const RESERVED = /(육아맨|운영|관리|자료실|공식|스태프|스탭|매니저|마스터|휴먼쌤|휴먼샘|심사|admin|official|staff|manager|master|moderator|yukaman|humanssaem)/i;
+const foldNick = s => s.replace(/[\s_.\-]+/g, '').toLowerCase().replace(/0/g, 'o').replace(/1/g, 'i').replace(/3/g, 'e').replace(/5/g, 's');
+
+const json = (obj, status = 200) => new Response(JSON.stringify(obj), {
+  status, headers: { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' }
+});
+const no = (error, status = 400) => json({ ok: false, error }, status);
+const badWord = word => json({ ok: false, error: 'bad_word', word }, 400);   // 어떤 말이 걸렸는지 알려 줘야 고칠 수 있다
+const str = (v, n) => String(v == null ? '' : v).replace(/\r\n?/g, '\n').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').trim().slice(0, n);
+const len = s => Array.from(s).length;
+const nickKey = s => s.replace(/\s+/g, '').toLowerCase();
+const nowIso = () => new Date().toISOString();
+const tokenOk = t => /^[A-Za-z0-9_-]{16,80}$/.test(t);
+const normCode = s => String(s == null ? '' : s).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
+const showCode = c => (c.length === 8 ? c.slice(0, 4) + '-' + c.slice(4) : c.length === 12 ? c.slice(0, 4) + '-' + c.slice(4, 8) + '-' + c.slice(8) : c);
+// 끊긴 기기 자리에 두는 값. 폰이 만드는 토큰 꼴(16~80자 영숫자)과 달라 어떤 토큰의 해시와도 맞지 않고, 줄마다 달라 UNIQUE에도 걸리지 않는다.
+const offToken = id => 'off|' + id + '|' + nowIso() + '|' + Math.random().toString(36).slice(2);
+
+async function sha256(s) {
+  const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(d), b => b.toString(16).padStart(2, '0')).join('');
+}
+
+// 회원번호 해시(11-09 보안 보강, 휴먼쌤 "보안 보강해줘"). 네이버·카카오 회원번호와 본인인증 값을 SHA-256만 하면, 표나 백업이 새었을 때
+// 회원번호를 아는 사람이 같은 계산으로 회원을 찾아낼 수 있다. 그래서 Pages 비밀 값 ID_HASH_KEY로 한 번 더 묶는다:
+//   'k1:' + HMAC-SHA256(열쇠, 옛 SHA-256 값). 옛 값 위에 묶으므로 deploy.py rehash가 회원번호 없이도 저장된 줄을 같은 값으로 바꾼다.
+// 옛 값으로 남은 줄은 그 회원이 다시 로그인할 때 findByIdHash가 바꾼다. 비밀 값이 없으면 옛 값 그대로 쓴다(열쇠를 넣기 전과 같다).
+const idKey = env => String(env.ID_HASH_KEY || '').trim();
+async function hmacHex(key, s) {
+  const k = await crypto.subtle.importKey('raw', new TextEncoder().encode(key), { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+  return Array.from(new Uint8Array(await crypto.subtle.sign('HMAC', k, new TextEncoder().encode(s))), b => b.toString(16).padStart(2, '0')).join('');
+}
+async function idHash(env, kind, id) {
+  const legacy = await sha256(kind + '|' + id), key = idKey(env);
+  return { hash: key ? 'k1:' + await hmacHex(key, legacy) : legacy, legacy };
+}
+// 열쇠 확인값: 정해진 글자의 HMAC 앞 8자. 열쇠를 드러내지 않고 deploy.py가 가진 열쇠와 같은지만 맞춰 본다(rehash 전에)
+const idKeyCheck = async env => (idKey(env) ? (await hmacHex(idKey(env), 'yukaman-key-check')).slice(0, 8) : '');
+// col은 코드 안에서만 넘기는 칸 이름(kakao_hash · naver_hash · identity_hash). 새 값으로 찾고, 없으면 옛 값으로 찾아 그 자리에서 새 값으로 바꾼다
+async function findByIdHash(db, col, h, cols) {
+  const q = 'SELECT ' + cols + ' FROM users WHERE ' + col + ' = ?1';
+  let u = await db.prepare(q).bind(h.hash).first();
+  if (u || h.hash === h.legacy) return u;
+  u = await db.prepare(q).bind(h.legacy).first();
+  if (u) {
+    await db.prepare('UPDATE users SET ' + col + ' = ?1 WHERE id = ?2 AND ' + col + ' = ?3').bind(h.hash, u.id, h.legacy).run();
+    u[col] = h.hash;
+  }
+  return u;
+}
+
+// 닉네임 = 별명/거주지/자녀 출생연도 끝 2자리(11-05 휴먼쌤). 예: 든든이/청주/24. 이미 가입한 사람의 옛 닉네임은 바꿀 때까지 그대로 둔다. public/app.js NICK_RE와 같게
+const NICK_RE = /^[가-힣A-Za-z0-9]{2,8}\/[가-힣]{2,6}\/\d{2}$/;
+function checkNick(nick) {
+  if (!NICK_RE.test(nick)) return 'nick_form';
+  if (RESERVED.test(foldNick(nick))) return 'nick_reserved';
+  if (nick.split('/').some(findBadWord)) return 'nick_bad';
+  return '';
+}
+
+export async function handleApi(request, env) {
+  try {
+    if (!env || !env.DB) return no('no_db', 500);
+    const u = new URL(request.url);
+    const seg = u.pathname.replace(/^\/api\/?/, '').split('/').filter(Boolean);
+    const m = request.method;
+    const isId = s => /^\d{1,12}$/.test(s || '');
+    if (seg[0] === 'posts' && !seg[1]) {
+      if (m === 'GET') return listPosts(request, env, u.searchParams);
+      if (m === 'POST') return createPost(request, env);
+    }
+    if (seg[0] === 'posts' && seg[1] === 'hot' && !seg[2] && m === 'GET') return hotPosts(request, env);
+    if (seg[0] === 'qna' && !seg[1]) {
+      if (m === 'GET') return qnaList(env);
+      if (m === 'POST') return ask(request, env);
+    }
+    if (seg[0] === 'posts' && isId(seg[1]) && !seg[2]) {
+      if (m === 'GET') return getPost(request, env, +seg[1]);
+      if (m === 'DELETE') return deletePost(request, env, +seg[1]);
+    }
+    if (seg[0] === 'posts' && isId(seg[1]) && seg[2] === 'comments' && !seg[3] && m === 'POST') return addComment(request, env, +seg[1]);
+    if (seg[0] === 'comments' && isId(seg[1]) && !seg[2] && m === 'DELETE') return deleteComment(request, env, +seg[1]);
+    if (seg[0] === 'reports' && !seg[1] && m === 'POST') return report(request, env);
+    if (seg[0] === 'me' && seg[1] === 'seen' && !seg[2] && m === 'POST') return seenComments(request, env);
+    if (seg[0] === 'me' && seg[1] === 'terms' && !seg[2] && m === 'POST') return agreeTerms(request, env);
+    if (seg[0] === 'blocks' && !seg[1] && m === 'POST') return blockUser(request, env);
+    if (seg[0] === 'blocks' && isId(seg[1]) && !seg[2] && m === 'DELETE') return unblockUser(request, env, +seg[1]);
+    if (seg[0] === 'login' && seg[1] === 'review' && !seg[2] && m === 'POST') return reviewLogin(request, env);
+    if (seg[0] === 'kakao' && seg[1] === 'unlink' && !seg[2] && (m === 'GET' || m === 'POST')) return kakaoUnlinked(request, env);
+    if (seg[0] === 'login' && seg[1] === 'kakao' && seg[2] === 'start' && !seg[3] && m === 'GET') return kakaoStart(env);
+    if (seg[0] === 'login' && seg[1] === 'kakao' && !seg[2] && m === 'POST') return kakaoLogin(request, env);
+    if (seg[0] === 'me' && seg[1] === 'leave-kakao' && !seg[2] && m === 'POST') return kakaoLeave(request, env);
+    if (seg[0] === 'login' && seg[1] === 'naver' && seg[2] === 'start' && !seg[3] && m === 'GET') return naverStart(env);
+    if (seg[0] === 'login' && seg[1] === 'naver' && !seg[2] && m === 'POST') return naverLogin(request, env);
+    if (seg[0] === 'me' && seg[1] === 'leave-naver' && !seg[2] && m === 'POST') return naverLeave(request, env);
+    if (seg[0] === 'join' && !seg[1] && m === 'POST') return join(request, env);
+    if (seg[0] === 'recover' && !seg[1] && m === 'POST') return recover(request, env);
+    if (seg[0] === 'recovery' && seg[1] === 'new' && !seg[2] && m === 'POST') return recoveryNew(request, env);
+    if (seg[0] === 'logout' && !seg[1] && m === 'POST') return logout(request, env);
+    if (seg[0] === 'me' && !seg[1]) {
+      if (m === 'GET') return me(request, env);
+      if (m === 'PATCH') return rename(request, env);
+      if (m === 'DELETE') return deleteMe(request, env);
+    }
+    if (seg[0] === 'verify' && seg[1] === 'code' && m === 'POST') return verifyCode(request, env);
+    if (seg[0] === 'verify' && seg[1] === 'apply' && m === 'POST') return verifyApply(request, env);
+    if (seg[0] === 'verify' && seg[1] === 'identity' && m === 'POST') return verifyIdentity(request, env);
+    if (seg[0] === 'invites' && !seg[1] && m === 'POST') return createInvite(request, env);
+    if (seg[0] === 'admin') return admin(request, env, seg[1], m);
+    if (seg[0] === 'health' && !seg[1] && m === 'GET') return json({ ok: true, app: 'yukaman', time: nowIso(), idk: await idKeyCheck(env) });
+    return no('not_found', 404);
+  } catch (e) {
+    console.error('api', e && e.stack || e);
+    return no('server', 500);
+  }
+}
+
+// ----- 공통 -----
+function bearer(request) {
+  const h = request.headers.get('Authorization') || '';
+  return h.startsWith('Bearer ') ? h.slice(7).trim() : '';
+}
+
+const USER_COLS = 'id, nick, created, role, verified, verified_how, blocked, recovery_hash, comments_seen, kakao_hash, naver_hash, terms_at';
+async function auth(request, db) {
+  const token = bearer(request);
+  if (!tokenOk(token)) return { err: no('login', 401) };
+  const hash = await sha256('tok|' + token);
+  const user = await db.prepare('SELECT ' + USER_COLS + ' FROM users WHERE token_hash = ?1').bind(hash).first();
+  if (!user) return { err: no('unknown_user', 401), hash };
+  return { user, hash };
+}
+const isAdmin = u => u && u.role === 'admin';
+const needTerms = u => u.role === 'user' && !u.terms_at;   // 약관 동의 전에는 글·댓글을 올리지 못한다(Play 사용자 제작 콘텐츠 정책). 운영·자료실 계정은 빼고
+const canWrite = u => u && !u.blocked && (u.verified === 1 || u.role === 'admin' || u.role === 'official');
+// 커뮤니티 읽기 자격은 쓰기와 같다. 글이 있는지 없는지도 자격을 본 뒤에야 알려 준다.
+async function reader(request, db) {
+  const a = await auth(request, db);
+  if (a.err) return a;
+  if (!canWrite(a.user)) return { err: no(a.user.blocked ? 'blocked' : 'verify', 403) };
+  return a;
+}
+
+async function readJson(request) {
+  try { const b = await request.json(); return b && typeof b === 'object' ? b : null; } catch (e) { return null; }
+}
+
+// 횟수 제한: 기간 안의 기록이 max 이상이면 거절, 아니면 기록하고 허용
+async function allow(db, who, kind) {
+  const [max, win] = RATE[kind];
+  const t = Date.now();
+  await db.prepare('DELETE FROM acts WHERE who = ?1 AND kind = ?2 AND at < ?3').bind(who, kind, t - win).run();
+  await db.prepare('DELETE FROM kakao_pending WHERE created < ?1').bind(new Date(t - KAKAO_PENDING_MS).toISOString()).run();   // 가입을 마치지 않은 사람의 정보는 남기지 않는다(카카오 운영정책은 24시간)
+  await db.prepare('DELETE FROM naver_pending WHERE created < ?1').bind(new Date(t - KAKAO_PENDING_MS).toISOString()).run();
+  // 다시 오지 않는 기기의 기록도 남지 않게 가끔 통째로 비운다(가장 긴 제한이 하루)
+  if (Math.random() < 0.02) await db.prepare('DELETE FROM acts WHERE at < ?1').bind(t - 2 * 86400000).run();
+  const c = await db.prepare('SELECT COUNT(*) AS n FROM acts WHERE who = ?1 AND kind = ?2').bind(who, kind).first();
+  if (c && c.n >= max) return false;
+  await db.prepare('INSERT INTO acts (who, kind, at) VALUES (?1, ?2, ?3)').bind(who, kind, t).run();
+  return true;
+}
+const ipKey = async request => 'ip:' + (await sha256('ip|' + (request.headers.get('CF-Connecting-IP') || 'local'))).slice(0, 16);
+
+const BADGE = "CASE WHEN u.role = 'official' THEN 'official' WHEN u.role = 'admin' THEN 'admin' WHEN u.verified = 1 THEN 'dad' ELSE '' END AS badge";
+const badgeOf = u => (u.role === 'official' ? 'official' : u.role === 'admin' ? 'admin' : u.verified === 1 ? 'dad' : '');
+const rowPost = r => ({ id: r.id, cat: r.cat, age: r.age || '', title: r.title, preview: r.preview, created: r.created, comments: r.comment_count, nick: r.nick, uid: r.uid, badge: r.badge || '', rank: r.rank == null ? null : r.rank });
+const pubUser = u => ({ id: u.id, nick: u.nick, created: u.created, verified: u.verified === 1 && !u.blocked, role: u.role, how: u.verified_how || '', blocked: !!u.blocked, kakao: !!u.kakao_hash, naver: !!u.naver_hash, terms: !!u.terms_at });
+
+// ----- 계급(11-05 휴먼쌤 "1안 좋아 … 짝대기부터해서"): 이병·일병·상병·병장·예비군·민방위. 재미로만 쓰고 권한 차이는 없다 -----
+// public/app.js RANKS의 at·days와 같게. 자료실·운영 계정은 계급이 없다(rank = null). 남에게는 계급만, 점수는 /api/me로 본인에게만 준다
+// 진급은 점수와 복무일(가입한 날부터)을 둘 다 채워야 한다(11-05 휴먼쌤 "진급 조건을 조금 까다롭게 해서 모두가 너무 빨리 진급하지 않도록")
+const RANK_AT = [0, 20, 60, 150, 400, 1000];
+const RANK_DAYS = [0, 7, 30, 90, 180, 365];
+const INVITE_PTS = 10, INVITE_PTS_MAX = 10;           // 아빠 초대: 1명 10점, 10명까지(11-05 휴먼쌤 "다른 아빠들을 초대하면 진급 포인트가 올라가는 제도")
+const rankOf = (pts, days) => { let i = 0; while (i + 1 < RANK_AT.length && pts >= RANK_AT[i + 1] && days >= RANK_DAYS[i + 1]) i++; return i; };
+const serviceDays = created => Math.max(0, Math.floor((Date.now() - Date.parse(created)) / 86400000)) || 0;
+// 초대 점수를 주는 후임: 인증됐고, 막히지 않았고, 글이나 댓글이 하나라도 남아 있는 사람. 가입만 하고 아무것도 안 쓴 계정으로 점수를 벌지 못하게 한다
+const INVITE_ACTIVE = "f.verified = 1 AND f.blocked = 0 AND f.role = 'user' AND (EXISTS (SELECT 1 FROM posts p WHERE p.user_id = f.id AND p.deleted IS NULL) OR EXISTS (SELECT 1 FROM comments c WHERE c.user_id = f.id AND c.deleted IS NULL))";
+// 점수는 글·댓글·후임에서 그때그때 센다(칸이 어긋날 일이 없고 지운 것은 저절로 빠진다). 글 3점(하루 2개까지) · 남의 글 댓글 2점(글마다 1번, 하루 5개 글까지) · 내 글에 남이 단 댓글 1점(글마다 사람당 1번) · 후임 10점(10명까지)
+const POINTS = "3 * COALESCE((SELECT SUM(MIN(n, 2)) FROM (SELECT COUNT(*) AS n FROM posts WHERE user_id = u.id AND deleted IS NULL GROUP BY date(created, '+9 hours'))), 0)"
+  + " + 2 * COALESCE((SELECT SUM(MIN(n, 5)) FROM (SELECT COUNT(*) AS n FROM (SELECT MIN(c.created) AS first FROM comments c JOIN posts p ON p.id = c.post_id WHERE c.user_id = u.id AND p.user_id != u.id AND c.deleted IS NULL AND p.deleted IS NULL GROUP BY c.post_id) GROUP BY date(first, '+9 hours'))), 0)"
+  + ' + (SELECT COUNT(*) FROM (SELECT DISTINCT c.post_id, c.user_id FROM comments c JOIN posts p ON p.id = c.post_id WHERE p.user_id = u.id AND c.user_id != u.id AND c.deleted IS NULL AND p.deleted IS NULL))'
+  + ' + ' + INVITE_PTS + ' * MIN(' + INVITE_PTS_MAX + ', (SELECT COUNT(*) FROM users f WHERE f.invited_by = u.id AND ' + INVITE_ACTIVE + '))';
+async function ranksOf(db, uids) {
+  const ids = Array.from(new Set(uids));
+  if (!ids.length) return new Map();
+  const rs = await db.prepare('SELECT u.id, u.role, u.created, ' + POINTS + ' AS points FROM users u WHERE u.id IN (SELECT value FROM json_each(?1))').bind(JSON.stringify(ids)).all();
+  return new Map((rs.results || []).map(x => { const days = serviceDays(x.created); return [x.id, { rank: x.role === 'user' ? rankOf(x.points, days) : null, points: x.points, days }]; }));
+}
+const rankIn = (ranks, uid) => { const x = ranks.get(uid); return x ? x.rank : null; };
+
+// ----- 글 -----
+async function listPosts(request, env, sp) {
+  const a = await reader(request, env.DB);
+  if (a.err) return a.err;
+  const db = env.DB;
+  const cat = str(sp.get('cat'), 20), age = str(sp.get('age'), 10), q = str(sp.get('q'), 60), before = +sp.get('before') || 0;
+  const limit = Math.min(Math.max(+sp.get('limit') || LIM.list, 1), LIM.listMax);
+  // 자료실 계정 글은 가이드 Q&A·정보에 있으니 커뮤니티 목록·검색에는 아빠들 글만(검수 15)
+  const where = ['p.deleted IS NULL', "u.role != 'official'", 'p.user_id NOT IN (SELECT blocked_id FROM user_blocks WHERE user_id = ?)'], args = [a.user.id];
+  if (cat && CATS.includes(cat)) { where.push('p.cat = ?'); args.push(cat); }
+  if (age && AGES.includes(age)) { where.push('p.age = ?'); args.push(age); }
+  const words = q ? q.split(/\s+/).filter(Boolean).slice(0, 5) : [];
+  if (before) { where.push('p.id < ?'); args.push(before); }
+  const head = 'SELECT p.id, p.cat, p.age, p.title, substr(p.body, 1, 140) AS preview, p.created, p.comment_count, u.nick, u.id AS uid, ' + BADGE + ' FROM posts p JOIN users u ON u.id = p.user_id WHERE ';
+  const tail = ' ORDER BY p.id DESC LIMIT ?';
+  let rows = null;
+  // 검색 색인(FTS5 trigram, 검수 27): 세 글자 이상인 낱말은 색인으로, 짧은 낱말이나 색인이 없을 때는 LIKE로(글 전체를 훑음)
+  if (words.length && words.every(w => Array.from(w).length >= 3)) {
+    const match = words.map(w => '"' + w.replace(/"/g, '""') + '"').join(' AND ');
+    try {
+      const rs = await db.prepare(head + where.concat(['p.id IN (SELECT rowid FROM posts_fts WHERE posts_fts MATCH ?)']).join(' AND ') + tail).bind(...args, match, limit + 1).all();
+      rows = rs.results || [];
+    } catch (e) { rows = null; }
+  }
+  if (rows === null) {
+    const w2 = where.slice(), a2 = args.slice();
+    words.forEach(w => {
+      const like = '%' + w.replace(/[\\%_]/g, c => '\\' + c) + '%';
+      w2.push("(p.title LIKE ? ESCAPE '\\' OR p.body LIKE ? ESCAPE '\\')");
+      a2.push(like, like);
+    });
+    const rs = await db.prepare(head + w2.join(' AND ') + tail).bind(...a2, limit + 1).all();
+    rows = rs.results || [];
+  }
+  const more = rows.length > limit;
+  if (more) rows.pop();
+  const ranks = await ranksOf(db, rows.map(x => x.uid));
+  return json({ ok: true, posts: rows.map(x => rowPost({ ...x, rank: rankIn(ranks, x.uid) })), next: more ? rows[rows.length - 1].id : null });
+}
+
+// 지금 뜨는 글(11-05 휴먼쌤 "핫한 글이 있으면 상위로"): 최근 7일 안에 글쓴이가 아닌 사람 2명 이상이 댓글을 단 글. 혼자 댓글을 달아 올릴 수 없게 사람 수로 센다
+const HOT_MIN = 2, HOT_DAYS = 7, HOT_MAX = 3;
+async function hotPosts(request, env) {
+  const a = await reader(request, env.DB);
+  if (a.err) return a.err;
+  const since = new Date(Date.now() - HOT_DAYS * 86400000).toISOString();
+  const rs = await env.DB.prepare('SELECT * FROM (SELECT p.id, p.cat, p.age, p.title, substr(p.body, 1, 140) AS preview, p.created, p.comment_count, u.nick, u.id AS uid, ' + BADGE + ', '
+    + '(SELECT COUNT(DISTINCT c.user_id) FROM comments c WHERE c.post_id = p.id AND c.deleted IS NULL AND c.user_id != p.user_id AND c.created > ?1) AS heat '
+    + "FROM posts p JOIN users u ON u.id = p.user_id WHERE p.deleted IS NULL AND u.role != 'official' AND p.comment_count >= ?2 AND p.user_id NOT IN (SELECT blocked_id FROM user_blocks WHERE user_id = ?4)) WHERE heat >= ?2 ORDER BY heat DESC, comment_count DESC, id DESC LIMIT ?3")
+    .bind(since, HOT_MIN, HOT_MAX, a.user.id).all();
+  return json({ ok: true, posts: (rs.results || []).map(rowPost) });
+}
+
+// ----- Q&A · 제보(11-05 휴먼쌤 "하단에 '질문하기' 기능을 추가해서 관리자가 해당 질문을 보고 추가할 수 있도록") -----
+// 답을 올리기 전에는 공개되지 않는다. 쓴 사람은 저장하지 않고, 도배를 막는 횟수 기록(기기 주소 해시)만 이틀 안에 지운다.
+async function qnaList(env) {
+  const rs = await env.DB.prepare("SELECT id, question, answer, answered_at FROM qna WHERE status = 'published' ORDER BY answered_at DESC LIMIT 100").all();
+  return json({ ok: true, items: rs.results || [] });
+}
+async function ask(request, env) {
+  const b = await readJson(request);
+  if (!b) return no('bad_json');
+  const kind = b.kind === 'fix' ? 'fix' : 'question', ref = str(b.ref, 40), text = str(b.text, 600);
+  if (ref && !/^[A-Za-z0-9-]+$/.test(ref)) return no('bad_json');
+  if (len(text) < LIM.ask[0] || len(text) > LIM.ask[1]) return no('ask_len');
+  if (!(await allow(env.DB, await ipKey(request), 'ask'))) return no('limit', 429);
+  await env.DB.prepare('INSERT INTO qna (kind, ref, question, created) VALUES (?1, ?2, ?3, ?4)').bind(kind, ref, text, nowIso()).run();
+  return json({ ok: true });
+}
+
+async function getPost(request, env, id) {
+  const a = await reader(request, env.DB);
+  if (a.err) return a.err;
+  const db = env.DB;
+  const p = await db.prepare('SELECT p.id, p.cat, p.age, p.title, p.body, p.created, p.comment_count, u.nick, u.id AS uid, ' + BADGE + ' '
+    + 'FROM posts p JOIN users u ON u.id = p.user_id WHERE p.id = ?1 AND p.deleted IS NULL').bind(id).first();
+  if (!p) return no('not_found', 404);
+  if (await db.prepare('SELECT 1 AS x FROM user_blocks WHERE user_id = ?1 AND blocked_id = ?2').bind(a.user.id, p.uid).first()) return no('user_blocked', 403);
+  const cs = await db.prepare('SELECT c.id, c.body, c.created, u.nick, u.id AS uid, ' + BADGE + ' FROM comments c JOIN users u ON u.id = c.user_id '
+    + 'WHERE c.post_id = ?1 AND c.deleted IS NULL AND c.user_id NOT IN (SELECT blocked_id FROM user_blocks WHERE user_id = ?2) ORDER BY c.id').bind(id, a.user.id).all();
+  const list = cs.results || [];
+  const ranks = await ranksOf(db, [p.uid].concat(list.map(c => c.uid)));
+  return json({ ok: true,
+    post: { id: p.id, cat: p.cat, age: p.age || '', title: p.title, body: p.body, created: p.created, comments: p.comment_count, nick: p.nick, uid: p.uid, badge: p.badge || '', rank: rankIn(ranks, p.uid) },
+    comments: list.map(c => ({ id: c.id, body: c.body, created: c.created, nick: c.nick, uid: c.uid, badge: c.badge || '', rank: rankIn(ranks, c.uid) })) });
+}
+
+async function createPost(request, env) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  if (!canWrite(a.user)) return no(a.user.blocked ? 'blocked' : 'verify', 403);
+  if (needTerms(a.user)) return no('terms', 403);
+  const b = await readJson(request);
+  if (!b) return no('bad_json');
+  const cat = str(b.cat, 20), age = str(b.age, 10), title = str(b.title, 200), text = str(b.body, 5000);
+  if (!CATS.includes(cat)) return no('cat');
+  if (age && !AGES.includes(age)) return no('age');
+  if (len(title) < LIM.title[0] || len(title) > LIM.title[1]) return no('title_len');
+  if (len(text) < LIM.body[0] || len(text) > LIM.body[1]) return no('body_len');
+  const bad = findBadWord(title + '\n' + text);
+  if (bad) return badWord(bad);
+  if (!isAdmin(a.user) && !(await allow(env.DB, 'u:' + a.user.id, 'post'))) return no('limit', 429);
+  const created = nowIso();
+  const r = await env.DB.prepare('INSERT INTO posts (user_id, cat, age, title, body, created) VALUES (?1, ?2, ?3, ?4, ?5, ?6)')
+    .bind(a.user.id, cat, age, title, text, created).run();
+  const id = r.meta && r.meta.last_row_id;
+  const ranks = await ranksOf(env.DB, [a.user.id]);
+  return json({ ok: true, id, post: { id, cat, age, title, body: text, created, comments: 0, nick: a.user.nick, uid: a.user.id, badge: badgeOf(a.user), rank: rankIn(ranks, a.user.id) } });
+}
+
+async function deletePost(request, env, id) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  const p = await env.DB.prepare('SELECT user_id FROM posts WHERE id = ?1 AND deleted IS NULL').bind(id).first();
+  if (!p) return no('not_found', 404);
+  if (p.user_id !== a.user.id && !isAdmin(a.user)) return no('forbidden', 403);
+  // 내용은 바로 비운다(아이 정보를 실수로 적은 글이 DB에 남지 않게). 달린 댓글도 글과 함께 사라지므로 내용을 비운다.
+  const at = nowIso();
+  await env.DB.batch([
+    env.DB.prepare("UPDATE posts SET deleted = ?1, title = '', body = '' WHERE id = ?2").bind(at, id),
+    env.DB.prepare("UPDATE comments SET body = '', deleted = COALESCE(deleted, ?1) WHERE post_id = ?2").bind(at, id)
+  ]);
+  return json({ ok: true });
+}
+
+// ----- 댓글 -----
+async function addComment(request, env, postId) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  if (!canWrite(a.user)) return no(a.user.blocked ? 'blocked' : 'verify', 403);
+  if (needTerms(a.user)) return no('terms', 403);
+  const b = await readJson(request);
+  if (!b) return no('bad_json');
+  const text = str(b.body, 2000);
+  if (len(text) < LIM.comment[0] || len(text) > LIM.comment[1]) return no('comment_len');
+  const bad = findBadWord(text);
+  if (bad) return badWord(bad);
+  const p = await env.DB.prepare('SELECT id FROM posts WHERE id = ?1 AND deleted IS NULL').bind(postId).first();
+  if (!p) return no('not_found', 404);
+  if (!isAdmin(a.user) && !(await allow(env.DB, 'u:' + a.user.id, 'comment'))) return no('limit', 429);
+  const created = nowIso();
+  const [r] = await env.DB.batch([
+    env.DB.prepare('INSERT INTO comments (post_id, user_id, body, created) VALUES (?1, ?2, ?3, ?4)').bind(postId, a.user.id, text, created),
+    env.DB.prepare('UPDATE posts SET comment_count = comment_count + 1 WHERE id = ?1').bind(postId)
+  ]);
+  const id = r.meta && r.meta.last_row_id;
+  const ranks = await ranksOf(env.DB, [a.user.id]);
+  return json({ ok: true, comment: { id, body: text, created, nick: a.user.nick, uid: a.user.id, badge: badgeOf(a.user), rank: rankIn(ranks, a.user.id) } });
+}
+
+// ----- 신고(검수 21) -----
+async function report(request, env) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  if (!canWrite(a.user)) return no(a.user.blocked ? 'blocked' : 'verify', 403);
+  const b = await readJson(request);
+  if (!b) return no('bad_json');
+  const kind = b.kind === 'comment' ? 'comment' : b.kind === 'post' ? 'post' : '';
+  const id = +b.id || 0, reason = str(b.reason, 300);
+  if (!kind || !id) return no('bad_json');
+  const row = kind === 'post'
+    ? await env.DB.prepare('SELECT user_id FROM posts WHERE id = ?1 AND deleted IS NULL').bind(id).first()
+    : await env.DB.prepare('SELECT user_id FROM comments WHERE id = ?1 AND deleted IS NULL').bind(id).first();
+  if (!row) return no('not_found', 404);
+  if (row.user_id === a.user.id) return no('own');
+  const dup = await env.DB.prepare('SELECT id FROM reports WHERE kind = ?1 AND target_id = ?2 AND user_id = ?3').bind(kind, id, a.user.id).first();
+  if (dup) return json({ ok: true, already: true });
+  if (!(await allow(env.DB, 'u:' + a.user.id, 'report'))) return no('limit', 429);
+  await env.DB.prepare('INSERT INTO reports (kind, target_id, user_id, reason, created) VALUES (?1, ?2, ?3, ?4, ?5)').bind(kind, id, a.user.id, reason, nowIso()).run();
+  return json({ ok: true });
+}
+
+// 글·댓글 숨기기 = 지우기와 같다(내용을 비움). 관리자 신고 처리와 '모두 숨김'이 쓴다.
+function hidePostStmts(db, id, at) {
+  return [
+    db.prepare("UPDATE posts SET deleted = COALESCE(deleted, ?1), title = '', body = '' WHERE id = ?2").bind(at, id),
+    db.prepare("UPDATE comments SET body = '', deleted = COALESCE(deleted, ?1) WHERE post_id = ?2").bind(at, id)
+  ];
+}
+function hideCommentStmts(db, id, postId, at) {
+  return [
+    db.prepare("UPDATE comments SET deleted = ?1, body = '' WHERE id = ?2 AND deleted IS NULL").bind(at, id),
+    db.prepare('UPDATE posts SET comment_count = (SELECT COUNT(*) FROM comments c WHERE c.post_id = posts.id AND c.deleted IS NULL) WHERE id = ?1').bind(postId)
+  ];
+}
+
+// ----- 사용자 차단(2026-11-05 Play 등록, 휴먼쌤 승인): 내 화면에서만 숨긴다. 상대에게 알리지 않고, 상대가 내 글을 보는 것은 막지 않는다 -----
+async function blockUser(request, env) {
+  const a = await reader(request, env.DB);
+  if (a.err) return a.err;
+  const b = await readJson(request);
+  const id = +(b && b.user_id) || 0;
+  if (!id) return no('bad_json');
+  if (id === a.user.id) return no('block_self');
+  const t = await env.DB.prepare('SELECT role FROM users WHERE id = ?1').bind(id).first();
+  if (!t) return no('not_found', 404);
+  if (t.role !== 'user') return no('block_staff', 403);        // 운영·자료실 계정의 안내를 가리지 않게
+  if (!(await allow(env.DB, 'u:' + a.user.id, 'block'))) return no('limit', 429);
+  await env.DB.prepare('INSERT OR IGNORE INTO user_blocks (user_id, blocked_id, created) VALUES (?1, ?2, ?3)').bind(a.user.id, id, nowIso()).run();
+  return json({ ok: true });
+}
+async function unblockUser(request, env, id) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  await env.DB.prepare('DELETE FROM user_blocks WHERE user_id = ?1 AND blocked_id = ?2').bind(a.user.id, id).run();
+  return json({ ok: true });
+}
+async function agreeTerms(request, env) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  const b = await readJson(request);
+  if (!b || b.agree !== true) return no('terms');
+  const at = a.user.terms_at || nowIso();
+  await env.DB.prepare('UPDATE users SET terms_at = ?1 WHERE id = ?2').bind(at, a.user.id).run();
+  return json({ ok: true, user: pubUser({ ...a.user, terms_at: at }) });
+}
+
+// 내 글에 새 댓글이 달렸는지(검수 22): 마지막으로 본 시각 뒤에 남이 단 댓글 수. 차단한 사람의 댓글은 세지 않는다
+const NOT_BLOCKED = ' AND c.user_id NOT IN (SELECT blocked_id FROM user_blocks WHERE user_id = ?1)';
+async function newCommentCount(db, user) {
+  const r = await db.prepare('SELECT COUNT(*) AS n FROM comments c JOIN posts p ON p.id = c.post_id WHERE p.user_id = ?1 AND c.user_id != ?1 AND c.deleted IS NULL AND p.deleted IS NULL AND c.created > ?2' + NOT_BLOCKED)
+    .bind(user.id, user.comments_seen || '').first();
+  return r ? r.n : 0;
+}
+async function seenComments(request, env) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  await env.DB.prepare('UPDATE users SET comments_seen = ?1 WHERE id = ?2').bind(nowIso(), a.user.id).run();
+  return json({ ok: true });
+}
+
+async function deleteComment(request, env, id) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  const c = await env.DB.prepare('SELECT user_id, post_id FROM comments WHERE id = ?1 AND deleted IS NULL').bind(id).first();
+  if (!c) return no('not_found', 404);
+  if (c.user_id !== a.user.id && !isAdmin(a.user)) return no('forbidden', 403);
+  await env.DB.batch([
+    env.DB.prepare("UPDATE comments SET deleted = ?1, body = '' WHERE id = ?2").bind(nowIso(), id),
+    env.DB.prepare('UPDATE posts SET comment_count = CASE WHEN comment_count > 0 THEN comment_count - 1 ELSE 0 END WHERE id = ?1').bind(c.post_id)
+  ]);
+  return json({ ok: true });
+}
+
+// ----- 아빠 인증 -----
+// 코드 쓰기: 조건부 UPDATE로 한 번만 쓰이게 한다(동시에 눌러도 한 사람만). 성공하면 {ok:true, role}, 아니면 {error}
+// 아빠 초대 링크(kind = ref)는 여러 사람이 쓰고, 막 가입한 사람에게만 초대한 사람을 적는다. 인증은 하지 않는다(인증은 카카오가 한다)
+async function useInvite(db, user, codeRaw, isNew) {
+  const code = normCode(codeRaw);
+  if (code.length < 4) return { error: 'code_bad' };
+  const inv = await db.prepare('SELECT code, owner_id, kind, used_by, revoked FROM invites WHERE code = ?1').bind(code).first();
+  if (!inv || inv.revoked) return { error: 'code_bad' };
+  if (inv.kind === 'ref') {
+    if (!isNew) return { error: 'code_bad' };
+    await db.prepare('UPDATE users SET invited_by = ?1 WHERE id = ?2').bind(inv.owner_id, user.id).run();
+    return { ok: true, role: user.role || 'user' };
+  }
+  if (inv.used_by != null) return { error: 'code_used' };
+  const at = nowIso();
+  const r = await db.prepare('UPDATE invites SET used_by = ?1, used_at = ?2 WHERE code = ?3 AND used_by IS NULL AND revoked = 0').bind(user.id, at, code).run();
+  if (!r.meta || !r.meta.changes) return { error: 'code_used' };
+  const role = inv.kind === 'admin' ? 'admin' : (user.role || 'user');
+  await db.batch([
+    db.prepare("UPDATE users SET verified = 1, verified_how = ?1, verified_at = ?2, invited_by = ?3, role = ?4 WHERE id = ?5").bind(inv.kind === 'admin' ? 'admin' : 'invite', at, inv.owner_id, role, user.id),
+    db.prepare("UPDATE applications SET status = 'approved', answer = '', decided_at = ?1 WHERE user_id = ?2 AND status = 'pending'").bind(at, user.id)   // 코드로 인증하면 대기 중인 신청 답변도 지운다
+  ]);
+  return { ok: true, role };
+}
+
+async function verifyCode(request, env) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  if (a.user.blocked) return no('blocked', 403);
+  if (!(await allow(env.DB, await ipKey(request), 'code'))) return no('limit', 429);
+  const b = await readJson(request);
+  // 이미 인증한 사람도 관리자 코드는 쓸 수 있게 코드를 먼저 본다(아빠 코드를 낭비하지 않게 kind를 확인). 네이버로 바꾼 뒤에는 아빠 코드로 성별 확인을 돌아가지 못한다
+  if (a.user.verified === 1 || naverOnly(env)) {
+    const inv = await env.DB.prepare('SELECT kind FROM invites WHERE code = ?1').bind(normCode(b && b.code)).first();
+    if (!inv || inv.kind !== 'admin') return a.user.verified === 1 ? json({ ok: true, user: pubUser(a.user), already: true }) : no('naver_required', 403);
+  }
+  const r = await useInvite(env.DB, a.user, b && b.code);
+  if (r.error) return no(r.error);
+  const u = await env.DB.prepare('SELECT ' + USER_COLS + ' FROM users WHERE id = ?1').bind(a.user.id).first();
+  return json({ ok: true, user: pubUser(u) });
+}
+
+async function verifyApply(request, env) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  if (a.user.blocked) return no('blocked', 403);
+  if (a.user.verified === 1) return json({ ok: true, user: pubUser(a.user), already: true });
+  if (naverOnly(env)) return no('naver_required', 403);
+  const b = await readJson(request);
+  if (!b) return no('bad_json');
+  const stage = str(b.stage, 20), answer = str(b.answer, 1000);
+  if (!STAGES.includes(stage)) return no('stage');
+  if (len(answer) < LIM.answer[0] || len(answer) > LIM.answer[1]) return no('answer_len');
+  if (b.pledge !== true) return no('pledge');
+  const open = await env.DB.prepare("SELECT id FROM applications WHERE user_id = ?1 AND status = 'pending'").bind(a.user.id).first();
+  if (open) return json({ ok: true, pending: true, user: pubUser(a.user) });
+  if (!(await allow(env.DB, 'u:' + a.user.id, 'apply'))) return no('limit', 429);
+  await env.DB.prepare('INSERT INTO applications (user_id, stage, answer, created) VALUES (?1, ?2, ?3, ?4)').bind(a.user.id, stage, answer, nowIso()).run();
+  return json({ ok: true, pending: true, user: pubUser(a.user) });
+}
+
+// 본인인증(11-05 휴먼쌤 "본인인증+닉네임"): 화면이 포트원으로 인증을 마치면 번호를 보내고, 서버가 포트원에 직접 물어 결과를 믿는다.
+// 만 19세 이상 남성만 통과. 저장하는 것은 중복 가입을 막는 값(DI, 없으면 CI)의 해시뿐이고 이름·전화번호·생년월일·성별은 판단 뒤 버린다.
+// 막힌 계정의 해시는 남아 다른 계정으로 다시 인증하지 못한다. 탈퇴하면 계정 줄과 함께 지워진다.
+async function verifyIdentity(request, env) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  if (a.user.blocked) return no('blocked', 403);
+  if (!env.PORTONE_API_SECRET) return no('identity_off', 503);
+  if (a.user.verified === 1) return json({ ok: true, user: pubUser(a.user), already: true });
+  const b = await readJson(request);
+  const id = str(b && b.id, 80);
+  if (!/^[A-Za-z0-9_-]{8,80}$/.test(id)) return no('identity_bad');
+  if (!(await allow(env.DB, await ipKey(request), 'identity'))) return no('limit', 429);
+  let d;
+  try {
+    const res = await fetch((env.PORTONE_API_BASE || 'https://api.portone.io') + '/identity-verifications/' + encodeURIComponent(id), { headers: { Authorization: 'PortOne ' + env.PORTONE_API_SECRET } });
+    if (!res.ok) return no('identity_bad');
+    d = await res.json();
+  } catch (e) { return no('identity_bad', 502); }
+  const c = d && d.status === 'VERIFIED' ? d.verifiedCustomer : null;
+  const key = c && (c.di || c.ci);
+  const m = c && String(c.birthDate || '').match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!key || !m) return no('identity_bad');
+  const adult = new Date(+m[1] + 19, +m[2] - 1, +m[3]).getTime() <= Date.now();
+  if (!adult || String(c.gender || '').toUpperCase() !== 'MALE') return no('identity_denied', 403);
+  const h = await idHash(env, 'id', key), hash = h.hash;
+  const other = await findByIdHash(env.DB, 'identity_hash', h, 'id');
+  if (other && other.id !== a.user.id) return no('identity_dup', 409);
+  const at = nowIso();
+  await env.DB.batch([
+    env.DB.prepare("UPDATE users SET identity_hash = ?1, verified = 1, verified_how = 'identity', verified_at = ?2 WHERE id = ?3").bind(hash, at, a.user.id),
+    env.DB.prepare("UPDATE applications SET status = 'approved', answer = '', decided_at = ?1 WHERE user_id = ?2 AND status = 'pending'").bind(at, a.user.id)
+  ]);
+  const u = await env.DB.prepare('SELECT ' + USER_COLS + ' FROM users WHERE id = ?1').bind(a.user.id).first();
+  return json({ ok: true, user: pubUser(u) });
+}
+
+// 카카오 로그인(11-05 휴먼쌤 "카카오로 바꿔줘"). 사업자 없이 쓸 수 있다. 저장은 회원번호의 해시뿐이고 프로필·이메일·전화번호와 카카오 토큰은 저장하지 않는다.
+// 키는 wrangler.toml [vars] KAKAO_REST_KEY, 비밀 코드는 wrangler pages secret KAKAO_CLIENT_SECRET(카카오 기본값이 켜짐이라 토큰 요청에 넣는다).
+const kakaoAuthBase = env => env.KAKAO_AUTH_BASE || 'https://kauth.kakao.com';
+const kakaoApiBase = env => env.KAKAO_API_BASE || 'https://kapi.kakao.com';
+const KAKAO_PENDING_MS = 30 * 60000;      // 카카오를 마치고 닉네임을 정할 때까지 기다리는 시간
+
+function kakaoStart(env) {
+  if (!env.KAKAO_REST_KEY) return no('kakao_off', 503);
+  return json({ ok: true, url: kakaoAuthBase(env) + '/oauth/authorize?response_type=code&client_id=' + encodeURIComponent(env.KAKAO_REST_KEY) });
+}
+// 인가 코드 → 토큰 → 회원번호. 다른 앱의 코드는 client_id가 달라 카카오가 거절한다. redirect_uri는 이 서버 주소만 받는다
+async function kakaoIdentify(request, env, b) {
+  const code = str(b && b.code, 600), redirect = str(b && b.redirect_uri, 300);
+  let same = false;
+  try { same = new URL(redirect).origin === new URL(request.url).origin; } catch (e) { same = false; }
+  if (!code || !same) return { err: no('kakao_bad') };
+  try {
+    const form = new URLSearchParams({ grant_type: 'authorization_code', client_id: env.KAKAO_REST_KEY, redirect_uri: redirect, code });
+    if (env.KAKAO_CLIENT_SECRET) form.set('client_secret', env.KAKAO_CLIENT_SECRET);
+    const t = await fetch(kakaoAuthBase(env) + '/oauth/token', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' }, body: form.toString() });
+    if (!t.ok) { console.error('kakao token', t.status); return { err: no('kakao_bad') }; }
+    const token = (await t.json()).access_token;
+    if (!token) return { err: no('kakao_bad') };
+    const u = await fetch(kakaoApiBase(env) + '/v2/user/me', { headers: { Authorization: 'Bearer ' + token } });
+    if (!u.ok) { console.error('kakao me', u.status); return { err: no('kakao_bad') }; }
+    const id = (await u.json()).id;
+    if (!id) return { err: no('kakao_bad') };
+    return { token, ...(await idHash(env, 'kakao', id)) };
+  } catch (e) { console.error('kakao', e && e.message); return { err: no('kakao_bad', 502) }; }
+}
+async function kakaoLogin(request, env) {
+  if (!env.KAKAO_REST_KEY) return no('kakao_off', 503);
+  const db = env.DB, token = bearer(request);
+  if (!tokenOk(token)) return no('login', 401);
+  if (!(await allow(db, await ipKey(request), 'kakao'))) return no('limit', 429);
+  const k = await kakaoIdentify(request, env, await readJson(request));
+  if (k.err) return k.err;
+  const hash = await sha256('tok|' + token), at = nowIso();
+  const owner = await findByIdHash(db, 'kakao_hash', k, USER_COLS);
+  const here = await db.prepare('SELECT ' + USER_COLS + ' FROM users WHERE token_hash = ?1').bind(hash).first();
+  if (owner) {
+    if (here && here.id !== owner.id) return no('kakao_taken', 409);
+    await db.prepare('UPDATE users SET token_hash = ?1, last_seen = ?2 WHERE id = ?3').bind(hash, at, owner.id).run();   // 새 기기면 이 기기로 옮긴다(이전 기기는 끊김)
+    return json({ ok: true, user: pubUser(owner) });
+  }
+  if (naverOnly(env)) return no('kakao_closed', 403);   // 네이버로 바꾼 뒤에는 이미 카카오로 가입한 회원만 카카오로 들어온다
+  if (here) {                    // 카카오 없이 가입한 계정: 카카오를 이어 붙이고 인증한다
+    if (here.kakao_hash) return no('kakao_taken', 409);
+    if (here.blocked) return no('blocked', 403);
+    await db.batch([
+      db.prepare("UPDATE users SET kakao_hash = ?1, verified = 1, verified_how = CASE WHEN verified = 1 THEN verified_how ELSE 'kakao' END, verified_at = COALESCE(verified_at, ?2) WHERE id = ?3").bind(k.hash, at, here.id),
+      db.prepare("UPDATE applications SET status = 'approved', answer = '', decided_at = ?1 WHERE user_id = ?2 AND status = 'pending'").bind(at, here.id)
+    ]);
+    const u = await db.prepare('SELECT ' + USER_COLS + ' FROM users WHERE id = ?1').bind(here.id).first();
+    return json({ ok: true, user: pubUser(u), linked: true });
+  }
+  // 처음 온 사람: 닉네임을 받을 때까지 이 기기와 묶어 둔다
+  await db.prepare('INSERT OR REPLACE INTO kakao_pending (token_hash, kakao_hash, created) VALUES (?1, ?2, ?3)').bind(hash, k.hash, at).run();
+  return json({ ok: true, need_nick: true });
+}
+// 연결 해제 웹훅: 사용자가 카카오 쪽(계정 탈퇴·연결 끊기)에서 끊으면 카카오가 부른다. 대표 어드민 키로 확인하고 탈퇴와 같게 지운다.
+// 막힌 계정은 재가입을 막도록 줄을 남기고, 관리자는 지우지 않고 연결만 푼다. 없는 사용자여도 카카오에는 200으로 답한다(3초 안에, 문서 규칙)
+async function kakaoUnlinked(request, env) {
+  if (!env.KAKAO_ADMIN_KEY) return no('kakao_off', 503);
+  if (request.headers.get('Authorization') !== 'KakaoAK ' + env.KAKAO_ADMIN_KEY) return no('forbidden', 403);
+  let id = new URL(request.url).searchParams.get('user_id');
+  if (!id && request.method === 'POST') id = new URLSearchParams(await request.text()).get('user_id');
+  if (!id) return json({ ok: true });
+  const db = env.DB, h = await idHash(env, 'kakao', id);
+  await db.prepare('DELETE FROM kakao_pending WHERE kakao_hash IN (?1, ?2)').bind(h.hash, h.legacy).run();
+  const u = await findByIdHash(db, 'kakao_hash', h, 'id, role, blocked');
+  if (u && u.role === 'user') await eraseUser(db, u.id, !!u.blocked);
+  else if (u) await db.prepare('UPDATE users SET kakao_hash = NULL WHERE id = ?1').bind(u.id).run();
+  return json({ ok: true });
+}
+// 탈퇴: 카카오 정책상 연결도 끊어야 한다. 회원번호를 저장하지 않으므로 다시 로그인해서 받은 토큰으로 끊는다. 막힌 계정은 내용만 지우고 재가입을 막도록 줄을 남긴다
+async function kakaoLeave(request, env) {
+  if (!env.KAKAO_REST_KEY) return no('kakao_off', 503);
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  if (a.user.role !== 'user' || !a.user.kakao_hash) return no('forbidden', 403);
+  if (!(await allow(env.DB, await ipKey(request), 'kakao'))) return no('limit', 429);
+  const k = await kakaoIdentify(request, env, await readJson(request));
+  if (k.err) return k.err;
+  if (a.user.kakao_hash !== k.hash && a.user.kakao_hash !== k.legacy) return no('kakao_mismatch', 403);   // 옛 해시로 남은 회원도 같은 사람
+  try {
+    const r = await fetch(kakaoApiBase(env) + '/v1/user/unlink', { method: 'POST', headers: { Authorization: 'Bearer ' + k.token } });
+    if (!r.ok) { console.error('kakao unlink', r.status); return no('kakao_bad', 502); }
+  } catch (e) { return no('kakao_bad', 502); }
+  await eraseUser(env.DB, a.user.id, !!a.user.blocked);
+  return json({ ok: true });
+}
+
+// 네이버 로그인(11-05 휴먼쌤 "맘카페는 어떻게 엄마들만 받고있어? 그 방식을 차용하고 싶어" · "네이버로 진행"): 계정의 성별이 남성인 회원만 새로 받는다.
+// 받는 것은 회원번호와 성별뿐이다. 저장은 회원번호의 해시뿐이고, 성별과 네이버 토큰은 판단한 뒤 버린다. 남성 여부만 알 뿐 아빠인지는 가리지 못한다.
+// 아이디는 wrangler.toml [vars] NAVER_CLIENT_ID, 비밀 코드는 wrangler pages secret NAVER_CLIENT_SECRET.
+// LOGIN_METHOD = 'naver'면 성별 확인을 돌아갈 길을 닫는다: 카카오 새 가입 · 네이버 없는 가입 · 회원의 초대 코드 만들기 · 신청서 · 아빠 초대 코드로 인증(관리자 코드와 아빠 초대 링크는 남는다)
+const naverAuthBase = env => env.NAVER_AUTH_BASE || 'https://nid.naver.com';
+const naverApiBase = env => env.NAVER_API_BASE || 'https://openapi.naver.com';
+const FORM = { 'Content-Type': 'application/x-www-form-urlencoded;charset=utf-8' };
+const naverOnly = env => env.LOGIN_METHOD === 'naver';
+
+function naverStart(env) {
+  if (!env.NAVER_CLIENT_ID) return no('naver_off', 503);
+  return json({ ok: true, url: naverAuthBase(env) + '/oauth2.0/authorize?response_type=code&client_id=' + encodeURIComponent(env.NAVER_CLIENT_ID) });
+}
+// 인가 코드 → 토큰 → 회원번호 + 성별. 네이버는 실패해도 200으로 {error}를 주므로 값으로 본다. state는 네이버 토큰 요청에 꼭 들어가야 한다
+async function naverIdentify(request, env, b) {
+  const code = str(b && b.code, 600), state = str(b && b.state, 100), redirect = str(b && b.redirect_uri, 300);
+  let same = false;
+  try { same = new URL(redirect).origin === new URL(request.url).origin; } catch (e) { same = false; }
+  if (!code || !state || !same) return { err: no('naver_bad') };
+  try {
+    const form = new URLSearchParams({ grant_type: 'authorization_code', client_id: env.NAVER_CLIENT_ID, client_secret: env.NAVER_CLIENT_SECRET || '', code, state });
+    const t = await fetch(naverAuthBase(env) + '/oauth2.0/token', { method: 'POST', headers: FORM, body: form.toString() });
+    if (!t.ok) { console.error('naver token', t.status); return { err: no('naver_bad') }; }
+    const token = (await t.json()).access_token;
+    if (!token) return { err: no('naver_bad') };
+    const u = await fetch(naverApiBase(env) + '/v1/nid/me', { headers: { Authorization: 'Bearer ' + token } });
+    if (!u.ok) { console.error('naver me', u.status); return { err: no('naver_bad') }; }
+    const j = await u.json(), p = j && j.resultcode === '00' && j.response;
+    if (!p || !p.id) return { err: no('naver_bad') };
+    return { token, gender: p.gender === 'M' || p.gender === 'F' ? p.gender : '', ...(await idHash(env, 'naver', p.id)) };
+  } catch (e) { console.error('naver', e && e.message); return { err: no('naver_bad', 502) }; }
+}
+// 연동 끊기. 끊겼으면 true
+async function naverUnlink(env, token) {
+  try {
+    const form = new URLSearchParams({ grant_type: 'delete', client_id: env.NAVER_CLIENT_ID, client_secret: env.NAVER_CLIENT_SECRET || '', access_token: token, service_provider: 'NAVER' });
+    const r = await fetch(naverAuthBase(env) + '/oauth2.0/token', { method: 'POST', headers: FORM, body: form.toString() });
+    if (!r.ok) { console.error('naver unlink', r.status); return false; }
+    return !(await r.json()).error;
+  } catch (e) { console.error('naver unlink', e && e.message); return false; }
+}
+async function naverLogin(request, env) {
+  if (!env.NAVER_CLIENT_ID) return no('naver_off', 503);
+  const db = env.DB, token = bearer(request);
+  if (!tokenOk(token)) return no('login', 401);
+  if (!(await allow(db, await ipKey(request), 'naver'))) return no('limit', 429);
+  const k = await naverIdentify(request, env, await readJson(request));
+  if (k.err) return k.err;
+  const hash = await sha256('tok|' + token), at = nowIso();
+  const owner = await findByIdHash(db, 'naver_hash', k, USER_COLS);
+  const here = await db.prepare('SELECT ' + USER_COLS + ' FROM users WHERE token_hash = ?1').bind(hash).first();
+  if (owner) {
+    if (here && here.id !== owner.id) return no('naver_taken', 409);
+    await db.prepare('UPDATE users SET token_hash = ?1, last_seen = ?2 WHERE id = ?3').bind(hash, at, owner.id).run();   // 새 기기면 이 기기로 옮긴다(이전 기기는 끊김)
+    return json({ ok: true, user: pubUser(owner) });
+  }
+  if (here && (here.naver_hash || here.kakao_hash)) return no('naver_taken', 409);   // 카카오 회원은 이어 붙이지 않는다(탈퇴 때 양쪽을 다 끊을 토큰이 없다)
+  if (here && here.blocked) return no('blocked', 403);
+  // 여기부터 새로 받는 사람. 남성이 아니면 받지 않고, 네이버 쪽 연동도 끊어 아무것도 남기지 않는다(실패해도 받지 않는 것은 같다)
+  if (k.gender !== 'M') {
+    await naverUnlink(env, k.token);
+    return no(k.gender === 'F' ? 'naver_not_dad' : 'naver_gender', 403);
+  }
+  if (here) {                    // 네이버 없이 가입한 계정: 네이버를 이어 붙이고 인증한다
+    await db.batch([
+      db.prepare("UPDATE users SET naver_hash = ?1, verified = 1, verified_how = CASE WHEN verified = 1 THEN verified_how ELSE 'naver' END, verified_at = COALESCE(verified_at, ?2) WHERE id = ?3").bind(k.hash, at, here.id),
+      db.prepare("UPDATE applications SET status = 'approved', answer = '', decided_at = ?1 WHERE user_id = ?2 AND status = 'pending'").bind(at, here.id)
+    ]);
+    const u = await db.prepare('SELECT ' + USER_COLS + ' FROM users WHERE id = ?1').bind(here.id).first();
+    return json({ ok: true, user: pubUser(u), linked: true });
+  }
+  // 처음 온 사람: 닉네임을 받을 때까지 이 기기와 묶어 둔다
+  await db.prepare('INSERT OR REPLACE INTO naver_pending (token_hash, naver_hash, created) VALUES (?1, ?2, ?3)').bind(hash, k.hash, at).run();
+  return json({ ok: true, need_nick: true });
+}
+// 탈퇴: 회원번호를 저장하지 않으므로 다시 로그인해서 받은 토큰으로 연동을 끊는다. 막힌 계정은 내용만 지우고 재가입을 막도록 줄을 남긴다
+async function naverLeave(request, env) {
+  if (!env.NAVER_CLIENT_ID) return no('naver_off', 503);
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  if (a.user.role !== 'user' || !a.user.naver_hash) return no('forbidden', 403);
+  if (!(await allow(env.DB, await ipKey(request), 'naver'))) return no('limit', 429);
+  const k = await naverIdentify(request, env, await readJson(request));
+  if (k.err) return k.err;
+  if (a.user.naver_hash !== k.hash && a.user.naver_hash !== k.legacy) return no('naver_mismatch', 403);   // 옛 해시로 남은 회원도 같은 사람
+  if (!(await naverUnlink(env, k.token))) return no('naver_bad', 502);
+  await eraseUser(env.DB, a.user.id, !!a.user.blocked);
+  return json({ ok: true });
+}
+
+const ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';       // 헷갈리는 글자(I·O·0·1) 뺌
+function newCode() {
+  const a = new Uint8Array(8);
+  crypto.getRandomValues(a);
+  return Array.from(a, x => ALPHA[x % ALPHA.length]).join('');
+}
+
+async function insertInvite(db, ownerId, kind, note) {
+  for (let i = 0; i < 5; i++) {
+    const code = newCode();
+    try {
+      await db.prepare('INSERT INTO invites (code, owner_id, kind, note, created) VALUES (?1, ?2, ?3, ?4, ?5)').bind(code, ownerId, kind, note || '', nowIso()).run();
+      return code;
+    } catch (e) { if (!/UNIQUE/i.test(String(e && e.message))) throw e; }
+  }
+  throw new Error('code collision');
+}
+
+async function createInvite(request, env) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  if (!canWrite(a.user)) return no(a.user.blocked ? 'blocked' : 'verify', 403);
+  if (!isAdmin(a.user)) {
+    if (naverOnly(env)) return no('naver_required', 403);
+    const c = await env.DB.prepare("SELECT COUNT(*) AS n FROM invites WHERE owner_id = ?1 AND revoked = 0 AND kind != 'ref'").bind(a.user.id).first();
+    if (c && c.n >= INVITE_MAX) return no('invite_max');
+    if (!(await allow(env.DB, 'u:' + a.user.id, 'invite'))) return no('limit', 429);
+  }
+  const code = await insertInvite(env.DB, a.user.id, 'dad', '');
+  return json({ ok: true, invite: { code: showCode(code), used: false } });
+}
+
+async function myInvites(db, uid) {
+  const r = await db.prepare('SELECT i.code, i.used_by, i.created, u.nick AS used_nick FROM invites i LEFT JOIN users u ON u.id = i.used_by '
+    + "WHERE i.owner_id = ?1 AND i.revoked = 0 AND i.kind != 'ref' ORDER BY i.created").bind(uid).all();
+  return (r.results || []).map(x => ({ code: showCode(x.code), used: x.used_by != null, nick: x.used_nick || '' }));
+}
+
+// 아빠 초대 링크: 한 사람당 코드 하나. MY를 처음 열 때 만든다. 몇 명이 들어왔고 몇 명이 점수로 인정됐는지 수만 준다(누구인지는 안 보여 준다)
+async function myRef(db, uid) {
+  const have = await db.prepare("SELECT code FROM invites WHERE owner_id = ?1 AND kind = 'ref' AND revoked = 0 LIMIT 1").bind(uid).first();
+  const code = have ? have.code : await insertInvite(db, uid, 'ref', '');
+  const n = await db.prepare('SELECT COUNT(*) AS joined, COALESCE(SUM(CASE WHEN ' + INVITE_ACTIVE + ' THEN 1 ELSE 0 END), 0) AS counted FROM users f WHERE f.invited_by = ?1 AND f.blocked = 0').bind(uid).first();
+  return { code: showCode(code), joined: n.joined, counted: n.counted };
+}
+
+// ----- 사용자 -----
+// 복구 코드: 폰을 바꾸거나 저장소가 지워졌을 때 같은 계정으로 돌아오는 유일한 길. 12자(초대 코드와 같은 글자판), 서버는 SHA-256만 둔다.
+function newRecovery() {
+  const a = new Uint8Array(12);
+  crypto.getRandomValues(a);
+  return Array.from(a, x => ALPHA[x % ALPHA.length]).join('');
+}
+const recHash = code => sha256('rec|' + code);
+async function setRecovery(db, uid) {
+  const code = newRecovery();
+  await db.prepare('UPDATE users SET recovery_hash = ?1 WHERE id = ?2').bind(await recHash(code), uid).run();
+  return showCode(code);
+}
+
+async function join(request, env) {
+  const db = env.DB;
+  const token = bearer(request);
+  if (!tokenOk(token)) return no('login', 401);
+  const hash = await sha256('tok|' + token);
+  const have = await db.prepare('SELECT ' + USER_COLS + ' FROM users WHERE token_hash = ?1').bind(hash).first();
+  if (have) return json({ ok: true, user: pubUser(have), existing: true });
+  const b = await readJson(request);
+  const nick = str(b && b.nick, 40);
+  const bad = checkNick(nick);
+  if (bad) return no(bad);
+  if (!b || b.terms !== true) return no('terms');
+  if (await db.prepare('SELECT 1 AS x FROM users WHERE nick_key = ?1').bind(nickKey(nick)).first()) return no('nick_taken', 409);
+  const ip = await ipKey(request);
+  if (!(await allow(db, ip, 'join'))) return no('limit', 429);
+  const created = nowIso();
+  // 네이버를 마치고 온 기기면 바로 인증(11-05 휴먼쌤). 성별은 naverLogin에서 이미 봤다. 복구 코드는 필요 없다
+  const since = new Date(Date.now() - KAKAO_PENDING_MS).toISOString();
+  const npend = await db.prepare('SELECT naver_hash FROM naver_pending WHERE token_hash = ?1 AND created >= ?2').bind(hash, since).first();
+  if (npend && await db.prepare('SELECT 1 AS x FROM users WHERE naver_hash = ?1').bind(npend.naver_hash).first()) {   // 같은 네이버로 다른 기기에서 먼저 가입을 마쳤다
+    await db.prepare('DELETE FROM naver_pending WHERE token_hash = ?1').bind(hash).run();
+    return no('naver_used', 409);
+  }
+  if (naverOnly(env) && !npend) return no('naver_required', 403);
+  // 카카오를 마치고 온 기기면 바로 인증(11-05 휴먼쌤). 복구 코드는 필요 없다(카카오로 다시 들어오면 된다)
+  const pend = npend ? null : await db.prepare('SELECT kakao_hash FROM kakao_pending WHERE token_hash = ?1 AND created >= ?2').bind(hash, since).first();
+  if (pend && await db.prepare('SELECT 1 AS x FROM users WHERE kakao_hash = ?1').bind(pend.kakao_hash).first()) {   // 같은 카카오로 다른 기기에서 먼저 가입을 마쳤다
+    await db.prepare('DELETE FROM kakao_pending WHERE token_hash = ?1').bind(hash).run();
+    return no('kakao_used', 409);
+  }
+  let uid;
+  try {
+    const r = await (npend
+      ? db.prepare("INSERT INTO users (nick, nick_key, token_hash, created, last_seen, terms_at, naver_hash, verified, verified_how, verified_at) VALUES (?1, ?2, ?3, ?4, ?4, ?4, ?5, 1, 'naver', ?4)").bind(nick, nickKey(nick), hash, created, npend.naver_hash)
+      : pend
+      ? db.prepare("INSERT INTO users (nick, nick_key, token_hash, created, last_seen, terms_at, kakao_hash, verified, verified_how, verified_at) VALUES (?1, ?2, ?3, ?4, ?4, ?4, ?5, 1, 'kakao', ?4)").bind(nick, nickKey(nick), hash, created, pend.kakao_hash)
+      : db.prepare('INSERT INTO users (nick, nick_key, token_hash, created, last_seen, terms_at) VALUES (?1, ?2, ?3, ?4, ?4, ?4)').bind(nick, nickKey(nick), hash, created)).run();
+    uid = r.meta && r.meta.last_row_id;
+    if (npend) await db.prepare('DELETE FROM naver_pending WHERE token_hash = ?1').bind(hash).run();
+    if (pend) await db.prepare('DELETE FROM kakao_pending WHERE token_hash = ?1').bind(hash).run();
+  } catch (e) {
+    if (/UNIQUE/i.test(String(e && e.message))) return no('nick_taken', 409);
+    throw e;
+  }
+  let inviteError = '';
+  if (b && b.invite) {
+    if (await allow(db, ip, 'code')) {
+      const res = await useInvite(db, { id: uid, role: 'user' }, b.invite, true);
+      inviteError = res.error || '';
+    } else inviteError = 'limit';
+  }
+  const recovery = pend || npend ? undefined : await setRecovery(db, uid);
+  const u = await db.prepare('SELECT ' + USER_COLS + ' FROM users WHERE id = ?1').bind(uid).first();
+  return json({ ok: true, user: pubUser(u), invite_error: inviteError, recovery });
+}
+
+// 앱 심사용 입구(2026-11-05 Play 등록): 심사자는 카카오 계정이 없어 코드로 들어온다. 코드는 Pages 비밀 값 REVIEW_CODE에만 있고, 여러 번 쓸 수 있다.
+// 심사자가 탈퇴를 시험해 계정이 지워져도 다음 입장 때 다시 만든다. 다른 기기에서 들어오면 이전 기기는 끊긴다. 닉네임의 '심사'는 RESERVED라 다른 사람이 쓸 수 없다
+const REVIEW_NICK = '심사계정/서울/26';
+async function reviewLogin(request, env) {
+  if (!env.REVIEW_CODE) return no('review_off', 503);
+  const db = env.DB, token = bearer(request);
+  if (!tokenOk(token)) return no('login', 401);
+  if (!(await allow(db, await ipKey(request), 'review'))) return no('limit', 429);
+  const b = await readJson(request);
+  const code = normCode(b && b.code), want = normCode(env.REVIEW_CODE);
+  if (code.length < 8 || (await sha256('rev|' + code)) !== (await sha256('rev|' + want))) return no('review_bad');
+  const hash = await sha256('tok|' + token), at = nowIso();
+  const here = await db.prepare('SELECT id FROM users WHERE token_hash = ?1').bind(hash).first();
+  const row = await db.prepare('SELECT id, verified_how, blocked FROM users WHERE nick_key = ?1').bind(nickKey(REVIEW_NICK)).first();
+  if (row && row.verified_how !== 'review') return no('review_bad');
+  if (row && row.blocked) return no('blocked', 403);
+  if (here && (!row || here.id !== row.id)) return no('token_in_use', 409);   // 이 기기에 이미 다른 계정이 있다(화면은 입장 전에 토큰을 새로 만든다)
+  const uid = row ? row.id
+    : (await db.prepare("INSERT INTO users (nick, nick_key, token_hash, created, last_seen, verified, verified_how, verified_at) VALUES (?1, ?2, ?3, ?4, ?4, 1, 'review', ?4)").bind(REVIEW_NICK, nickKey(REVIEW_NICK), hash, at).run()).meta.last_row_id;
+  if (row) await db.prepare('UPDATE users SET token_hash = ?1, last_seen = ?2 WHERE id = ?3').bind(hash, at, uid).run();
+  const u = await db.prepare('SELECT ' + USER_COLS + ' FROM users WHERE id = ?1').bind(uid).first();
+  return json({ ok: true, user: pubUser(u) });
+}
+
+// 복구: 새 기기의 토큰 + 복구 코드 → 그 계정의 토큰을 이 기기로 바꾼다(이전 기기는 끊김). 코드는 한 번 쓰면 새 코드로 바뀐다.
+async function recover(request, env) {
+  const db = env.DB;
+  const token = bearer(request);
+  if (!tokenOk(token)) return no('login', 401);
+  if (!(await allow(db, await ipKey(request), 'recover'))) return no('limit', 429);
+  const b = await readJson(request);
+  const code = normCode(b && b.code);
+  if (code.length !== 12) return no('recovery_bad');
+  const user = await db.prepare('SELECT ' + USER_COLS + ' FROM users WHERE recovery_hash = ?1').bind(await recHash(code)).first();
+  if (!user || user.role === 'official') return no('recovery_bad');
+  const hash = await sha256('tok|' + token);
+  const other = await db.prepare('SELECT id FROM users WHERE token_hash = ?1').bind(hash).first();
+  if (other && other.id !== user.id) return no('token_in_use', 409);      // 이 기기에 이미 다른 계정이 있다(화면은 복구 전에 토큰을 새로 만든다)
+  await db.prepare('UPDATE users SET token_hash = ?1, last_seen = ?2 WHERE id = ?3').bind(hash, nowIso(), user.id).run();
+  const recovery = await setRecovery(db, user.id);
+  return json({ ok: true, user: pubUser(user), recovery });
+}
+
+async function recoveryNew(request, env) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  if (a.user.role === 'official') return no('forbidden', 403);
+  if (!(await allow(env.DB, 'u:' + a.user.id, 'recover'))) return no('limit', 429);
+  return json({ ok: true, recovery: await setRecovery(env.DB, a.user.id) });
+}
+
+// 이 기기 끊기. 계정은 남고 복구 코드로만 돌아온다(관리자 폰을 잃었을 때도 다른 기기에서 복구하면 그 순간 옛 기기가 끊긴다).
+async function logout(request, env) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  await env.DB.prepare('UPDATE users SET token_hash = ?1 WHERE id = ?2').bind(offToken(a.user.id), a.user.id).run();
+  return json({ ok: true });
+}
+
+// 탈퇴: 글·댓글 내용을 비우고(지운 표시), 내 글에 달린 남의 댓글도 글과 함께 사라지니 비운다. 안 쓴 초대 코드는 막고, 신청서·횟수 기록·계정 줄을 지운다.
+function eraseUser(db, uid, keepRow) {
+  const at = nowIso();
+  return db.batch([
+    db.prepare("UPDATE comments SET body = '', deleted = COALESCE(deleted, ?1) WHERE user_id = ?2").bind(at, uid),
+    db.prepare('UPDATE posts SET comment_count = (SELECT COUNT(*) FROM comments c WHERE c.post_id = posts.id AND c.deleted IS NULL) '
+      + 'WHERE id IN (SELECT post_id FROM comments WHERE user_id = ?1)').bind(uid),
+    db.prepare("UPDATE comments SET body = '', deleted = COALESCE(deleted, ?1) WHERE post_id IN (SELECT id FROM posts WHERE user_id = ?2)").bind(at, uid),
+    db.prepare("UPDATE posts SET title = '', body = '', deleted = COALESCE(deleted, ?1) WHERE user_id = ?2").bind(at, uid),
+    db.prepare('UPDATE invites SET revoked = 1 WHERE owner_id = ?1 AND used_by IS NULL').bind(uid),
+    db.prepare('DELETE FROM applications WHERE user_id = ?1').bind(uid),
+    db.prepare('DELETE FROM user_blocks WHERE user_id = ?1 OR blocked_id = ?1').bind(uid),
+    db.prepare('UPDATE reports SET user_id = 0 WHERE user_id = ?1').bind(uid),   // 내가 한 신고는 누가 했는지 모르게 바꿔 처리 기록으로 남긴다(처리방침 8절)
+    db.prepare('DELETE FROM acts WHERE who = ?1').bind('u:' + uid),
+    keepRow ? db.prepare('UPDATE users SET token_hash = ?1 WHERE id = ?2').bind(offToken(uid), uid) : db.prepare('DELETE FROM users WHERE id = ?1').bind(uid)
+  ]);
+}
+async function deleteMe(request, env) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  if (a.user.role !== 'user') return no('forbidden', 403);          // 관리자는 먼저 넘겨 주고, 자료실 계정은 로그인이 없다
+  if (a.user.naver_hash && env.NAVER_CLIENT_ID) return no('naver_leave');   // 네이버로 들어온 사람은 네이버 연동도 끊는다(/api/me/leave-naver)
+  if (a.user.kakao_hash && env.KAKAO_REST_KEY) return no('kakao_leave');   // 카카오로 들어온 사람은 카카오 연결도 끊어야 한다(/api/me/leave-kakao)
+  const b = await readJson(request);
+  if (!b || b.confirm !== true) return no('bad_json');
+  await eraseUser(env.DB, a.user.id);
+  return json({ ok: true });
+}
+
+async function me(request, env) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  const db = env.DB, uid = a.user.id;
+  const [ps, cs, ap, bl] = await db.batch([
+    db.prepare('SELECT id, cat, age, title, substr(body, 1, 140) AS preview, created, comment_count FROM posts WHERE user_id = ?1 AND deleted IS NULL ORDER BY id DESC LIMIT 100').bind(uid),
+    db.prepare('SELECT c.id, c.body, c.created, c.post_id, p.title AS post_title FROM comments c JOIN posts p ON p.id = c.post_id '
+      + 'WHERE c.user_id = ?1 AND c.deleted IS NULL AND p.deleted IS NULL ORDER BY c.id DESC LIMIT 100').bind(uid),
+    db.prepare('SELECT status, created FROM applications WHERE user_id = ?1 ORDER BY id DESC LIMIT 1').bind(uid),
+    db.prepare('SELECT u.id, u.nick FROM user_blocks b JOIN users u ON u.id = b.blocked_id WHERE b.user_id = ?1 ORDER BY b.created DESC LIMIT 200').bind(uid),
+    db.prepare('UPDATE users SET last_seen = ?1 WHERE id = ?2').bind(nowIso(), uid)
+  ]);
+  const invites = a.user.verified === 1 ? await myInvites(db, uid) : [];
+  const badge = badgeOf(a.user);
+  // 내 글에 달린 새 댓글(남이 단 것, 마지막으로 본 뒤): 수와 최근 20개
+  const newN = await newCommentCount(db, a.user);
+  const recent = newN ? await db.prepare('SELECT c.id, c.body, c.created, c.post_id, p.title AS post_title, u.nick FROM comments c JOIN posts p ON p.id = c.post_id JOIN users u ON u.id = c.user_id '
+    + 'WHERE p.user_id = ?1 AND c.user_id != ?1 AND c.deleted IS NULL AND p.deleted IS NULL AND c.created > ?2' + NOT_BLOCKED + ' ORDER BY c.id DESC LIMIT 20').bind(uid, a.user.comments_seen || '').all() : { results: [] };
+  const mine = (await ranksOf(db, [uid])).get(uid);
+  const ref = mine.rank != null && canWrite(a.user) ? await myRef(db, uid) : null;
+  return json({ ok: true, user: pubUser(a.user), rank: mine.rank, points: mine.points, days: mine.days, ref, application: (ap.results || [])[0] || null, blocks: bl.results || [], invites, invite_max: isAdmin(a.user) ? null : INVITE_MAX, has_recovery: !!a.user.recovery_hash,
+    new_comments: newN, new_list: (recent.results || []).map(c => ({ id: c.id, body: c.body, created: c.created, post_id: c.post_id, post_title: c.post_title, nick: c.nick })),
+    posts: (ps.results || []).map(r => rowPost({ ...r, nick: a.user.nick, uid, badge, rank: mine.rank })),
+    comments: (cs.results || []).map(c => ({ id: c.id, body: c.body, created: c.created, post_id: c.post_id, post_title: c.post_title })) });
+}
+
+async function rename(request, env) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  const b = await readJson(request);
+  const nick = str(b && b.nick, 40);
+  const bad = checkNick(nick);
+  if (bad) return no(bad);
+  if (nick === a.user.nick) return json({ ok: true, user: pubUser(a.user) });
+  const other = await env.DB.prepare('SELECT id FROM users WHERE nick_key = ?1').bind(nickKey(nick)).first();
+  if (other && other.id !== a.user.id) return no('nick_taken', 409);
+  if (!(await allow(env.DB, 'u:' + a.user.id, 'nick'))) return no('limit', 429);
+  try {
+    await env.DB.prepare('UPDATE users SET nick = ?1, nick_key = ?2 WHERE id = ?3').bind(nick, nickKey(nick), a.user.id).run();
+  } catch (e) {
+    if (/UNIQUE/i.test(String(e && e.message))) return no('nick_taken', 409);
+    throw e;
+  }
+  return json({ ok: true, user: pubUser({ ...a.user, nick }) });
+}
+
+// ----- 관리자(휴먼쌤) -----
+async function admin(request, env, what, method) {
+  const a = await auth(request, env.DB);
+  if (a.err) return a.err;
+  if (!isAdmin(a.user)) return no('forbidden', 403);
+  const db = env.DB;
+  if (what === 'queue' && method === 'GET') {
+    const [q, us, inv, rp, qa, qp] = await db.batch([
+      db.prepare("SELECT ap.id, ap.user_id, ap.stage, ap.answer, ap.created, u.nick FROM applications ap JOIN users u ON u.id = ap.user_id WHERE ap.status = 'pending' ORDER BY ap.id"),
+      db.prepare("SELECT u.id, u.nick, u.created, u.verified, u.verified_how, u.blocked, u.role, i.nick AS inviter, (SELECT COUNT(*) FROM posts p WHERE p.user_id = u.id AND p.deleted IS NULL) AS posts "
+        + "FROM users u LEFT JOIN users i ON i.id = u.invited_by WHERE u.role != 'official' ORDER BY u.id DESC LIMIT 200"),
+      db.prepare("SELECT code, note, used_by, created FROM invites WHERE (owner_id IS NULL OR owner_id = ?1) AND kind != 'ref' ORDER BY created DESC LIMIT 50").bind(a.user.id),
+      // 신고함: 대기 중인 신고를 대상별로 묶어 신고 수와 대상의 앞부분을 함께
+      db.prepare("SELECT r.kind, r.target_id, COUNT(*) AS n, MIN(r.created) AS first_at, GROUP_CONCAT(r.reason, ' / ') AS reasons, "
+        + "CASE WHEN r.kind = 'post' THEN (SELECT p.title FROM posts p WHERE p.id = r.target_id) ELSE '' END AS title, "
+        + "CASE WHEN r.kind = 'post' THEN (SELECT substr(p.body, 1, 160) FROM posts p WHERE p.id = r.target_id) ELSE (SELECT substr(c.body, 1, 160) FROM comments c WHERE c.id = r.target_id) END AS preview, "
+        + "CASE WHEN r.kind = 'post' THEN (SELECT u.nick FROM posts p JOIN users u ON u.id = p.user_id WHERE p.id = r.target_id) ELSE (SELECT u.nick FROM comments c JOIN users u ON u.id = c.user_id WHERE c.id = r.target_id) END AS author, "
+        + "CASE WHEN r.kind = 'post' THEN r.target_id ELSE (SELECT c.post_id FROM comments c WHERE c.id = r.target_id) END AS post_id, "
+        + "CASE WHEN r.kind = 'post' THEN (SELECT p.deleted FROM posts p WHERE p.id = r.target_id) ELSE (SELECT c.deleted FROM comments c WHERE c.id = r.target_id) END AS gone "
+        + "FROM reports r WHERE r.handled IS NULL GROUP BY r.kind, r.target_id ORDER BY first_at"),
+      db.prepare("SELECT id, kind, ref, question, created FROM qna WHERE status = 'pending' ORDER BY id"),
+      db.prepare("SELECT id, question, answer, answered_at FROM qna WHERE status = 'published' ORDER BY answered_at DESC LIMIT 50")
+    ]);
+    return json({ ok: true, queue: q.results || [], users: us.results || [], reports: rp.results || [], qna: qa.results || [], qna_published: qp.results || [],
+      invites: (inv.results || []).map(x => ({ code: showCode(x.code), note: x.note, used: x.used_by != null })) });
+  }
+  if (what === 'qna' && method === 'POST') {
+    const b = await readJson(request);
+    const id = +(b && b.id) || 0, action = String(b && b.action || '');
+    const row = await db.prepare('SELECT id FROM qna WHERE id = ?1').bind(id).first();
+    if (!row) return no('not_found', 404);
+    if (action === 'delete') {
+      await db.prepare('DELETE FROM qna WHERE id = ?1').bind(id).run();
+      return json({ ok: true });
+    }
+    if (action !== 'answer') return no('bad_json');
+    const question = str(b.question, 600), answer = str(b.answer, 2000);       // 질문은 관리자가 다듬어(개인정보 지우기) 올릴 수 있다
+    if (len(question) < LIM.ask[0] || len(question) > LIM.ask[1]) return no('ask_len');
+    if (len(answer) < LIM.qa[0] || len(answer) > LIM.qa[1]) return no('answer_len');
+    await db.prepare("UPDATE qna SET question = ?1, answer = ?2, status = 'published', answered_at = ?3, answered_by = ?4 WHERE id = ?5").bind(question, answer, nowIso(), a.user.id, id).run();
+    return json({ ok: true });
+  }
+  if (what === 'report' && method === 'POST') {
+    const b = await readJson(request);
+    const kind = b && b.kind === 'comment' ? 'comment' : 'post', id = +(b && b.id) || 0, action = String(b && b.action || '');
+    if (!id || !['hide', 'keep'].includes(action)) return no('bad_json');
+    const at = nowIso();
+    const stmts = [];
+    if (action === 'hide') {
+      if (kind === 'post') stmts.push(...hidePostStmts(db, id, at));
+      else {
+        const c = await db.prepare('SELECT post_id FROM comments WHERE id = ?1').bind(id).first();
+        if (c) stmts.push(...hideCommentStmts(db, id, c.post_id, at));
+      }
+    }
+    stmts.push(db.prepare('UPDATE reports SET handled = ?1, handled_by = ?2, result = ?3 WHERE kind = ?4 AND target_id = ?5 AND handled IS NULL').bind(at, a.user.id, action === 'hide' ? 'hidden' : 'kept', kind, id));
+    await db.batch(stmts);
+    return json({ ok: true });
+  }
+  if (what === 'decide' && method === 'POST') {
+    const b = await readJson(request);
+    const id = +(b && b.id) || 0;
+    const ap = await db.prepare("SELECT id, user_id FROM applications WHERE id = ?1 AND status = 'pending'").bind(id).first();
+    if (!ap) return no('not_found', 404);
+    const at = nowIso(), ok = !!(b && b.approve);
+    const stmts = [db.prepare("UPDATE applications SET status = ?1, answer = '', decided_at = ?2, decided_by = ?3 WHERE id = ?4").bind(ok ? 'approved' : 'rejected', at, a.user.id, id)];
+    if (ok) stmts.push(db.prepare("UPDATE users SET verified = 1, verified_how = 'apply', verified_at = ?1 WHERE id = ?2").bind(at, ap.user_id));
+    await db.batch(stmts);
+    return json({ ok: true });
+  }
+  if (what === 'user' && method === 'POST') {
+    const b = await readJson(request);
+    const id = +(b && b.user_id) || 0, action = String(b && b.action || '');
+    const u = await db.prepare('SELECT id, role FROM users WHERE id = ?1').bind(id).first();
+    if (!u) return no('not_found', 404);
+    if (u.role !== 'user') return no('forbidden', 403);        // 관리자·자료실 계정은 여기서 못 바꾼다
+    const at = nowIso();
+    if (action === 'hide_all') {                                 // 그 회원의 글·댓글을 모두 숨긴다(내용 비움). 계정은 남는다
+      await db.batch([
+        db.prepare("UPDATE comments SET body = '', deleted = COALESCE(deleted, ?1) WHERE user_id = ?2").bind(at, id),
+        db.prepare('UPDATE posts SET comment_count = (SELECT COUNT(*) FROM comments c WHERE c.post_id = posts.id AND c.deleted IS NULL) WHERE id IN (SELECT post_id FROM comments WHERE user_id = ?1)').bind(id),
+        db.prepare("UPDATE comments SET body = '', deleted = COALESCE(deleted, ?1) WHERE post_id IN (SELECT id FROM posts WHERE user_id = ?2)").bind(at, id),
+        db.prepare("UPDATE posts SET title = '', body = '', deleted = COALESCE(deleted, ?1) WHERE user_id = ?2").bind(at, id)
+      ]);
+      return json({ ok: true });
+    }
+    const sql = {
+      verify: "UPDATE users SET verified = 1, blocked = 0, verified_how = 'admin', verified_at = ?1 WHERE id = ?2",
+      unverify: "UPDATE users SET verified = 0, verified_how = '', verified_at = ?1 WHERE id = ?2",
+      block: "UPDATE users SET verified = 0, blocked = 1, verified_how = '', verified_at = ?1 WHERE id = ?2",
+      unblock: "UPDATE users SET blocked = 0, verified_at = ?1 WHERE id = ?2",
+      logout: 'UPDATE users SET token_hash = ?1 WHERE id = ?2'            // 그 회원의 기기를 끊는다(복구 코드로만 돌아옴)
+    }[action];
+    if (!sql) return no('bad_json');
+    const stmts = [db.prepare(sql).bind(action === 'logout' ? offToken(id) : at, id)];
+    if (action === 'block') stmts.push(db.prepare('UPDATE invites SET revoked = 1 WHERE owner_id = ?1 AND used_by IS NULL').bind(id));   // 안 쓴 초대 코드로 새 기기가 돌아오지 못하게(검수 16)
+    await db.batch(stmts);
+    return json({ ok: true });
+  }
+  if (what === 'invites' && method === 'POST') {
+    const b = await readJson(request);
+    const count = Math.min(Math.max(+(b && b.count) || 1, 1), 20), note = str(b && b.note, 60);
+    const codes = [];
+    for (let i = 0; i < count; i++) codes.push(showCode(await insertInvite(db, a.user.id, 'dad', note)));
+    return json({ ok: true, codes });
+  }
+  return no('not_found', 404);
+}

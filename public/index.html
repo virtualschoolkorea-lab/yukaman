@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFFBF0">
+<meta name="description" content="육아맨 — 육아하는 아빠들의 가이드와 게시판. 육아휴직 급여 계산기, 제도 안내, 아빠끼리 묻고 답하는 커뮤니티.">
+<meta name="robots" content="noindex">
+<!-- 링크를 보낼 때 카드(카카오톡·인스타 DM, 검수 13). 그림은 icons/og.png 1200×630 -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="육아맨">
+<meta property="og:title" content="육아맨 — 육아하는 아빠들의 동네">
+<meta property="og:description" content="육아휴직 급여 바로 계산, 제도 안내, 아빠끼리 솔직하게 묻고 답하는 곳. 사진·영상 없이 줄글로.">
+<meta property="og:image" content="https://humanssaem-yukaman.pages.dev/icons/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://humanssaem-yukaman.pages.dev/">
+<meta property="og:locale" content="ko_KR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="육아맨 — 육아하는 아빠들의 동네">
+<meta name="twitter:description" content="육아휴직 급여 바로 계산, 제도 안내, 아빠끼리 솔직하게 묻고 답하는 곳.">
+<meta name="twitter:image" content="https://humanssaem-yukaman.pages.dev/icons/og.png">
+<title>육아맨</title>
+<!-- 홈 화면에 추가하면 주소창 없이 앱처럼 열린다(manifest.json · sw.js · icons/) -->
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/svg+xml" href="icons/logo.svg">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="육아맨">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<!-- 글꼴은 화면을 막지 않게 print로 받아 두고 app.js가 all로 바꾼다(검수 18). 그 사이엔 기기 글꼴(Apple SD Gothic·Noto Sans KR·맑은 고딕) -->
+<link rel="stylesheet" id="fontcss" href="https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css" media="print">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app" id="app">
+  <!-- PC 왼쪽 메뉴와 오른쪽 칸: 창이 넓을 때만 app.js가 그린다 -->
+  <nav class="side" id="side" aria-label="메뉴" hidden></nav>
+  <header class="appbar" id="appbar"></header>
+  <main id="view" class="view" aria-live="polite"></main>
+  <aside class="rail" id="rail" aria-label="함께 보기" hidden></aside>
+  <a href="#/write" class="fab" id="fab" hidden aria-label="글쓰기">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l10-10-4-4L4 16z"/><path d="m13 7 4 4"/></svg><span>글쓰기</span>
+  </a>
+  <nav class="tabbar" id="tabbar" aria-label="아래 탭">
+    <a href="#/" class="tab" data-tab="home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.5 12 4l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+      <span>홈</span>
+    </a>
+    <a href="#/guide" class="tab" data-tab="guide">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7a2 2 0 0 1 2 2v14a1 1 0 0 1-1-1H4zM13 6a2 2 0 0 1 2-2h5v15h-6a1 1 0 0 0-1 1z"/></svg>
+      <span>가이드</span>
+    </a>
+    <a href="#/community" class="tab" data-tab="community">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-8l-5 4v-4H4a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1z"/></svg>
+      <span>커뮤니티</span>
+    </a>
+    <a href="#/me" class="tab" data-tab="me">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm-8 8.5c0-4 3.6-7 8-7s8 3 8 7V21H4z"/></svg>
+      <span>MY</span><i class="dot" id="meDot" hidden aria-label="새 댓글"></i>
+    </a>
+  </nav>
+  <div class="sheet-wrap" id="sheet" hidden></div>
+  <div class="toast" id="toast" role="status"></div>
+</div>
+<script src="config.js"></script>
+<script src="sample-data.js"></script>
+<script src="guide-data.js"></script>
+<script src="official-data.js"></script>
+<script src="law-data.js"></script>
+<script src="calc.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
