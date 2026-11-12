@@ -37,6 +37,7 @@
   const MSG = {
     login: '닉네임 먼저 정하기', unknown_user: '이 기기에 닉네임 기록 없음. 다시 정하기',
     logged_out: '다른 기기에서 로그인해 이 기기는 로그아웃됨. 다시 로그인하기',
+    has_answers: '다른 아빠의 답이 달린 질문은 지우기 불가. 꼭 지워야 하면 운영자 메일로 요청',
     nick_taken: '이미 쓰는 닉네임. 별명 바꾸기', name_taken: '다른 아빠가 쓰는 별명. 다른 별명 적기',nick_form: '별명/거주지/자녀 출생연도 끝 2자리로 적기', nick_reserved: '운영 계정과 헷갈리는 이름은 사용 불가', nick_bad: '욕설 · 비속어는 닉네임에 사용 불가',
     bad_word: '욕설 · 비하 · 혐오 표현은 올리기 불가. 고쳐서 다시 올리기',
     limit: '너무 잦은 시도. 잠시 뒤 다시 하기', title_len: '질문은 2~60자로 적기', body_len: '상황 적기(3000자까지)',
@@ -933,6 +934,8 @@
   }
   function renderGuideItem(id) {
     setTab('guide');
+    // 정보 칸에서 짝 글로 합친 옛 글(11-13)은 그 짝 글로 넘긴다(official-data.js alias)
+    if (GD.alias && GD.alias[id] && !GD.items.some(x => x.id === id)) { location.replace('#/g/' + GD.alias[id]); return; }
     const g = GD.items.find(x => x.id === id);
     if (!g) { bar(backBtn('#/guide') + '<div class="fill atitle">아빠 가이드</div>'); view.innerHTML = '<section class="pad">' + empty('글을 찾을 수 없음', '') + '</section>'; return; }
     const c = GCAT[g.cat] || {};
@@ -1488,7 +1491,9 @@
       return;
     }
     const p = r.post, c = catOf(p.cat), mine = me && (p.uid === me.id || me.role === 'admin');
-    $('#postAct').innerHTML = (mine ? '<button type="button" class="abtn danger" id="delPost">삭제</button>' : '')
+    // 다른 아빠의 답이 달린 질문은 글쓴이에게 '삭제'를 보이지 않는다(서버도 막는다, 11-13). 관리자는 그대로
+    const answered = (r.comments || []).some(x => x.uid !== p.uid), canDel = me && (me.role === 'admin' || (p.uid === me.id && !answered));
+    $('#postAct').innerHTML = (canDel ? '<button type="button" class="abtn danger" id="delPost">삭제</button>' : '')
       + (me && p.uid !== me.id && canWrite() ? '<button type="button" class="abtn ghosty" data-report="post" data-rid="' + p.id + '">신고</button>' : '')
       + (canBlock(p) ? '<button type="button" class="abtn ghosty" data-block="' + p.uid + '" data-bnick="' + esc(p.nick) + '">차단</button>' : '');
     const ph = !me ? '가입하면 답 쓰기 가능' : canWrite() ? '답 쓰기' : '아빠 인증을 하면 답 쓰기 가능';

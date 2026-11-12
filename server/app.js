@@ -385,6 +385,8 @@ async function deletePost(request, env, id) {
   const p = await env.DB.prepare('SELECT user_id FROM posts WHERE id = ?1 AND deleted IS NULL').bind(id).first();
   if (!p) return no('not_found', 404);
   if (p.user_id !== a.user.id && !isAdmin(a.user)) return no('forbidden', 403);
+  // 다른 아빠의 답이 달린 질문은 글쓴이가 지우지 못한다(11-13 운영자 "추천대로": 지우면 남의 답과 그 점수까지 사라져서). 관리자는 지울 수 있고, 글쓴이는 운영자에게 요청한다
+  if (!isAdmin(a.user) && await env.DB.prepare('SELECT 1 AS x FROM comments WHERE post_id = ?1 AND user_id != ?2 AND deleted IS NULL LIMIT 1').bind(id, p.user_id).first()) return no('has_answers', 409);
   // 내용은 바로 비운다(아이 정보를 실수로 적은 글이 DB에 남지 않게). 달린 댓글도 글과 함께 사라지므로 내용을 비운다.
   const at = nowIso();
   await env.DB.batch([

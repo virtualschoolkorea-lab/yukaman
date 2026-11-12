@@ -88,14 +88,18 @@ def to_item(i, p):
 
 
 def write_guide(posts):
-    items = [to_item(i, p) for i, p in enumerate(posts, 1)]
+    # "hide": "<가이드 글 id>"가 붙은 글은 가이드에 넣지 않고, 옛 주소(#/g/oN)가 그 짝 글로 넘어가게 alias만 남긴다(2026-11-13 정보 칸 정리: 다른 칸과 겹치는 11편)
+    items = [to_item(i, p) for i, p in enumerate(posts, 1) if not p.get('hide')]
+    alias = {'o%d' % i: p['hide'] for i, p in enumerate(posts, 1) if p.get('hide')}
     cat_of = {'o%d' % i: p['cat'] for i, p in enumerate(posts, 1)}
     items.sort(key=lambda g: ORDER.index(cat_of[g['id']]))     # sort는 안정 정렬이라 같은 분류 안은 파일 순서
     path = os.path.join(HERE, 'public', 'official-data.js')
     text = ('// 만들어지는 파일: tools/build_seed.py. 고칠 곳은 seed/official-posts.json\n'
             '// 자료실 계정의 글을 아빠 가이드 Q&A와 정보 칸에 넣는다. 서버를 거치지 않아 인증 전에도, 끊겨도 보인다. guide-data.js 다음, app.js 앞에 읽는다.\n'
+            '// alias: 가이드에서 뺀 글의 옛 주소 → 내용을 합친 가이드 글\n'
             '(function () {\n  var G = window.YK_GUIDES;\n  if (!G) return;\n'
-            '  G.items.push.apply(G.items, ' + json.dumps(items, ensure_ascii=False, separators=(',', ':')) + ');\n})();\n')
+            '  G.items.push.apply(G.items, ' + json.dumps(items, ensure_ascii=False, separators=(',', ':')) + ');\n'
+            '  G.alias = ' + json.dumps(alias, ensure_ascii=False, separators=(',', ':')) + ';\n})();\n')
     open(path, 'w', encoding='utf-8', newline='\n').write(text)
     print('가이드 글', len(items), '→', path)
 
@@ -116,6 +120,9 @@ def main():
     print('글', len(posts), '→', path)
     upd = ['-- 만들어지는 파일: tools/build_seed.py. 이미 들어 있는 자료실 글의 제목·본문을 seed/official-posts.json과 같게 맞춘다(user_id = 1인 글만).']
     for i, p in enumerate(posts, 1):
+        if p.get('hide'):     # 가이드에서 뺀 글은 운영 D1에서도 지운 글로(내용을 비우고 시각만 남김, 다른 지운 글과 같은 꼴)
+            upd.append("UPDATE posts SET deleted = '2026-11-13T00:00:00.000Z', title = '', body = '' WHERE id = %d AND user_id = 1 AND deleted IS NULL;" % i)
+            continue
         upd.append('UPDATE posts SET cat = %s, title = %s, body = %s WHERE id = %d AND user_id = 1 AND deleted IS NULL;' % (q(p['cat']), q(p['title']), q(p['body']), i))
     path = os.path.join(HERE, 'seed', 'official-update.sql')
     open(path, 'w', encoding='utf-8', newline='\n').write('\n'.join(upd) + '\n')

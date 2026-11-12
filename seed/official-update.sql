@@ -25,18 +25,7 @@ https://www.moel.go.kr/news/enews/report/enewsView.do?news_seq=18987
 https://mods.go.kr/board.es?mid=a10301030600&bid=11814&act=view&list_no=442470
 https://www.nabo.go.kr/ko/periodical/focusView.do?idx=8672&key=2507040015&idx=8671
 https://www.newsis.com/view/NISX20260717_0003713305' WHERE id = 1 AND user_id = 1 AND deleted IS NULL;
-UPDATE posts SET cat = 'play', title = '아빠 모임 어디 있나요: 100인의 아빠단과 서울 200인의 아빠단', body = '아빠끼리 만나고 싶다면 공공 모임부터 찾아보세요.
-
-- 100인의 아빠단: 보건복지부와 지자체가 여는 아빠 모임이에요. 지역별로 해마다 모집하고, 2025년 기준 대상은 3세~초등 2학년 자녀를 키우는 아빠였어요. 선배 아빠 미션을 아이와 해 보고 온라인으로 나눠요.
-- 서울 200인의 아빠단: 2026년은 200명을 뽑았고 1,412명이 지원했어요. 3월부터 약 10개월 활동해요.
-- 서울 아버지 교실: 서울시와 자치구 가족센터가 기업·학교·어린이집의 아버지를 대상으로 운영해요.
-
-모집 시기와 대상은 지역마다 달라요. 우리 동네 모임이 궁금하면 질문게시판에서 아빠들에게 물어보세요.
-
-출처
-https://www.mohw.go.kr/board.es?mid=a10503010200&bid=0027&act=view&list_no=1485460
-https://mediahub.seoul.go.kr/archives/2017420
-https://news.seoul.go.kr/welfare/archives/101728' WHERE id = 2 AND user_id = 1 AND deleted IS NULL;
+UPDATE posts SET deleted = '2026-11-13T00:00:00.000Z', title = '', body = '' WHERE id = 2 AND user_id = 1 AND deleted IS NULL;
 UPDATE posts SET cat = 'tip', title = '먼저 쓴 아빠들의 책 12권', body = '육아휴직을 다녀온 아빠들이 쓴 책이에요. 서점 페이지에서 있는 책인지 확인했어요. 추천 순서는 아니에요.
 
 - 아빠가 육아휴직을 결정했다 (임아영·황경상, 2020)
@@ -61,27 +50,7 @@ UPDATE posts SET cat = 'tip', title = '연구로 본 아빠 육아: 알아 두�
 4. 경력에 대한 결과는 엇갈려요. 노르웨이에서 4주 아빠 휴가 뒤 소득이 낮아졌다는 연구가 있어요(Rege & Solli 2013). 한국 남성의 휴직 뒤 임금·승진을 직접 분석한 연구는 이번 자료 모음에서 찾지 못했어요.
 
 원문 링크는 가이드 > 자료실에서 "연구", "해외"를 골라 보세요.' WHERE id = 4 AND user_id = 1 AND deleted IS NULL;
-UPDATE posts SET cat = 'tip', title = '복직 전에 챙길 것: 먼저 복직한 아빠들의 체크리스트', body = '언론 연재와 변호사 칼럼에서 되풀이되는 내용을 모았어요.
-
-휴직 전
-- 1년치 생활비를 따져 봐요. 급여는 달마다 줄어요.
-- 대출·연금·보험을 점검해요.
-- 내가 병원에 갈 때 아이를 맡길 사람을 정해요.
-
-휴직 중
-- 고용24에서 급여를 신청해요.
-- 업계 소식과 동료 연락을 이어 가요.
-- 어린이집 사전 등록을 알아봐요.
-
-복직 전
-- 회사를 찾아가 일정, 단축근무, 부서 복귀를 이야기해요.
-
-먼저 복직한 아빠들의 경험이 궁금하면 질문게시판에서 물어보세요.
-
-출처
-https://www.mt.co.kr/society/2026/02/21/2026021623534125067
-https://www.mt.co.kr/society/2026/01/10/2026010916401515184
-https://www.lawtimes.co.kr/opinion/196233' WHERE id = 5 AND user_id = 1 AND deleted IS NULL;
+UPDATE posts SET deleted = '2026-11-13T00:00:00.000Z', title = '', body = '' WHERE id = 5 AND user_id = 1 AND deleted IS NULL;
 UPDATE posts SET cat = 'question', title = 'Q. 휴직 중 회사에서 돈을 받으면 급여가 줄어드나요?', body = 'A. 합이 통상임금을 넘을 때만 줄어요.
 
 육아휴직을 이유로 회사에서 받은 돈과 육아휴직 급여를 달마다 합해서, 휴직 시작일 기준 월 통상임금을 넘으면 넘는 만큼 급여에서 빼요. 예를 들어 통상임금 300만원, 급여 250만원인 달에 회사에서 100만원을 받으면 합이 350만원이라 50만원이 줄어요.
@@ -182,35 +151,8 @@ https://www.law.go.kr/법령/남녀고용평등과일ㆍ가정양립지원에관
 https://www.moel.go.kr/minwon/fastcounsel/fastcounselView.do?inetDcssMngId=202305121436150931000
 https://www.law.go.kr/법령/고용보험법시행령/제95조의3
 https://www.moel.go.kr/minwon/fastcounsel/fastcounselView.do?inetDcssMngId=202502031122161240281' WHERE id = 14 AND user_id = 1 AND deleted IS NULL;
-UPDATE posts SET cat = 'leave', title = '자영업자·프리랜서 아빠가 받을 수 있는 것', body = '고용보험으로 받는 육아휴직 급여는 근로자 기준이에요. 고용24 안내에 따르면 자영업자·예술인·노무제공자로 가입한 기간은 180일 계산에 합치지 않아요. 대신 이런 지원이 있어요.
-
-- 서울 1인 자영업자·프리랜서 아빠 출산휴가급여: 2026년 1월 1일 이후 출생아부터 최대 15일, 하루 8만원, 최대 120만원. 서울 거주 등 조건이 있어요.
-- 고용보험 미적용자 출산급여(월 50만원, 정책브리핑 안내 기준)는 출산한 엄마가 대상이라 아빠는 해당하지 않아요. 아내가 자영업자·프리랜서면 아내 쪽에서 확인해 주세요.
-
-우리 지역 제도가 궁금하면 질문게시판에서 아빠들에게 물어보세요.
-
-출처
-https://mediahub.seoul.go.kr/archives/2016949
-https://www.korea.kr/news/policyNewsView.do?newsId=148960279&call_from=rsslink
-https://m.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systClId=SC00000251&systId=SI00000402' WHERE id = 15 AND user_id = 1 AND deleted IS NULL;
-UPDATE posts SET cat = 'leave', title = '공무원·교원 아빠는 규정이 달라요', body = '공무원·국공립 교원은 고용보험이 아니라 수당 규정을 따라요. 사립학교 교원도 같은 규정을 준용해요.
-
-- 수당: 통상임금이 아니라 월봉급액(수당을 뺀 봉급)이 기준이에요. 첫 6개월은 월봉급액, 7개월째부터 80%예요. 상한은 1~3개월 250만원, 4~6개월 200만원, 7개월째부터 160만원, 하한은 70만원이에요(공무원수당 규정 제11조의3, 지방공무원은 지방공무원 수당 규정 제11조의2).
-- 수당이 나오는 기간: 휴직 시작일부터 1년까지예요. 같은 자녀로 부모가 각각 3개월 이상 휴직한 경우, 한부모, 장애 자녀의 부모는 1년 6개월까지예요. 3년을 쉬어도 수당은 그 기간만이에요.
-- 같은 자녀로 부모가 모두 쉬고 두 번째로 쉬는 사람이 공무원이면 첫 6개월 상한이 250·250·300·350·400·450만원이에요.
-- 자녀 기준: 일반 공무원은 12세 이하 또는 초6 이하예요(국가공무원법 제71조, 지방공무원법 제63조, 2026. 10. 22. 시행본). 교사는 아직 만 8세 이하 또는 초2 이하예요(교육공무원법 제44조, 사립학교법 제59조).
-- 기간: 자녀 1명당 3년 이내예요.
-- 사립학교 행정직원은 법령에 정한 금액이 없고 학교법인 내부 규정을 따라요. 학교 행정실에 확인해 주세요.
-
-가이드 계산기에서 직종을 공무원·교원으로 고르면 수당을 어림해 볼 수 있어요.
-
-출처
-https://www.mpm.go.kr/mpm/info/infoBiz/bizHr05/
-https://www.law.go.kr/LSW//lsLawLinkInfo.do?lsJoLnkSeq=1000313658&chrClsCd=010202&lsId=002303&print=print
-https://www.law.go.kr/법령/지방공무원수당등에관한규정/제11조의2
-https://www.law.go.kr/법령/국가공무원법/제71조
-https://www.law.go.kr/법령/교육공무원법/제44조
-https://www.law.go.kr/법령/사립학교법시행령/제24조의9' WHERE id = 16 AND user_id = 1 AND deleted IS NULL;
+UPDATE posts SET deleted = '2026-11-13T00:00:00.000Z', title = '', body = '' WHERE id = 15 AND user_id = 1 AND deleted IS NULL;
+UPDATE posts SET deleted = '2026-11-13T00:00:00.000Z', title = '', body = '' WHERE id = 16 AND user_id = 1 AND deleted IS NULL;
 UPDATE posts SET cat = 'leave', title = '우리 지역 아빠 육아휴직 장려금, 있는지 확인해 보세요', body = '일부 지자체가 아빠 육아휴직 장려금을 따로 줘요. 보도·공지 기준 사례예요. 조건과 예산이 바뀌니 신청 전에 꼭 확인해 주세요.
 
 - 서울 강남구: 월 30만원, 최대 1년. 6+6 대상자는 제외(2026. 1.)
@@ -227,113 +169,13 @@ https://www.gangnam.go.kr/board/B_000031/1074904/view.do?mid=ID01
 https://www.sejong.go.kr/bbs/R0071/view.do?nttId=B000000154984Lk5kK2j
 https://www.bokjiro.go.kr/ssis-tbu/cms/pc/news/news/1309328_1114.html
 https://www.asan.go.kr/main/cms/?no=433' WHERE id = 17 AND user_id = 1 AND deleted IS NULL;
-UPDATE posts SET cat = 'leave', title = '회사에 알려 주면 좋은 지원금 (2026)', body = '휴직을 말할 때 회사가 받을 수 있는 돈을 함께 알려 주면 이야기가 쉬워져요. 금액은 2026년 고용노동부 안내의 최대 금액이고, 대체로 우선지원대상기업(중소기업 등)이 대상이에요.
-
-- 대체인력 지원금: 월 최대 140만원(30인 미만), 130만원(30인 이상). 단축근무는 상한이 더 낮아요
-- 50인 미만 기업이 처음 대체인력을 뽑으면 민간 출연금까지 합쳐 연 최대 1,880만원이라는 안내가 있어요. 조건이 붙으니 고용24에서 확인해요
-- 업무분담 지원금: 월 최대 60만원(30인 미만), 40만원(30인 이상). 단축근무는 상한이 더 낮아요
-- 육아휴직 지원금: 30일 이상 허용하면 근로자 1명당 월 30만원. 생후 12개월 이내 자녀로 3개월 이상 연속 허용하면 첫 3개월 월 100만원인데, 이 특례를 받으면 대체인력 지원금이 제한돼요. 남성 육아휴직을 처음 허용한 사업장은 세 번째 사례까지 월 10만원 추가. 절반은 휴직이 끝난 뒤 6개월 이상 계속 고용해야 나와요.
-- 육아기 10시 출근제: 임금을 깎지 않고 단축을 허용한 중소·중견 사업주에게 월 30만원
-
-조건은 고용24에서 확인해 주세요. 2026년 직장갑질119 설문에서는 업무분담 지원금이 실제 활용된다는 답이 12.4%였어요. 회사가 모를 수 있다는 뜻이에요.
-
-출처
-https://www.korea.kr/news/policyNewsView.do?newsId=148958223
-https://www.korea.kr/news/policyNewsView.do?newsId=148961455
-https://m.work24.go.kr/cm/c/f/1100/selecSystInfo.do?systId=SI00000456&systClId=SC00000379
-https://www.gov.kr/portal/rcvfvrSvc/dtlEx/WII000001060
-https://www.segye.com/newsView/20261015510297' WHERE id = 18 AND user_id = 1 AND deleted IS NULL;
-UPDATE posts SET cat = 'leave', title = '단축근무 거부 사유가 줄었어요 (2026. 9. 18.)', body = '육아기 근로시간 단축은 만 12세 이하 또는 초6 이하 자녀가 있으면 신청할 수 있어요. 주 15~35시간으로 줄여요.
-
-2026년 9월 18일 신청분부터 회사가 거부할 수 있는 사유에서 "대체인력을 구하지 못한 경우"가 빠졌어요. 남은 사유는 둘이에요.
-- 시작 전날까지 근속 6개월 미만
-- 업무 성격상 나누기 어렵거나 정상 운영에 큰 지장이 있음을 회사가 증명한 경우
-
-신청과 절차
-- 시작 30일 전까지 문서(전자문서 포함)로 신청해요. 기한을 넘겨도 회사는 신청일부터 30일 안에 시작일을 정해 허용해야 해요(시행령 제15조).
-- 회사가 거부하면 사유를 서면으로 알리고, 육아휴직이나 출퇴근 시간 조정 같은 다른 방법을 협의해야 해요.
-- 단축 중에는 회사가 연장근로를 시킬 수 없어요. 내가 분명히 요청할 때만 주 12시간 안에서 할 수 있어요(제19조의3).
-
-급여는 2026년 1월부터 처음 10시간 상한 250만원, 나머지 상한 160만원 기준이에요. 가이드 > 계산기 > 단축근무 급여에서 계산해 보세요.
-
-출처
-https://www.moel.go.kr/news/enews/report/enewsView.do?news_seq=19768
-https://www.law.go.kr/법령/남녀고용평등과일ㆍ가정양립지원에관한법률시행령/제15조의2
-https://www.law.go.kr/법령/고용보험법시행령/제104조의2' WHERE id = 19 AND user_id = 1 AND deleted IS NULL;
-UPDATE posts SET cat = 'leave', title = '육아휴직 급여 한눈에: 일반 · 6+6 · 한부모', body = '고용보험법 시행령 2026. 9. 18. 시행본 기준이에요. 금액은 월 상한이고, 하한은 모두 70만원이에요.
-
-일반
-- 1~3개월: 통상임금 전액, 250만원
-- 4~6개월: 통상임금 전액, 200만원
-- 7개월째부터: 통상임금 80%, 160만원
-
-부모 모두(6+6)
-- 아이가 생후 18개월 안일 때 부모가 모두 휴직을 시작해야 해요. 배우자가 공무원·교원이어도 근로자인 쪽은 받아요. 배우자가 자영업자·프리랜서·전업주부면 일반 기준이에요.
-- 1~6개월: 통상임금 전액, 250·250·300·350·400·450만원
-- 7개월째부터: 일반과 같아요.
-
-한부모
-- 한부모가족지원법에 따라 모 또는 부로 인정된 경우예요. 별거 중이라는 것만으로는 아니에요.
-- 1~3개월: 통상임금 전액, 300만원
-- 4개월째부터: 일반과 같아요.
-
-알아 둘 것
-- 25%를 복직 6개월 뒤에 주던 사후지급은 2025년부터 없어졌어요. 휴직 중에 다 받아요.
-- 나눠 쓴 기간은 합쳐서 계산하고, 한 달을 못 채운 달은 일수에 비례해요.
-
-내 월급으로는 가이드 > 계산기에서 바로 계산돼요.
-
-출처
-https://www.law.go.kr/법령/고용보험법시행령/제95조
-https://www.law.go.kr/법령/고용보험법시행령/제95조의3
-https://www.moel.go.kr/minwon/fastcounsel/fastcounselView.do?inetDcssMngId=202503181109200080639' WHERE id = 20 AND user_id = 1 AND deleted IS NULL;
-UPDATE posts SET cat = 'leave', title = '1년 6개월 쓰려면: 부모 각각 3개월 이상', body = '육아휴직은 기본 1년이에요. 다음 중 하나면 6개월을 더 쓸 수 있어요.
-
-- 같은 자녀로 부모가 모두 각각 3개월 이상 쓴 경우
-- 한부모
-- 중증 장애아동의 부모
-
-3번까지 나눠 네 구간으로 쓸 수 있고(늘어난 6개월 포함), 휴직 기간은 근속에 들어가요.
-
-출처
-https://www.law.go.kr/법령/남녀고용평등과일ㆍ가정양립지원에관한법률/제19조
-https://www.law.go.kr/법령/남녀고용평등과일ㆍ가정양립지원에관한법률/제19조의4' WHERE id = 21 AND user_id = 1 AND deleted IS NULL;
-UPDATE posts SET cat = 'leave', title = '6+6은 겹치지 않아도 돼요. 대신 18개월 안에 시작해야 해요', body = '아이가 생후 18개월 안일 때 부모가 모두 육아휴직을 시작하면, 고용보험에 가입한 근로자는 첫 6개월 상한이 250·250·300·350·400·450만원으로 올라가요.
-
-헷갈리는 점 넷
-- 배우자가 공무원·교원이어도 근로자인 쪽은 받아요. 신청할 때 배우자의 휴직 경력을 증빙해요. 내가 먼저 쉬면 일단 일반 기준으로 받고, 증빙한 뒤 차액을 더 받아요. 배우자가 자영업자·프리랜서·전업주부면 일반 기준이에요.
-- 같이 쉬어도, 번갈아 쉬어도 적용돼요.
-- 생후 18개월은 휴직을 시작하는 시점으로 봐요. 고용노동부 예시: 2024년 12월 5일생은 2026년 6월 4일까지 시작해야 해요.
-- 두 사람이 공통으로 쓴 기간만큼 적용돼요. 한 사람이 3개월이면 특례도 3개월까지예요.
-
-출처
-https://www.law.go.kr/법령/고용보험법시행령/제95조의3
-https://www.moel.go.kr/minwon/fastcounsel/fastcounselView.do?inetDcssMngId=202501080525450040945
-https://www.moel.go.kr/minwon/fastcounsel/fastcounselView.do?inetDcssMngId=202503181109200080639
-https://www.moel.go.kr/minwon/fastcounsel/fastcounselView.do?inetDcssMngId=202502031122161240281' WHERE id = 22 AND user_id = 1 AND deleted IS NULL;
-UPDATE posts SET cat = 'leave', title = '단기 육아휴직이 생겼어요: 1주 또는 2주 (2026. 8. 20.)', body = '방학, 휴원·휴교, 아이 질병·사고 입원 때 짧게 쓸 수 있어요.
-
-- 1년에 1번, 1주 또는 2주
-- 쓴 기간만큼 전체 육아휴직 한도가 줄어요. 나눠 쓰는 횟수에는 넣지 않아요.
-- 방학 사유는 30일 전까지 신청해요. 긴급한 사유는 시작하는 날까지 신청할 수 있고, 회사는 지체 없이 허용 사실을 알려야 해요.
-- 7일 이상 쓰면 육아휴직 급여를 받을 수 있어요(고용보험법 제70조 제1항).
-
-출처
-https://www.moel.go.kr/news/enews/report/enewsView.do?news_seq=19768
-https://www.law.go.kr/법령/남녀고용평등과일ㆍ가정양립지원에관한법률/제19조
-https://www.law.go.kr/법령/고용보험법/제70조' WHERE id = 23 AND user_id = 1 AND deleted IS NULL;
-UPDATE posts SET cat = 'leave', title = '2026년 9월부터 아빠에게 달라진 것 세 가지', body = '고용노동부가 ''배우자 지원 3종 세트''라고 부르는 변화예요. 2026년 9월 18일부터 시행됐어요.
-
-1. 배우자 출산전후휴가: 20일 유급. 이제 출산 예정일 50일 전부터 쓸 수 있어요. 출산 후 120일까지, 네 번까지 나눠 쓸 수 있어요.
-2. 배우자 유산·사산휴가(신설): 그날부터 20일 안에 청구해 5일 안에서 써요. 처음 3일은 유급이에요.
-3. 임신 중 배우자 돌봄 육아휴직(신설): 임신한 배우자에게 유산·조산 위험이 있으면 출생 전에도 쓸 수 있어요. 시작 7일 전까지 신청해요.
-
-우선지원대상기업 근로자는 정부 급여를 받을 수 있어요. 배우자 출산전후휴가 20일 상한은 2026년 168만 4,210원이고, 휴가가 끝난 날부터 12개월 안에 고용24에서 신청해요(피보험 단위기간 180일 이상). 서류는 급여 신청서, 배우자 출산휴가 확인서(회사 발급), 통상임금 확인 자료예요.
-
-출처
-https://www.moel.go.kr/news/enews/report/enewsView.do?news_seq=19964
-https://www.law.go.kr/법령/남녀고용평등과일ㆍ가정양립지원에관한법률/제18조의2
-https://www.korea.kr/news/policyNewsView.do?newsId=148958223' WHERE id = 24 AND user_id = 1 AND deleted IS NULL;
+UPDATE posts SET deleted = '2026-11-13T00:00:00.000Z', title = '', body = '' WHERE id = 18 AND user_id = 1 AND deleted IS NULL;
+UPDATE posts SET deleted = '2026-11-13T00:00:00.000Z', title = '', body = '' WHERE id = 19 AND user_id = 1 AND deleted IS NULL;
+UPDATE posts SET deleted = '2026-11-13T00:00:00.000Z', title = '', body = '' WHERE id = 20 AND user_id = 1 AND deleted IS NULL;
+UPDATE posts SET deleted = '2026-11-13T00:00:00.000Z', title = '', body = '' WHERE id = 21 AND user_id = 1 AND deleted IS NULL;
+UPDATE posts SET deleted = '2026-11-13T00:00:00.000Z', title = '', body = '' WHERE id = 22 AND user_id = 1 AND deleted IS NULL;
+UPDATE posts SET deleted = '2026-11-13T00:00:00.000Z', title = '', body = '' WHERE id = 23 AND user_id = 1 AND deleted IS NULL;
+UPDATE posts SET deleted = '2026-11-13T00:00:00.000Z', title = '', body = '' WHERE id = 24 AND user_id = 1 AND deleted IS NULL;
 UPDATE posts SET cat = 'question', title = 'Q. 둘째가 생기면 육아휴직을 또 쓸 수 있나요?', body = 'A. 네. 육아휴직은 아이마다 따로 봐요. 첫째 때 1년을 다 썼어도 둘째로 다시 쓸 수 있어요.
 
 아이마다 따로 보는 것
