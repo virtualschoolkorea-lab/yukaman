@@ -14,11 +14,11 @@
 #   python -X utf8 deploy.py backup-seal                   예전 평문 백업(backups/yukaman-*.json)을 암호화하고, 풀어 본 내용이 같으면 평문을 지운다
 #   python -X utf8 deploy.py backup-open <백업.json.enc> <저장할 곳>   백업을 풀어 평문 JSON으로 저장한다(다 쓰면 지운다)
 # 지어낸 견본 글(test/seed-local.sql)은 내 컴퓨터 미리 보기에서만 쓴다. 공개 D1에는 넣지 않는다.
-# wrangler: 환경 변수 WRANGLER_JS(wrangler.js 경로, NODE가 있으면 그 node로) → 위쪽 폴더 어딘가의 tools/cf-wrangler(포터블, 로그인 정보 config/ 포함) → npx wrangler.
+# wrangler: 환경 변수 WRANGLER_JS(wrangler.js 경로, NODE가 있으면 그 node로) → 위쪽 폴더 어딘가의 tools/cf-wrangler(포터블, 로그인 정보는 tools/secrets/cf-wrangler-vsk) → npx wrangler.
 import base64, glob, hashlib, hmac, json, os, re, secrets, shutil, subprocess, sys, time, urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-PROJECT = 'humanssaem-yukaman'
+PROJECT = 'yukaman'
 DB = 'yukaman'
 PLACEHOLDER = '00000000-0000-0000-0000-000000000000'
 ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
@@ -43,9 +43,10 @@ MIGRATIONS = [
     "INSERT INTO posts_fts(posts_fts) VALUES ('rebuild')",  # 기존 글을 색인에 채운다(몇 번 돌려도 그대로)
 ]
 SEEDS = [os.path.join('seed', 'official.sql'), os.path.join('seed', 'official-update.sql')]
-ID_KEY_FILE = 'yukaman-id-hash-key.txt'      # 회원번호 해시 열쇠. Pages 비밀 값 ID_HASH_KEY와 같은 값
-BACKUP_KEY_FILE = 'yukaman-backup-key.txt'   # 백업 열쇠(32바이트 base64). 둘 다 저장소·드라이브에 올리지 않고, 휴먼쌤 비밀번호 관리자에 사본을 둔다
-LIVE = 'https://humanssaem-yukaman.pages.dev'
+ID_KEY_FILE = 'yukaman-vsk-id-hash-key.txt'      # 회원번호 해시 열쇠. Pages 비밀 값 ID_HASH_KEY와 같은 값(옛 앱의 열쇠와 다른 파일)
+BACKUP_KEY_FILE = 'yukaman-vsk-backup-key.txt'   # 백업 열쇠(32바이트 base64). 둘 다 저장소·드라이브에 올리지 않고, 운영자 비밀번호 관리자에 사본을 둔다
+LIVE = 'https://xn--e02bt1s4nb.com'              # 육아맨.com
+WRANGLER_LOGIN = 'cf-wrangler-vsk'               # 이 앱의 Cloudflare 로그인 정보 폴더 이름(비밀 값 폴더 안). 다른 계정의 로그인과 섞이지 않게 따로 둔다
 # 회원번호 해시가 든 칸(server/app.js idHash). rehash가 옛 값을 'k1:' + HMAC으로 바꾼다
 HASH_COLS = [('users', 'id', 'kakao_hash'), ('users', 'id', 'naver_hash'), ('users', 'id', 'identity_hash'),
              ('kakao_pending', 'token_hash', 'kakao_hash'), ('naver_pending', 'token_hash', 'naver_hash')]
@@ -58,7 +59,7 @@ def portable():
         js = os.path.join(d, 'tools', 'cf-wrangler', 'node_modules', 'wrangler', 'bin', 'wrangler.js')
         if os.path.exists(js):
             node = os.path.join(d, 'tools', 'node', 'node.exe' if os.name == 'nt' else 'node')
-            os.environ.setdefault('XDG_CONFIG_HOME', os.path.join(d, 'tools', 'cf-wrangler', 'config'))
+            os.environ.setdefault('XDG_CONFIG_HOME', os.path.join(d, 'tools', 'secrets', WRANGLER_LOGIN))
             os.environ.setdefault('WRANGLER_SEND_METRICS', 'false')
             return [node if os.path.exists(node) else 'node', js]
     return None
