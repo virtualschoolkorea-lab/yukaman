@@ -346,6 +346,8 @@ button.notice.vcta { display: flex; width: 100%; text-align: left; font: inherit
 .nlist li:before { content: ""; position: absolute; left: 2px; top: .58em; width: 4px; height: 4px; border-radius: 50%; background: var(--mute); }
 .nlist a { color: var(--pri-d); text-decoration: underline; }
 /* 홈에서 가이드로 가는 큰 버튼 · 커뮤니티 잠금 아래 타일 가운데 정렬(11-05 휴먼쌤) */
+/* '육아템 추천받기' 큰 파란 단추(11-12 운영자): 용품 글과 용품 칸의 맨 위. 글 안의 링크 색과 밑줄을 덮는다. 이름은 ad로 시작하지 않게 */
+.btn.shopgo { display: block; text-align: center; margin-top: 16px; padding: 18px 16px; font-size: 18px; color: #fff !important; text-decoration: none !important; box-shadow: var(--shadow); }
 .btn.gobig { margin-top: 16px; text-align: center; }
 .btn.gobig .nw { white-space: nowrap; }
 .tiles.center .tile { align-items: center; text-align: center; }

@@ -825,6 +825,8 @@
   // 글을 확인한 뒤 법령이 바뀌었거나 오래되면 스스로 알린다(최신화 장치). 시행일은 tools/check_laws.py --write가 표에 넣는다
   const daysAgo = s => Math.floor((Date.now() - new Date(s).getTime()) / 86400000);
   function lawWarn(g, laws) {
+    // 용품 글은 고용센터(1350)에 물을 일이 아니라 따로 알린다
+    if (g.status === '용품 기준') return g.updated && daysAgo(g.updated) > 180 ? '<div class="warn">⚠️ 확인한 지 6개월이 넘은 글이에요. 살 때 기준과 리콜 여부를 다시 확인해 주세요.</div>' : '';
     const newer = laws.filter(l => g.updated && l.effective > g.updated);
     if (newer.length) return '<div class="warn">⚠️ 이 글을 확인한 뒤 ' + esc(newer[0].name) + '이 바뀌었어요(' + dotd(newer[0].effective) + ' 시행). 내용이 다를 수 있으니 1350에 확인해 주세요.</div>';
     if (g.status !== '일반 조언' && g.status !== '공식 안내' && g.updated && daysAgo(g.updated) > 180) return '<div class="warn">⚠️ 확인한 지 6개월이 넘은 글이에요. 신청 전에 1350에 확인해 주세요.</div>';
@@ -851,21 +853,23 @@
       const box = $('#qaNew'); if (box) box.innerHTML = (r.items || []).map(x => qaItem(x.question, x.answer, '')).join('');
     } catch (e) { /* 끊겨도 저장된 Q&A는 보인다 */ }
   }
+  // '육아템 추천받기' 큰 파란 단추(11-12 운영자 "크게 '육아템 추천받기' 넣어주고 누르면 '육아템' 탭으로" · "파란색 버튼"): 용품 글과 용품 칸의 맨 위. key가 육아템 카테고리면 그 카테고리로 간다
+  const shopGo = key => '<a class="btn primary shopgo" href="#/shop' + (key && SHOP_CAT[key] ? '/' + esc(key) : '') + '">육아템 추천받기 →</a>';
   function renderGuide(cat) {
     if (!cat) cat = 'leave';
     if (cat === 'faq') { renderQna(); return; }
     setTab('guide');
     bar(brandBar());
     const items = GD.items.filter(g => g.cat === cat);
-    // 용품 칸(11-12): 고르는 법 글은 아직 없다. 지어낸 글을 넣지 않고 준비 중이라고만 적고 육아템 탭으로 잇는다. 광고 칸은 쿠팡 가입 뒤에
+    // 용품 칸(11-12): 육아템 카테고리마다 고르는 법 글 한 편(guide-data.js '용품' 절). 맨 위에 파란 '육아템 추천받기' 단추. 광고 칸은 쿠팡 가입 뒤에
     const gearEmpty = '<div class="about">용품 고르는 법 글을 준비하고 있어요.</div>';
-    const toShop = '<a class="grow" href="#/shop" style="margin-top:16px"><span class="ge">🛍️</span><span class="tx"><b>육아템 탭에서 상품 보기</b><small>' + SHOP_CATS.map(c => c.name.split(' · ')[0]).join(' · ') + '</small></span></a>';
+    const gearAbout = '<div class="about"><b>아빠 몸과 아빠 차에 맞춰 고르는 기준</b>을 정리했어요. 써 본 후기가 아니라 공공 자료와 전문 기관 안내로 확인한 내용이에요.</div>';
     view.innerHTML = '<section class="pad">'
       + guideHead(cat)
       + (cat === 'leave' ? calcCard() + '<a class="grow" href="#/calc" style="margin-top:16px"><span class="ge">🧮</span><span class="tx"><b>계산기 모음</b><small>단축근무 · 출산휴가 · 아이 날짜</small></span></a>' : '')
-      + (cat === 'gear' && !items.length ? gearEmpty : '<div class="glist">' + (items.length ? items.map(grow).join('') : empty('준비 중이에요', '곧 글이 올라와요'))
+      + (cat === 'gear' ? shopGo('') + (items.length ? gearAbout : gearEmpty) : '')
+      + (cat === 'gear' && !items.length ? '' : '<div class="glist">' + (items.length ? items.map(grow).join('') : empty('준비 중이에요', '곧 글이 올라와요'))
         + (cat === 'outing' ? '<a class="grow" href="#/community/play"><span class="ge">🙋</span><span class="tx"><b>아빠들에게 물어보기</b><small>질문게시판 놀이·나들이 칸</small></span></a>' : '') + '</div>')
-      + (cat === 'gear' ? toShop : '')
       + lawBox(lawsFor(items))
       + '</section>';
     window.scrollTo(0, 0);
@@ -895,10 +899,11 @@
     const note = g.status === '공식 근거' ? '<div class="draft"><span>✅</span><span>' + dotd(g.updated) + ' 법령과 정부 안내로 확인. 내 경우는 1350이나 고용센터에 문의</span></div>'
       : g.status === '공식 안내' ? '<div class="draft"><span>✅</span><span>' + dotd(g.updated) + ' 정부 안내로 확인. 번호와 조건은 바뀔 수 있어요</span></div>'
       : g.status === '일반 조언' ? '<div class="draft"><span>✍️</span><span>일반적인 조언이에요. 집마다 다를 수 있어요.</span></div>'
-      : g.status === '자료 정리' ? '<div class="draft"><span>🗂️</span><span>' + dotd(g.updated) + ' 출처가 있는 자료로 정리. 내 경우는 1350이나 고용센터에 문의</span></div>' : '';
+      : g.status === '자료 정리' ? '<div class="draft"><span>🗂️</span><span>' + dotd(g.updated) + ' 출처가 있는 자료로 정리. 내 경우는 1350이나 고용센터에 문의</span></div>'
+      : g.status === '용품 기준' ? '<div class="draft"><span>✍️</span><span>직접 써 보고 쓴 글이 아니에요. ' + dotd(g.updated) + ' 공공 자료와 전문 기관 안내로 고르는 기준을 정리했어요.</span></div>' : '';
     view.innerHTML = '<section class="pad"><article class="garticle">'
       + '<div class="meta"><span class="badge c-etc">' + esc(c.e || '') + ' ' + esc(c.name || '') + '</span>' + (g.tag ? '<span class="tag ' + tagCls(g.tag) + '">' + esc(g.tag) + '</span>' : '') + '</div>'
-      + '<h1>' + esc(g.title) + '</h1><p class="gsub">' + esc(g.sub) + '</p>' + lawWarn(g, laws) + note
+      + '<h1>' + esc(g.title) + '</h1><p class="gsub">' + esc(g.sub) + '</p>' + (g.shop ? shopGo(g.shop) : '') + lawWarn(g, laws) + note
       + blocks(g.body)
       + lawBox(laws)
       + (g.sources && g.sources.length ? '<div class="srcs"><b>출처</b><ul>' + g.sources.map(s => '<li><a href="' + esc(s.u) + '" target="_blank" rel="noopener">' + esc(s.t) + '</a></li>').join('') + '</ul></div>' : '')
@@ -1272,13 +1277,15 @@
     bar(backBtn('#/shop') + '<div class="fill atitle">아빠 육아템 · ' + esc(c.name) + '</div>');
     if (shopSub && (c.subs || []).indexOf(shopSub) < 0) shopSub = '';
     const all = shopItems(key);
+    const gearGuide = GD.items.find(g => g.cat === 'gear' && g.shop === key);     // 이 카테고리의 고르는 법 글(guide-data.js)
     const paint = () => {
       const list = shopSub ? all.filter(p => p.sub === shopSub) : all;
       const box = $('#shopList'); if (box) box.innerHTML = list.length ? '<div class="prods">' + list.map(prodCard).join('') + '</div>' : shopReady();
     };
     view.innerHTML = '<section class="pad">' + pageHead(c.e, c.name, shopSubs(c)) + SHOP_NOTE
       + (all.length && (c.subs || []).length ? '<div class="chips" id="shopSubs"><button type="button" class="chip' + (shopSub ? '' : ' on') + '" data-sub="">전체</button>' + c.subs.map(s => '<button type="button" class="chip' + (s === shopSub ? ' on' : '') + '" data-sub="' + esc(s) + '">' + esc(s) + '</button>').join('') + '</div>' : '')
-      + '<a class="grow" href="#/guide/gear" style="margin-top:14px"><span class="ge">📚</span><span class="tx"><b>고르는 법 먼저 보기</b><small>아빠 가이드 · 용품</small></span></a>'
+      + (gearGuide ? '<a class="grow" href="#/g/' + esc(gearGuide.id) + '" style="margin-top:14px"><span class="ge">📚</span><span class="tx"><b>고르는 법 먼저 보기</b><small>' + esc(gearGuide.title) + '</small></span></a>'
+        : '<a class="grow" href="#/guide/gear" style="margin-top:14px"><span class="ge">📚</span><span class="tx"><b>고르는 법 먼저 보기</b><small>아빠 가이드 · 용품</small></span></a>')
       + '<div id="shopList" style="margin-top:16px"></div>'
       + SHOP_NOTES() + '</section>';
     paint();
