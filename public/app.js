@@ -1264,7 +1264,11 @@
   const SHOP_CAT = {}; SHOP_CATS.forEach(c => { SHOP_CAT[c.key] = c; });
   const shopSubs = c => (c.subs || []).join(' · ');
   // 표시 문구(공정위 추천 · 보증 심사지침): 탭과 카테고리 화면 맨 위. class는 ad로 시작하지 않게(paynote · lab)
-  const SHOP_NOTE = '<div class="paynote"><span class="lab">광고</span><span>이 탭의 상품 링크는 광고 · 제휴 링크예요. 링크로 사면 육아맨이 수수료를 받아요.</span></div>';
+  // 쿠팡 링크가 있으면 쿠팡 파트너스가 정한 대가 문구를 그대로 쓴다(11-13 파트너스 링크 생성 화면의 '활동 시 주의 사항' 1번 문구). 다른 판매처 링크가 섞이면 한 줄을 더한다
+  const SHOP_HAS_CP = (SHOP.items || []).some(p => p && p.seller === '쿠팡'), SHOP_HAS_OTHER = (SHOP.items || []).some(p => p && p.seller && p.seller !== '쿠팡');
+  const SHOP_NOTE = '<div class="paynote"><span class="lab">광고</span><span>'
+    + (SHOP_HAS_CP ? '이 포스팅은 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.' : '')
+    + (SHOP_HAS_OTHER || !SHOP_HAS_CP ? (SHOP_HAS_CP ? ' ' : '') + '이 탭의 다른 상품 링크도 광고 · 제휴 링크예요. 링크로 사면 육아맨이 수수료를 받아요.' : '') + '</span></div>';
   const SHOP_NOTES = () => notes(['가격은 판매처에서 확인해 주세요. 자주 바뀌어 여기에 적지 않아요', '놓인 순서는 순위가 아니에요']);
   const shopReady = () => '<div class="about shopwait">상품을 준비하고 있어요.</div>';
   // 상품 한 칸. 링크는 누른 사람만 판매처로 간다(새 창). 판매처 이름은 데이터에 적힌 대로
