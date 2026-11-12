@@ -36,7 +36,8 @@
   const foldNick = s => s.replace(/[\s_.\-]+/g, '').toLowerCase().replace(/0/g, 'o').replace(/1/g, 'i').replace(/3/g, 'e').replace(/5/g, 's');
   const MSG = {
     login: '닉네임을 먼저 정해 주세요', unknown_user: '이 기기의 닉네임 기록이 없어요. 다시 정해 주세요',
-    nick_taken: '이미 쓰는 닉네임이에요. 별명을 바꿔 보세요', nick_form: '별명/거주지/자녀 출생연도 끝 2자리로 적어 주세요', nick_reserved: '운영 계정과 헷갈리는 이름은 쓸 수 없어요', nick_bad: '욕설이나 비속어는 닉네임에 쓸 수 없어요',
+    logged_out: '다른 기기에서 로그인해서 이 기기는 로그아웃됐어요. 다시 로그인해 주세요',
+    nick_taken: '이미 쓰는 닉네임이에요. 별명을 바꿔 보세요', name_taken: '다른 아빠가 쓰는 별명이에요. 다른 별명을 적어 주세요',nick_form: '별명/거주지/자녀 출생연도 끝 2자리로 적어 주세요', nick_reserved: '운영 계정과 헷갈리는 이름은 쓸 수 없어요', nick_bad: '욕설이나 비속어는 닉네임에 쓸 수 없어요',
     bad_word: '욕설 · 비하 · 혐오 표현은 올릴 수 없어요. 고쳐서 올려 주세요',
     limit: '너무 자주 했어요. 잠시 뒤에 다시 해 주세요', title_len: '질문은 2~60자로 해 주세요', body_len: '상황을 적어 주세요(3000자까지)',
     comment_len: '답은 1~1000자로 해 주세요', cat: '무엇에 대한 질문인지 골라 주세요', not_found: '글을 찾을 수 없어요(지워졌을 수 있어요)',
@@ -405,7 +406,7 @@
   function fail(e, after) {
     let code = 'server';
     if (e && e.name === 'ApiError') code = e.code; else if (e && (e.name === 'AbortError' || e.name === 'TypeError')) code = 'network';
-    if (code === 'unknown_user') { setMe(null); toast(MSG.unknown_user, 'err'); openSheet(after); return; }
+    if (code === 'unknown_user') { setMe(null); toast(socialOn() ? MSG.logged_out : MSG.unknown_user, 'err'); openSheet(after); return; }
     if (code === 'login') { openSheet(after); return; }
     if (code === 'verify') { if (me) { me.verified = false; store.set('me', me); } openVerify(after); return; }
     if (code === 'terms') { openTerms(after); return; }
@@ -2228,7 +2229,11 @@
       };
       closeSheet();
       if (r.recovery) showRecovery(r.recovery, next); else next();     // 가입 직후 복구 코드를 한 번 보여 준다(서버는 해시만 둔다)
-    } catch (e) { say(errText(e)); }
+    } catch (e) {
+      // 다른 기기에서 로그인해 이 기기가 끊긴 경우: 닉네임 칸에 머물지 않고 로그아웃 상태로 돌려 다시 로그인하게 한다(11-13)
+      if (rename && e && e.code === 'unknown_user') { closeSheet(); setMe(null); toast(socialOn() ? MSG.logged_out : MSG.unknown_user, 'err'); render(); return; }
+      say(errText(e));
+    }
     finally { btn.disabled = false; }
   }
   // 복구 코드 보여 주기(가입 직후 · 새로 만들 때 · 복구 뒤). 배경을 눌러 닫아도 다음 단계로 간다.

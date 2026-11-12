@@ -73,6 +73,10 @@ const badWord = word => json({ ok: false, error: 'bad_word', word }, 400);   // 
 const str = (v, n) => String(v == null ? '' : v).replace(/\r\n?/g, '\n').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').trim().slice(0, n);
 const len = s => Array.from(s).length;
 const nickKey = s => s.replace(/\s+/g, '').toLowerCase();
+// 별명(닉네임 첫 칸)도 다른 사람과 겹치지 않게 한다(11-13 운영자 "별명만 겹치지 않게"). 대소문자는 같은 것으로 본다. 빗금이 없는 옛 닉네임은 별명이 없는 것으로 친다
+const nameKey = s => nickKey(String(s).split('/')[0]);
+const NAME_SQL = "SELECT id FROM users WHERE instr(nick, '/') > 0 AND lower(replace(substr(nick, 1, instr(nick, '/') - 1), ' ', '')) = ?1";
+const nameTaken = async (db, nick, selfId) => (await db.prepare(NAME_SQL).bind(nameKey(nick)).all()).results.some(r => r.id !== selfId);
 const nowIso = () => new Date().toISOString();
 const tokenOk = t => /^[A-Za-z0-9_-]{16,80}$/.test(t);
 const normCode = s => String(s == null ? '' : s).toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 12);
@@ -868,6 +872,7 @@ async function join(request, env) {
   if (bad) return no(bad);
   if (!b || b.terms !== true) return no('terms');
   if (await db.prepare('SELECT 1 AS x FROM users WHERE nick_key = ?1').bind(nickKey(nick)).first()) return no('nick_taken', 409);
+  if (await nameTaken(db, nick, null)) return no('name_taken', 409);
   const ip = await ipKey(request);
   if (!(await allow(db, ip, 'join'))) return no('limit', 429);
   const created = nowIso();
@@ -1035,6 +1040,7 @@ async function rename(request, env) {
   if (nick === a.user.nick) return json({ ok: true, user: pubUser(a.user) });
   const other = await env.DB.prepare('SELECT id FROM users WHERE nick_key = ?1').bind(nickKey(nick)).first();
   if (other && other.id !== a.user.id) return no('nick_taken', 409);
+  if (await nameTaken(env.DB, nick, a.user.id)) return no('name_taken', 409);
   if (!(await allow(env.DB, 'u:' + a.user.id, 'nick'))) return no('limit', 429);
   try {
     await env.DB.prepare('UPDATE users SET nick = ?1, nick_key = ?2 WHERE id = ?3').bind(nick, nickKey(nick), a.user.id).run();
