@@ -37,7 +37,7 @@
   const MSG = {
     login: '닉네임을 먼저 정해 주세요', unknown_user: '이 기기의 닉네임 기록이 없어요. 다시 정해 주세요',
     nick_taken: '이미 쓰는 닉네임이에요. 별명을 바꿔 보세요', nick_form: '별명/거주지/자녀 출생연도 끝 2자리로 적어 주세요', nick_reserved: '운영 계정과 헷갈리는 이름은 쓸 수 없어요', nick_bad: '욕설이나 비속어는 닉네임에 쓸 수 없어요',
-    bad_word: '욕설이나 비속어는 쓸 수 없어요. 고쳐서 올려 주세요',
+    bad_word: '욕설 · 비하 · 혐오 표현은 올릴 수 없어요. 고쳐서 올려 주세요',
     limit: '너무 자주 했어요. 잠시 뒤에 다시 해 주세요', title_len: '질문은 2~60자로 해 주세요', body_len: '상황을 적어 주세요(3000자까지)',
     comment_len: '답은 1~1000자로 해 주세요', cat: '무엇에 대한 질문인지 골라 주세요', not_found: '글을 찾을 수 없어요(지워졌을 수 있어요)',
     forbidden: '내가 쓴 것만 지울 수 있어요', bad_json: '보낼 내용이 잘못됐어요', server: '서버에 문제가 있어요. 잠시 뒤 다시 해 주세요', network: '인터넷 연결을 확인해 주세요',
@@ -1454,7 +1454,7 @@
       + '<div class="body">' + rich(p.body) + '</div></article>'
       + '<div class="sec"><h2>답 <span id="cmtN">' + r.comments.length + '</span></h2><small class="note">아빠들이 쓴 답이에요</small></div>'
       + '<div class="cmts" id="cmts">' + (r.comments.length ? r.comments.map(cmtItem).join('') : empty('답을 기다려요', '경험이 있다면 첫 답을 남겨 주세요')) + '</div>'
-      + '<div class="about qnote">아빠들의 경험과 의견이에요. 육아맨이 확인한 정보는 가이드에 있어요. 아이가 아프면 소아과나 119에 먼저 물어보세요.</div>'
+      + '<div class="about qnote">아빠들의 경험과 의견이에요. 육아맨이 확인한 정보는 가이드에 있어요. 아이가 아프면 소아과나 119에 먼저 물어보세요.<br><b>욕설 · 비하 · 혐오 표현과 광고는 올릴 수 없어요.</b> 돌려 쓰거나 띄어 써도 걸러져요.</div>'
       + '</section>'
       + '<form class="composer" id="composer"><textarea id="cbody" rows="1" placeholder="' + esc(ph) + '" maxlength="1000"></textarea><button class="send" type="submit" aria-label="보내기">' + ICON.send + '</button></form>';
     const form = $('#composer'), ta = $('#cbody');
@@ -1601,6 +1601,8 @@
       + '<label class="lbl" for="wbody">' + (ASK_ONLY ? '상황' : '내용') + '</label><textarea class="inp" id="wbody" maxlength="3000" placeholder="' + (ASK_ONLY ? '상황을 적어 주면 답하기 쉬워요. 링크도 붙일 수 있어요.' : '묻고 싶은 것, 알려 주고 싶은 것을 편하게 적어 주세요. 링크도 붙일 수 있어요.') + '">' + esc(d.body || '') + '</textarea>'
       + '<div class="cnt"><span id="wcnt">' + len(d.body || '') + '</span>/3000</div></details>'
       + '<div class="notice"><span class="e">🔒</span><span>아이 이름·어린이집 이름·회사 이름은 적지 말아 주세요.' + (ASK_ONLY ? ' 아이가 아프면 소아과나 119에 먼저 물어보세요.' : '') + '</span></div>'
+      // 비속어 규정(11-12 운영자 "비속어 규정을 강화해줘"): 쓰기 전에 보이게 한 줄. 거르기는 서버(server/badwords.js)
+      + '<div class="notice"><span class="e">🚫</span><span><b>욕설 · 비하 · 혐오 표현과 광고는 올릴 수 없어요.</b> 돌려 쓰거나 띄어 써도 걸러져요.</span></div>'
       + '<button class="btn primary" type="submit" style="margin-top:14px">올리기</button>'
       + '</div></form></section>';
     window.scrollTo(0, 0);
