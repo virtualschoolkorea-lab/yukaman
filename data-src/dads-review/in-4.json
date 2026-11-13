@@ -1,0 +1,435 @@
+[
+ {
+  "id": "seoul-200-dads-2026",
+  "name": "서울 200인의 아빠단",
+  "kind": "public",
+  "region": "서울",
+  "area": "서울 전역",
+  "host": "서울시 여성가족실 저출생담당관",
+  "year": 2026,
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://mediahub.seoul.go.kr/archives/2017002"
+   }
+  ],
+  "sources": [
+   {
+    "title": "육아는 팀플! '서울 200인의 아빠단' 20일까지 참여자 모집",
+    "url": "https://mediahub.seoul.go.kr/archives/2017002",
+    "publisher": "서울시 미디어허브",
+    "date": "2026-02-04",
+    "kind": "공식"
+   },
+   {
+    "title": "'서울 200인의 아빠단' 활동 첫발…아빠 육아 지원 뭐가 있나?",
+    "url": "https://mediahub.seoul.go.kr/archives/2017420",
+    "publisher": "서울시 미디어허브",
+    "date": "2026-03-12",
+    "kind": "공식"
+   },
+   {
+    "title": "\"서울 200인의 아빠단\"과 함께…서울시, 맞돌봄 확산 위한 아빠육아 지원 확대",
+    "url": "https://news.seoul.go.kr/welfare/archives/577755",
+    "publisher": "서울시 복지분야 누리집",
+    "date": "2026-03-12",
+    "kind": "공식"
+   }
+  ]
+ },
+ {
+  "id": "seoul-gangnam-builog",
+  "name": "강남구가족센터 부(父)이로그",
+  "kind": "public",
+  "region": "서울",
+  "area": "강남구",
+  "host": "강남구가족센터",
+  "year": 2026,
+  "links": [
+   {
+    "label": "공식 누리집",
+    "url": "https://www.gangnam.go.kr/gangnamlife/2026/html/vol369/sub01_03.html"
+   }
+  ],
+  "sources": [
+   {
+    "title": "함께하는 따뜻한 이음 강남구가족센터",
+    "url": "https://www.gangnam.go.kr/gangnamlife/2026/html/vol369/sub01_03.html",
+    "publisher": "강남구",
+    "date": "",
+    "kind": "공식"
+   }
+  ]
+ },
+ {
+  "id": "gyeonggi-100-dads",
+  "name": "경기 100인의 아빠단",
+  "kind": "public",
+  "region": "경기",
+  "area": "경기도 전역",
+  "host": "경기도, 인구보건복지협회 경기도지회(가족계획협회 경기지부)",
+  "year": 2025,
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://www.asiae.co.kr/en/article/2025051307151040038"
+   }
+  ],
+  "sources": [
+   {
+    "title": "Gyeonggi Province Recruiting \"100 Dads Group\" for Novice Fathers with Children Aged 3 to 9",
+    "url": "https://www.asiae.co.kr/en/article/2025051307151040038",
+    "publisher": "아시아경제",
+    "date": "2025-05-13",
+    "kind": "기사"
+   },
+   {
+    "title": "‘아빠와 추억 만들기’…인구보건복지협회, 경기 100인의 아빠단 체험 프로그램 성료",
+    "url": "https://www.kyeonggi.com/article/20240701580238",
+    "publisher": "경기일보",
+    "date": "2024-07-01",
+    "kind": "기사"
+   }
+  ]
+ },
+ {
+  "id": "incheon-100-dads-8th",
+  "name": "인천 100인의 아빠단 (제8기)",
+  "kind": "public",
+  "region": "인천",
+  "area": "인천 전역",
+  "host": "인천시, 인구보건복지협회 인천지회",
+  "year": 2026,
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://kyeonggi.com/article/20260614580253"
+   }
+  ],
+  "sources": [
+   {
+    "title": "인천시, '제8기 100인의 아빠단' 닻 올렸다…부부 공동 육아 문화 확대",
+    "url": "https://kyeonggi.com/article/20260614580253",
+    "publisher": "경기일보",
+    "date": "2026-06-14",
+    "kind": "기사"
+   }
+  ]
+ },
+ {
+  "id": "jungnang-aja-playground-2026",
+  "name": "아자프로젝트 '아자놀이터' (중랑구가족센터)",
+  "kind": "public",
+  "region": "서울",
+  "area": "중랑구",
+  "host": "중랑구가족센터(서울시가족센터 남성양육자 아자프로젝트)",
+  "year": 2026,
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://familyseoul.or.kr/node/29478"
+   }
+  ],
+  "sources": [
+   {
+    "title": "[중랑구] 2026 남성양육자 대상 아자프로젝트 \"아자놀이터\"",
+    "url": "https://familyseoul.or.kr/node/29478",
+    "publisher": "패밀리서울(서울시가족센터)",
+    "date": "",
+    "kind": "공식"
+   }
+  ]
+ },
+ {
+  "id": "seocho-father-class-2026",
+  "name": "서초구가족센터 아버지교실 (서울가족학교, 2026 시리즈)",
+  "kind": "public",
+  "region": "서울",
+  "area": "서초구",
+  "host": "서초구가족센터",
+  "year": 2026,
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://familyseoul.or.kr/node/29955"
+   }
+  ],
+  "sources": [
+   {
+    "title": "[서초구] 2026년 아버지교실 '대디 케어 프로젝트' 참여자 모집",
+    "url": "https://familyseoul.or.kr/node/29955",
+    "publisher": "패밀리서울(서울시가족센터)",
+    "date": "",
+    "kind": "공식"
+   },
+   {
+    "title": "[서초구] 2026년 아버지교실 '아빠랑, 마음착' 참여자 모집",
+    "url": "https://familyseoul.or.kr/node/31242",
+    "publisher": "패밀리서울(서울시가족센터)",
+    "date": "",
+    "kind": "공식"
+   }
+  ]
+ },
+ {
+  "id": "osan-dad-shining-school-2026",
+  "name": "아빠가 빛나는 학교 (오산시가족센터)",
+  "kind": "public",
+  "region": "경기",
+  "area": "오산시",
+  "host": "오산시가족센터",
+  "year": 2026,
+  "links": [
+   {
+    "label": "인스타그램",
+    "url": "https://www.threads.com/@osanfamily/post/DW71mnuE9rA"
+   }
+  ],
+  "sources": [
+   {
+    "title": "2026년 아빠가 빛나는 학교 참여자 모집",
+    "url": "https://www.threads.com/@osanfamily/post/DW71mnuE9rA",
+    "publisher": "오산시가족센터(공식 계정 게시물)",
+    "date": "2026-04-13",
+    "kind": "공식"
+   }
+  ]
+ },
+ {
+  "id": "gyeongbuk-uiseong-uridongne-appa-2026",
+  "name": "의성군 우리동네 아빠교실",
+  "kind": "public",
+  "region": "경북",
+  "area": "의성군",
+  "host": "의성군 · 의성군가족센터",
+  "year": 2026,
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://kbmaeil.com/article/20260728500154"
+   }
+  ],
+  "sources": [
+   {
+    "title": "의성군 우리동네 아빠교실 부자캠프",
+    "url": "https://kbmaeil.com/article/20260728500154",
+    "publisher": "경북매일",
+    "date": "2026-07-28",
+    "kind": "기사"
+   },
+   {
+    "title": "의성군 우리동네 아빠교실 (10월 운영)",
+    "url": "https://www.kbmaeil.com/article/20261027500121",
+    "publisher": "경북매일",
+    "date": "2026-10-27",
+    "kind": "기사"
+   }
+  ]
+ },
+ {
+  "id": "gyeongbuk-gyeongsan-goal-appa-2026",
+  "name": "경산시가족센터 골 때리는 아이와 아빠",
+  "kind": "public",
+  "region": "경북",
+  "area": "경산시",
+  "host": "경산시가족센터(우리동네 아빠교실 사업)",
+  "year": 2026,
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://www.sisa-news.com/news/article.html?no=269105"
+   }
+  ],
+  "sources": [
+   {
+    "title": "경산시가족센터 「골 때리는 아이와 아빠」",
+    "url": "https://www.sisa-news.com/news/article.html?no=269105",
+    "publisher": "시사뉴스",
+    "date": "2026-04-21",
+    "kind": "기사"
+   }
+  ]
+ },
+ {
+  "id": "chungbuk-dads-1000-2026",
+  "name": "충북 아빠단(1000명 확대)",
+  "kind": "public",
+  "region": "충북",
+  "area": "충북 전역",
+  "host": "충청북도, 인구보건복지협회 충북세종지회",
+  "year": 2026,
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://www.gukjenews.com/news/articleView.html?idxno=3493934"
+   }
+  ],
+  "sources": [
+   {
+    "title": "충북도, 올해 아빠단 1000명 확대 운영",
+    "url": "https://www.gukjenews.com/news/articleView.html?idxno=3493934",
+    "publisher": "국제뉴스",
+    "date": "2026-02-01",
+    "kind": "기사"
+   }
+  ]
+ },
+ {
+  "id": "jeonnam-100-dads-8",
+  "name": "전남 100인의 아빠단 8기",
+  "kind": "public",
+  "region": "전남",
+  "area": "전남 전역",
+  "host": "전라남도, 인구보건복지협회 광주전남지회",
+  "year": 2026,
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://www.twig24.com/news/local_govern/2026/03/24/20260324500068"
+   }
+  ],
+  "sources": [
+   {
+    "title": "전남도, 아빠 육아 역량 강화 나서",
+    "url": "https://www.twig24.com/news/local_govern/2026/03/24/20260324500068",
+    "publisher": "트윈스24",
+    "date": "2026-03-24",
+    "kind": "기사"
+   }
+  ]
+ },
+ {
+  "id": "sunday-fathers-club",
+  "name": "썬데이 파더스 클럽",
+  "kind": "self",
+  "region": "전국",
+  "area": "온라인(이메일 뉴스레터)",
+  "host": "아빠 회원들",
+  "year": 2023,
+  "links": [
+   {
+    "label": "관련 기사",
+    "url": "https://nocutnews.co.kr/news/5939902"
+   }
+  ],
+  "sources": [
+   {
+    "title": "\"여보, 애 또 싼다!\"…밀레니얼 아빠들의 육아일기",
+    "url": "https://nocutnews.co.kr/news/5939902",
+    "publisher": "CBS노컷뉴스",
+    "date": "2023-05-09",
+    "kind": "기사"
+   },
+   {
+    "title": "육아하는 아빠 늘었지만…\"육아와 일의 균형 찾는 게 가장 큰 스트레스\"",
+    "url": "https://weekly.khan.co.kr/article/202605040600021",
+    "publisher": "주간경향",
+    "date": "2026-05-04",
+    "kind": "기사"
+   }
+  ]
+ },
+ {
+  "id": "papa-school-rootimpact",
+  "name": "돌보는 아빠 워크숍·파파스쿨(Papa School)",
+  "kind": "org",
+  "region": "서울",
+  "area": "서울(헤이그라운드 서울숲점, 서머셋팰리스 서울 등)",
+  "host": "사단법인 루트임팩트, 유엔여성기구(UN Women) 지식·파트너십 센터 등",
+  "year": 2026,
+  "links": [
+   {
+    "label": "공식 누리집",
+    "url": "https://rootimpact.org/journal/416/"
+   }
+  ],
+  "sources": [
+   {
+    "title": "DEI LAB : 좋은 아버지가 되는 법, 혼자 고민하지 마세요.",
+    "url": "https://rootimpact.org/journal/416/",
+    "publisher": "루트임팩트",
+    "date": "2025-08-01",
+    "kind": "공식"
+   },
+   {
+    "title": "\"I want to be someone my children can talk to\": Fathers reflect on caregiving at Papa Scho",
+    "url": "https://asiapacific.unwomen.org/en/stories/feature-story/2026/07/i-want-to-be-someone-my-children-can-talk-to",
+    "publisher": "UN Women Asia-Pacific",
+    "date": "2026-07-08",
+    "kind": "공식"
+   }
+  ]
+ },
+ {
+  "id": "daegu-dalseong-dad-class",
+  "name": "달성아빠클래스 (달성군가족센터 아빠 육아 교실)",
+  "kind": "public",
+  "region": "대구",
+  "area": "대구 달성군",
+  "host": "달성군가족센터",
+  "year": 2026,
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://kbmaeil.com/article/20260831500460"
+   }
+  ],
+  "sources": [
+   {
+    "title": "달성군가족센터 아빠 육아 교실 수료",
+    "url": "https://kbmaeil.com/article/20260831500460",
+    "publisher": "경북매일",
+    "date": "2026-08-31",
+    "kind": "기사"
+   }
+  ]
+ },
+ {
+  "id": "ulsan-childcare-center-new-dad",
+  "name": "초보 아빠를 위한 육아의 기술 AtoZ (울산광역시육아종합지원센터)",
+  "kind": "public",
+  "region": "울산",
+  "area": "울산 동구(센터 위치)",
+  "host": "울산광역시육아종합지원센터",
+  "year": 2025,
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://www.heraldk.com/article/2025072117035889294"
+   }
+  ],
+  "sources": [
+   {
+    "title": "울산육아종합지원센터 초보 아버지 육아 교육",
+    "url": "https://www.heraldk.com/article/2025072117035889294",
+    "publisher": "헤럴드경제(미주)",
+    "date": "2025-07-21",
+    "kind": "기사"
+   }
+  ]
+ },
+ {
+  "id": "gyeongnam-gimhae-appa-haebom",
+  "name": "김해, 아빠 해봄 (전신: 김해 40인의 아빠단)",
+  "kind": "public",
+  "region": "경남",
+  "area": "김해시",
+  "host": "김해시 인구정책 담당",
+  "year": 2026,
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://v.daum.net/v/20260630201308035"
+   }
+  ],
+  "sources": [
+   {
+    "title": "[현장속으로] 김해 아빠들의 당찬 도전 ‘김해, 아빠 해봄’",
+    "url": "https://v.daum.net/v/20260630201308035",
+    "publisher": "KBS 창원(다음)",
+    "date": "2026-06-30",
+    "kind": "기사"
+   }
+  ]
+ }
+]

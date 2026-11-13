@@ -997,6 +997,9 @@ a.btn { text-align: center; }
 .dnews b { display: block; margin-top: 3px; font-size: 14.5px; font-weight: 800; line-height: 1.4; word-break: keep-all; }
 .dnews .o { display: block; margin-top: 3px; font-size: 12.5px; font-weight: 800; color: var(--pri-d); }
 .btn.dask { display: block; margin-top: 18px; }
+.drec .rw { display: block; margin-top: 4px; font-size: 12.5px; font-weight: 700; color: var(--sub); }
+.dmore { margin-top: 8px; }
+.dmore summary { padding: 10px 2px; font-size: 13.5px; font-weight: 800; color: var(--pri-d); cursor: pointer; }
 .dhead { display: flex; gap: 12px; align-items: flex-start; margin-top: 6px; }
 .dhead .tx { flex: 1; min-width: 0; }
 .dhead .crumb { font-size: 13px; font-weight: 800; color: var(--pri-d); }

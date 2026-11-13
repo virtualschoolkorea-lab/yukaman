@@ -77,10 +77,36 @@ def item(x, why):
         d['sources'].append({'title': clean(s.get('title'), 90), 'url': u, 'publisher': clean(s.get('publisher'), 30), 'date': date, 'kind': '기사' if clean(s.get('kind')) == '기사' else '공식'})
     if not d['sources']:
         return why('출처 없음')
-    if not d['links']:      # 바로가기 단추가 하나는 있게: 공식 출처를 공고로
+    # 링크 점검 결과(data-src/dads-review/out-*.json, 11-13 운영자 "우측 상단 링크가 엉뚱한게 들어가잇는경우가 많아")로 바로가기를 바꾸고 모집 글을 붙인다
+    rv = REVIEW.get(d['id'])
+    if rv is not None:
+        d['links'] = []
+        for l in rv.get('links') or []:
+            u = clean(l.get('url'), 400)
+            if URL.match(u) and not any(u == z['url'] for z in d['links']):
+                d['links'].append({'label': clean(l.get('label'), 12) or '관련 기사', 'url': u})
+        d['links'] = d['links'][:4]
+        rp = []
+        for p in rv.get('recruit_posts') or []:
+            u = clean(p.get('url'), 400)
+            date = clean(p.get('date'), 10)
+            if not URL.match(u) or any(u == z['url'] for z in rp):
+                continue
+            rp.append({'title': clean(p.get('title'), 90), 'url': u, 'publisher': clean(p.get('publisher'), 30), 'date': date if re.match(r'^\d{4}-\d{2}-\d{2}$', date) else '',
+                       'kind': clean(p.get('kind'), 6) if clean(p.get('kind'), 6) in ('공고', '보도자료', '기사') else '기사', 'period': clean(p.get('period'), 40)})
+        if rp:
+            d['recruit_posts'] = rp
+    if not d['links']:      # 바로가기 단추가 하나는 있게: 출처를 그 종류 이름 그대로(기사를 '모집 공고'라 부르지 않는다)
         off = [s for s in d['sources'] if s['kind'] == '공식'] or d['sources']
-        d['links'].append({'label': '모집 공고' if d['kind'] == 'public' else '공식 누리집' if off[0]['kind'] == '공식' else '관련 기사', 'url': off[0]['url']})
+        d['links'].append({'label': '공식 안내' if off[0]['kind'] == '공식' else '관련 기사', 'url': off[0]['url']})
     return d
+
+
+REVIEW = {}
+for _f in sorted(glob.glob(os.path.join(ROOT, 'data-src', 'dads-review', 'out-*.json'))):
+    for _r in json.load(open(_f, encoding='utf-8')):
+        if _r.get('id'):
+            REVIEW[_r['id']] = _r
 
 
 def main():

@@ -22,7 +22,11 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"공식 누리집",
+"url":"https://www.ppfk.or.kr"
+},
+{
+"label":"보도자료",
 "url":"https://eiec.kdi.re.kr/policy/materialView.do?num=285911"
 }
 ],
@@ -60,7 +64,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"보도자료",
 "url":"https://eiec.kdi.re.kr/policy/materialView.do?num=285911"
 }
 ],
@@ -101,7 +105,11 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"공식 누리집",
+"url":"https://www.ppfk.or.kr"
+},
+{
+"label":"관련 기사",
 "url":"https://www.heraldk.com/article/2026060918041873238"
 }
 ],
@@ -112,6 +120,16 @@ window.YK_DADS = {
 "publisher":"헤럴드경제 미주판",
 "date":"2026-06-09",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"아이와 더 가까워지는 특별한 하루…‘2026 찾아가는 파더링’ 참가자 모집",
+"url":"https://www.heraldk.com/article/2026060918041873238",
+"publisher":"헤럴드경제 미주판",
+"date":"2026-06-09",
+"kind":"기사",
+"period":"~6월 28일(기사 표기 '28일까지'), 신청 방법은 협회 누리집 새소"
 }
 ]
 },
@@ -153,8 +171,12 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"보도자료",
 "url":"https://mediahub.seoul.go.kr/archives/2017002"
+},
+{
+"label":"보도자료",
+"url":"https://news.seoul.go.kr/welfare/archives/577755"
 }
 ],
 "sources":[
@@ -178,6 +200,16 @@ window.YK_DADS = {
 "publisher":"서울시 복지분야 누리집",
 "date":"2026-03-12",
 "kind":"공식"
+}
+],
+"recruit_posts":[
+{
+"title":"육아는 팀플! '서울 200인의 아빠단' 20일까지 참여자 모집",
+"url":"https://mediahub.seoul.go.kr/archives/2017002",
+"publisher":"서울시 미디어허브",
+"date":"2026-02-04",
+"kind":"보도자료",
+"period":"2026.2.4~2.20"
 }
 ]
 },
@@ -238,6 +270,10 @@ window.YK_DADS = {
 "links":[
 {
 "label":"공식 누리집",
+"url":"https://familyseoul.or.kr"
+},
+{
+"label":"관련 기사",
 "url":"https://mediahub.seoul.go.kr/archives/2017420"
 }
 ],
@@ -272,7 +308,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"공식 누리집",
+"label":"관련 기사",
 "url":"https://mediahub.seoul.go.kr/archives/2017420"
 }
 ],
@@ -306,7 +342,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"공식 누리집",
+"label":"관련 기사",
 "url":"https://www.gangnam.go.kr/gangnamlife/2026/html/vol369/sub01_03.html"
 }
 ],
@@ -343,7 +379,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://m.go.seoul.co.kr/news/2024/03/01/20240301500071"
 }
 ],
@@ -386,8 +422,12 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://www.heraldk.com/article/2026050714544859278"
+},
+{
+"label":"관련 기사",
+"url":"https://www.heraldk.com/article/2026012301121110194"
 }
 ],
 "sources":[
@@ -404,6 +444,24 @@ window.YK_DADS = {
 "publisher":"헤럴드경제 미주판",
 "date":"2026-01-23",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"육아하는 아빠도 회복이 필요하다! ...서초구, 맞춤형 운동 프로그램 '아빠 힐앤핏' 운영",
+"url":"https://www.heraldk.com/article/2026050714544859278",
+"publisher":"헤럴드경제 미주판",
+"date":"2026-05-07",
+"kind":"기사",
+"period":"매월 셋째 주 월요일 오후 2시부터 선착순, 건강부모e음 누리집 신청"
+},
+{
+"title":"서초구 '육아하는 아빠를 위한 육퇴운동클럽(서킷)' 운영",
+"url":"https://www.heraldk.com/article/2026012301121110194",
+"publisher":"헤럴드경제 미주판",
+"date":"2026-01-23",
+"kind":"기사",
+"period":"매월 셋째 주 월요일 오후 2시부터 선착순, 건강부모e음 누리집 신청"
 }
 ]
 },
@@ -434,7 +492,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://biz.heraldcorp.com/article/10900518"
 }
 ],
@@ -445,6 +503,16 @@ window.YK_DADS = {
 "publisher":"헤럴드경제",
 "date":"2026-10-13",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"은평구, 놀이와 유대감에 초점을 맞춘 아버지 교육 프로그램 운영",
+"url":"https://biz.heraldcorp.com/article/10900518",
+"publisher":"헤럴드경제",
+"date":"2026-10-13",
+"kind":"기사",
+"period":"마감일 없음(10월 21일 온라인·24일 대면 진행), 은평구 종합육아지"
 }
 ]
 },
@@ -482,7 +550,11 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"네이버 카페",
+"url":"https://cafe.naver.com/100papa"
+},
+{
+"label":"관련 기사",
 "url":"https://www.asiae.co.kr/en/article/2025051307151040038"
 }
 ],
@@ -500,6 +572,16 @@ window.YK_DADS = {
 "publisher":"경기일보",
 "date":"2024-07-01",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"Gyeonggi Province Recruiting \"100 Dads Group\" for Novice Fathers with Children Aged 3 to 9",
+"url":"https://www.asiae.co.kr/en/article/2025051307151040038",
+"publisher":"아시아경제",
+"date":"2025-05-13",
+"kind":"기사",
+"period":"2025.5.13~5.23 선착순"
 }
 ]
 },
@@ -536,7 +618,11 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"공식 누리집",
+"url":"https://www.gwff.kr"
+},
+{
+"label":"관련 기사",
 "url":"https://www.kgnews.co.kr/mobile/article.html?no=895216"
 }
 ],
@@ -554,6 +640,16 @@ window.YK_DADS = {
 "publisher":"중부일보(다음뉴스)",
 "date":"2025-10-13",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"경기도여성가족재단, '경기도 아빠스쿨' 정규과정 2기 참여자 모집 '스타트'",
+"url":"https://www.kgnews.co.kr/mobile/article.html?no=895216",
+"publisher":"경기신문",
+"date":"2026-05-11",
+"kind":"기사",
+"period":"5월 13일 오전 10시부터 선착순 300명(기사 기준 2026.5.13"
 }
 ]
 },
@@ -580,8 +676,12 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://v.daum.net/v/20251013121854867?f=p"
+},
+{
+"label":"관련 기사",
+"url":"https://kpinews.kr/newsView/1065566425272811&dt=m"
 }
 ],
 "sources":[
@@ -620,7 +720,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://kpinews.kr/newsView/1065566425272811&dt=m"
 }
 ],
@@ -662,7 +762,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://kyeonggi.com/article/20260614580253"
 }
 ],
@@ -797,6 +897,16 @@ window.YK_DADS = {
 "date":"",
 "kind":"공식"
 }
+],
+"recruit_posts":[
+{
+"title":"[은평구] 2026 남성 양육자 아자프로젝트 \"아빠는 탐험대장\"",
+"url":"https://familyseoul.or.kr/node/29741",
+"publisher":"패밀리서울(서울시가족센터) 은평구가족센터",
+"date":"",
+"kind":"공고",
+"period":"2026.3.1~3.21(모집완료 표시)"
+}
 ]
 },
 {
@@ -843,6 +953,16 @@ window.YK_DADS = {
 "date":"",
 "kind":"공식"
 }
+],
+"recruit_posts":[
+{
+"title":"[중랑구] 2026 남성양육자 대상 아자프로젝트 \"아자놀이터\"",
+"url":"https://familyseoul.or.kr/node/29478",
+"publisher":"패밀리서울(서울시가족센터)",
+"date":"",
+"kind":"공고",
+"period":"2026.3.20 10:30~15:00 (선착순, 현재 모집 완료)"
+}
 ]
 },
 {
@@ -877,6 +997,10 @@ window.YK_DADS = {
 {
 "label":"모집 공고",
 "url":"https://familyseoul.or.kr/node/29869"
+},
+{
+"label":"공식 누리집",
+"url":"https://familyseoul.or.kr"
 }
 ],
 "sources":[
@@ -886,6 +1010,16 @@ window.YK_DADS = {
 "publisher":"패밀리서울(서울시가족센터)",
 "date":"",
 "kind":"공식"
+}
+],
+"recruit_posts":[
+{
+"title":"[광진구] 2026 아자프로젝트 '아자 꿈원정대' [미래반]",
+"url":"https://familyseoul.or.kr/node/29869",
+"publisher":"패밀리서울(서울시가족센터)",
+"date":"",
+"kind":"공고",
+"period":"2026.4.10 9:00~4.23 17:00 (구글폼 선착순, 현재 모"
 }
 ]
 },
@@ -923,8 +1057,8 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
-"url":"https://childfamily.snu.ac.kr/33003/"
+"label":"관련 기사",
+"url":"https://www.heraldk.com/article/2025092121511917937"
 }
 ],
 "sources":[
@@ -983,6 +1117,16 @@ window.YK_DADS = {
 "date":"",
 "kind":"공식"
 }
+],
+"recruit_posts":[
+{
+"title":"2026 아빠랑 마음 말랑톡",
+"url":"https://familyseoul.or.kr/node/31861",
+"publisher":"패밀리서울(서울시가족센터)",
+"date":"",
+"kind":"공고",
+"period":"2026.10.23~11.13(모집완료 표시, 구글 신청서)"
+}
 ]
 },
 {
@@ -1017,6 +1161,10 @@ window.YK_DADS = {
 {
 "label":"모집 공고",
 "url":"https://familyseoul.or.kr/node/29955"
+},
+{
+"label":"모집 공고",
+"url":"https://familyseoul.or.kr/node/31242"
 }
 ],
 "sources":[
@@ -1033,6 +1181,24 @@ window.YK_DADS = {
 "publisher":"패밀리서울(서울시가족센터)",
 "date":"",
 "kind":"공식"
+}
+],
+"recruit_posts":[
+{
+"title":"[서초구] 2026년 아버지교실 '대디 케어 프로젝트' 참여자 모집",
+"url":"https://familyseoul.or.kr/node/29955",
+"publisher":"패밀리서울(서울시가족센터)",
+"date":"",
+"kind":"공고",
+"period":"2026.4.20~6.15 (모집 완료)"
+},
+{
+"title":"[서초구] 2026년 아버지교실 '아빠랑, 마음착' 참여자 모집",
+"url":"https://familyseoul.or.kr/node/31242",
+"publisher":"패밀리서울(서울시가족센터)",
+"date":"",
+"kind":"공고",
+"period":"2026.9.1~10.17 (모집 완료)"
 }
 ]
 },
@@ -1064,7 +1230,11 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"공식 누리집",
+"url":"https://familyseoul.or.kr"
+},
+{
+"label":"보도자료",
 "url":"https://news.seoul.go.kr/welfare/archives/556847"
 }
 ],
@@ -1106,6 +1276,10 @@ window.YK_DADS = {
 {
 "label":"공식 누리집",
 "url":"https://familyseoul.or.kr"
+},
+{
+"label":"보도자료",
+"url":"https://news.seoul.go.kr/welfare/?p=572614"
 }
 ],
 "sources":[
@@ -1115,6 +1289,16 @@ window.YK_DADS = {
 "publisher":"서울특별시 복지분야 누리집",
 "date":"2025-08-12",
 "kind":"공식"
+}
+],
+"recruit_posts":[
+{
+"title":"아빠와 자녀의 4주간의 러닝미션 \"아자러너\"…참가자 선착순 모집",
+"url":"https://news.seoul.go.kr/welfare/?p=572614",
+"publisher":"서울특별시 복지분야 누리집",
+"date":"2025-08-12",
+"kind":"보도자료",
+"period":"2025.8.13 오전 9시부터 250팀 선착순, 패밀리서울 누리집 신청"
 }
 ]
 },
@@ -1145,7 +1329,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://www.kyeonggi.com/article/20260504580021"
 }
 ],
@@ -1156,6 +1340,16 @@ window.YK_DADS = {
 "publisher":"경기일보",
 "date":"2026-05-04",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"'통(通)하는 아빠의 우리 가족 행복 레시피' 수강생 모집",
+"url":"https://www.kyeonggi.com/article/20260504580021",
+"publisher":"경기일보",
+"date":"2026-05-04",
+"kind":"기사",
+"period":"신청일 미표기(선착순, 5월 권역별 15명), 시흥교육캠퍼스 쏙 온라인 "
 }
 ]
 },
@@ -1185,7 +1379,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"인스타그램",
+"label":"모집 공고",
 "url":"https://www.threads.com/@osanfamily/post/DW71mnuE9rA"
 }
 ],
@@ -1196,6 +1390,16 @@ window.YK_DADS = {
 "publisher":"오산시가족센터(공식 계정 게시물)",
 "date":"2026-04-13",
 "kind":"공식"
+}
+],
+"recruit_posts":[
+{
+"title":"2026년 아빠가 빛나는 학교 참여자 모집",
+"url":"https://www.threads.com/@osanfamily/post/DW71mnuE9rA",
+"publisher":"오산시가족센터(스레드 공식 계정)",
+"date":"2026-04-09",
+"kind":"공고",
+"period":"2026.4.13~4.24"
 }
 ]
 },
@@ -1233,7 +1437,11 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"공식 누리집",
+"url":"https://www.tongyeong.go.kr"
+},
+{
+"label":"관련 기사",
 "url":"http://ityb.co.kr/sub_read.html?uid=11220"
 }
 ],
@@ -1244,6 +1452,16 @@ window.YK_DADS = {
 "publisher":"인터넷 통영방송",
 "date":"2026-06-10",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"함께하는 육아의 시작 「2026년 통영 아빠단」 참가자 모집",
+"url":"http://ityb.co.kr/sub_read.html?uid=11220",
+"publisher":"인터넷 통영방송",
+"date":"2026-06-10",
+"kind":"기사",
+"period":"2026.6.10~6.30"
 }
 ]
 },
@@ -1274,7 +1492,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://www.gukjenews.com/news/articleView.html?idxno=3715278"
 }
 ],
@@ -1285,6 +1503,16 @@ window.YK_DADS = {
 "publisher":"국제뉴스",
 "date":"2026-10-07",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"경남 고성군, 아빠 육아 참여 프로그램 2차 참가자 모집",
+"url":"https://www.gukjenews.com/news/articleView.html?idxno=3715278",
+"publisher":"국제뉴스",
+"date":"2026-10-07",
+"kind":"기사",
+"period":"2026.10.8~10.22 (20명, 네이버 폼 또는 이메일)"
 }
 ]
 },
@@ -1313,7 +1541,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://kpinews.kr/newsView/1065591331747262"
 }
 ],
@@ -1353,8 +1581,12 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://kbmaeil.com/article/20260728500154"
+},
+{
+"label":"관련 기사",
+"url":"https://www.kbmaeil.com/article/20261027500121"
 }
 ],
 "sources":[
@@ -1391,7 +1623,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://www.heraldk.com/article/2026031713544034569"
 }
 ],
@@ -1434,6 +1666,10 @@ window.YK_DADS = {
 {
 "label":"공식 누리집",
 "url":"https://cheongsonggun.familynet.or.kr"
+},
+{
+"label":"관련 기사",
+"url":"https://www.kbmaeil.com/article/20250526500328"
 }
 ],
 "sources":[
@@ -1465,7 +1701,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://kbmaeil.com/article/20260713500120"
 }
 ],
@@ -1509,7 +1745,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://www.sisa-news.com/news/article.html?no=269105"
 }
 ],
@@ -1558,7 +1794,11 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"공식 누리집",
+"url":"https://www.ppfk.or.kr"
+},
+{
+"label":"관련 기사",
 "url":"https://m.joongdo.co.kr/view.php?key=20260324010007797"
 }
 ],
@@ -1569,6 +1809,16 @@ window.YK_DADS = {
 "publisher":"중도일보",
 "date":"2026-03-23",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"인구보건복지협회 대전충남지회, 제8기 대전 100인의 아빠단 활동 단원 모집",
+"url":"https://m.joongdo.co.kr/view.php?key=20260324010007797",
+"publisher":"중도일보",
+"date":"2026-03-23",
+"kind":"기사",
+"period":"~2026.4.7 (공식 커뮤니티 네이버 폼, 선착순 100명)"
 }
 ]
 },
@@ -1605,7 +1855,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://v.daum.net/v/20260323173038465"
 }
 ],
@@ -1616,6 +1866,16 @@ window.YK_DADS = {
 "publisher":"충청투데이(다음 뉴스)",
 "date":"2026-03-23",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"슈퍼맨은 바로 나… 100인의 아빠 어서오세요",
+"url":"https://v.daum.net/v/20260323173038465",
+"publisher":"충청투데이(다음 뉴스)",
+"date":"2026-03-23",
+"kind":"기사",
+"period":"~2026.4.7 선착순, 온라인 네이버 폼(3~9세 자녀 아빠)"
 }
 ]
 },
@@ -1652,8 +1912,12 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://www.khan.co.kr/article/202602271003001/"
+},
+{
+"label":"관련 기사",
+"url":"https://www.naewoeilbo.com/news/articleView.html?idxno=2378762"
 }
 ],
 "sources":[
@@ -1670,6 +1934,16 @@ window.YK_DADS = {
 "publisher":"내외일보",
 "date":"2026-07-12",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"“육아는 엄마 몫?” 세종시, ‘100인의 아빠단’으로 인식 바꾼다",
+"url":"https://www.khan.co.kr/article/202602271003001/",
+"publisher":"경향신문",
+"date":"2026-02-27",
+"kind":"기사",
+"period":"2026.3.1~3.22(네이버폼, 선착순)"
 }
 ]
 },
@@ -1724,7 +1998,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://www.gukjenews.com/news/articleView.html?idxno=3493934"
 }
 ],
@@ -1735,6 +2009,16 @@ window.YK_DADS = {
 "publisher":"국제뉴스",
 "date":"2026-02-01",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"충북도, 올해 아빠단 1000명 확대 운영",
+"url":"https://www.gukjenews.com/news/articleView.html?idxno=3493934",
+"publisher":"국제뉴스",
+"date":"2026-02-01",
+"kind":"기사",
+"period":"2026.1.19부터 상시, 충북 가치자람 플랫폼 · QR 온라인 신청"
 }
 ]
 },
@@ -1772,7 +2056,11 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"발대식 기사",
+"label":"공식 누리집",
+"url":"https://www.ppfk.or.kr"
+},
+{
+"label":"관련 기사",
 "url":"https://www.dongbangilbo.co.kr/news/articleView.html?idxno=93658"
 }
 ],
@@ -1790,6 +2078,16 @@ window.YK_DADS = {
 "publisher":"이뉴스투데이",
 "date":"2025-04-02",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"인구보건복지협회 강원, 100인의 아빠단 7기 단원 모집 (지난 기수)",
+"url":"http://www.enewstoday.co.kr/news/articleView.html?idxno=2258778",
+"publisher":"이뉴스투데이",
+"date":"2025-04-02",
+"kind":"기사",
+"period":"2025.4.4~4.15"
 }
 ]
 },
@@ -1828,7 +2126,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"발대식 기사",
+"label":"관련 기사",
 "url":"https://www.heraldk.com/article/2026042523163954282"
 }
 ],
@@ -1846,6 +2144,16 @@ window.YK_DADS = {
 "publisher":"위키트리",
 "date":"2025-04-10",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"광주시, “초보아빠 모여라” ~‘100인의 아빠단’ 모집 (7기)",
+"url":"https://www.wikitree.co.kr/articles/1040966",
+"publisher":"위키트리",
+"date":"2025-04-10",
+"kind":"기사",
+"period":"~2025.4.21 (7기, 신청 방법 미기재)"
 }
 ]
 },
@@ -1885,8 +2193,12 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"발대식 기사",
+"label":"관련 기사",
 "url":"https://mobile.newsis.com/view/NISX20250621_0003222101"
+},
+{
+"label":"관련 기사",
+"url":"https://jjan.kr/article/20250504580014"
 }
 ],
 "sources":[
@@ -1931,7 +2243,11 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"네이버 카페",
+"url":"https://cafe.naver.com/100papa"
+},
+{
+"label":"관련 기사",
 "url":"https://www.twig24.com/news/local_govern/2026/03/24/20260324500068"
 }
 ],
@@ -1942,6 +2258,16 @@ window.YK_DADS = {
 "publisher":"트윈스24",
 "date":"2026-03-24",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"전남도, 아빠 육아 역량 강화 나서",
+"url":"https://www.twig24.com/news/local_govern/2026/03/24/20260324500068",
+"publisher":"트윈스24",
+"date":"2026-03-24",
+"kind":"기사",
+"period":"~2026.4.5 온라인 신청"
 }
 ]
 },
@@ -1977,7 +2303,11 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"발대식 기사",
+"label":"공식 누리집",
+"url":"https://www.ppfk.or.kr"
+},
+{
+"label":"관련 기사",
 "url":"http://www.ihalla.com/article.php?aid=1777294800785189042"
 }
 ],
@@ -2245,7 +2575,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"공식 누리집",
+"label":"블로그",
 "url":"https://rootimpact.org/journal/416/"
 }
 ],
@@ -2305,12 +2635,16 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"공식 누리집",
+"url":"https://www.busan.go.kr/childcare"
+},
+{
+"label":"보도자료",
 "url":"https://www.busan.go.kr/nbtnewsBU/1719963"
 },
 {
-"label":"공식 누리집",
-"url":"https://www.busan.go.kr/childcare"
+"label":"관련 기사",
+"url":"https://www.heraldk.com/article/2026031916594736057"
 }
 ],
 "sources":[
@@ -2334,6 +2668,16 @@ window.YK_DADS = {
 "publisher":"헤럴드경제(미주)",
 "date":"2026-03-19",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"아빠가 만드는 육아 도시 부산… 「부산 100인의 아빠단」 10기 모집",
+"url":"https://www.busan.go.kr/nbtnewsBU/1719963",
+"publisher":"부산광역시",
+"date":"2026-02-25",
+"kind":"보도자료",
+"period":"2026.2.25~3.6 (busan.go.kr/childcare 온라인"
 }
 ]
 },
@@ -2364,7 +2708,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://www.heraldk.com/article/2026060918041873238"
 }
 ],
@@ -2375,6 +2719,16 @@ window.YK_DADS = {
 "publisher":"헤럴드경제(미주)",
 "date":"2026-06-09",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"아이와 더 가까워지는 특별한 하루…‘2026 찾아가는 파더링’ 참가자 모집",
+"url":"https://www.heraldk.com/article/2026060918041873238",
+"publisher":"헤럴드경제(미주)",
+"date":"2026-06-09",
+"kind":"기사",
+"period":"~28일 접수(월 미기재), 인구보건복지협회 누리집 새소식 참고"
 }
 ]
 },
@@ -2411,7 +2765,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://www.kbmaeil.com/article/20260614500314"
 }
 ],
@@ -2459,7 +2813,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://kbmaeil.com/article/20260831500460"
 }
 ],
@@ -2510,7 +2864,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://kbmaeil.com/article/202403270388916"
 }
 ],
@@ -2548,7 +2902,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://kbmaeil.com/article/202412250415015"
 }
 ],
@@ -2589,7 +2943,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://kbmaeil.com/article/202408020401499"
 }
 ],
@@ -2630,7 +2984,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://www.heraldk.com/article/2025072117035889294"
 }
 ],
@@ -2641,6 +2995,16 @@ window.YK_DADS = {
 "publisher":"헤럴드경제(미주)",
 "date":"2025-07-21",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"울산육아종합지원센터 초보 아버지 육아 교육",
+"url":"https://www.heraldk.com/article/2025072117035889294",
+"publisher":"헤럴드경제(미주)",
+"date":"2025-07-21",
+"kind":"기사",
+"period":"28일부터(월은 기사에 없음, 회차당 10명 선착순, 울아이랑 누리집 신"
 }
 ]
 },
@@ -2668,7 +3032,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://www.asiae.co.kr/en/article/2025040315492163440"
 }
 ],
@@ -2679,6 +3043,16 @@ window.YK_DADS = {
 "publisher":"아시아경제",
 "date":"2025-04-03",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"Yangsan City Recruits Participants for '400 Fathers Group'",
+"url":"https://www.asiae.co.kr/en/article/2025040315492163440",
+"publisher":"아시아경제",
+"date":"2025-04-03",
+"kind":"기사",
+"period":"2025.4.4~4.23"
 }
 ]
 },
@@ -2716,7 +3090,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://kpinews.kr/newsView/1065576610718425"
 }
 ],
@@ -2727,6 +3101,16 @@ window.YK_DADS = {
 "publisher":"KPI뉴스",
 "date":"2025-04-15",
 "kind":"기사"
+}
+],
+"recruit_posts":[
+{
+"title":"[진주시 소식] 육아 멘토링 '아빠단' 모집-유홍준 교수 초청 특강",
+"url":"https://kpinews.kr/newsView/1065576610718425",
+"publisher":"KPI뉴스",
+"date":"2025-04-15",
+"kind":"기사",
+"period":"~2025.4.23, 진주시 청년온라인플랫폼 신청(3~7세 자녀 아빠)"
 }
 ]
 },
@@ -2753,7 +3137,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://kpinews.kr/newsView/1065577152788030"
 }
 ],
@@ -2789,7 +3173,7 @@ window.YK_DADS = {
 ],
 "links":[
 {
-"label":"모집 공고",
+"label":"관련 기사",
 "url":"https://v.daum.net/v/20260630201308035"
 }
 ],

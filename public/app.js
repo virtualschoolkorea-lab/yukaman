@@ -2443,7 +2443,7 @@
   const dadPlace = d => d.area ? (d.area.indexOf(d.region) === 0 || d.region === '전국' ? d.area : d.region + ' ' + d.area) : d.region;
   const dadOld = d => d.year && d.year < new Date().getFullYear() ? d.year + ' 기준' : '';
   const dadSort = (a, b) => (DAD_REG.indexOf(a.region) - DAD_REG.indexOf(b.region)) || (DAD_KORDER.indexOf(a.kind) - DAD_KORDER.indexOf(b.kind)) || ((b.year || 0) - (a.year || 0)) || a.name.localeCompare(b.name, 'ko');
-  const LINK_E = { '공식 누리집': '🔗', '네이버 카페': '☕', '다음 카페': '☕', '밴드': '👥', '모집 공고': '📢', '인스타그램': '📷', '블로그': '📝', '유튜브': '▶️', '카카오톡 채널': '💬', '오픈채팅': '💬' };
+  const LINK_E = { '공식 누리집': '🔗', '공식 안내': '🔗', '네이버 카페': '☕', '다음 카페': '☕', '밴드': '👥', '모집 공고': '📢', '인스타그램': '📷', '블로그': '📝', '유튜브': '▶️', '카카오톡 채널': '💬', '오픈채팅': '💬', '보도자료': '📰', '관련 기사': '📰' };
   const LINK_N = { '공식 누리집': '누리집', '네이버 카페': '카페', '다음 카페': '카페', '인스타그램': '인스타', '카카오톡 채널': '카톡 채널' };
   const okUrl = u => /^https?:\/\//i.test(u || '');
   function dadCard(d) {
@@ -2453,14 +2453,17 @@
       + ((d.does || []).length ? '<span class="kw">' + d.does.slice(0, 4).map(w => '<i>' + esc(w) + '</i>').join('') + '</span>' : '')
       + '</div><span class="dbs"><span class="dk ' + k.c + '">' + k.n + '</span>' + (old ? '<span class="dyr">' + old + '</span>' : '') + '</span></a>';
   }
-  // 달마다 모집 · 가입 시기: 지금 고른 모임 가운데 모집 달이 적힌 것의 수(발표 기준). 이번 달은 진하게
-  function dadMonths(list) {
-    const cnt = Array(13).fill(0), now = new Date().getMonth() + 1;
-    list.forEach(d => (d.recruit_months || []).forEach(m => { if (m >= 1 && m <= 12) cnt[m]++; }));
-    if (!cnt.some(x => x)) return '';
-    const max = Math.max.apply(null, cnt);
-    return '<div class="sec"><h2>달마다 모집 시기</h2><small class="note">발표 기준 · 해마다 다를 수 있음</small></div><div class="dmon" role="img" aria-label="달마다 모집하는 모임 수">'
-      + cnt.slice(1).map((c, i) => '<div class="m' + (i + 1 === now ? ' now' : '') + '"><span class="bx"><i style="height:' + (c ? Math.max(18, Math.round(c / max * 100)) : 0) + '%"></i></span><b>' + (c || '') + '</b><small>' + (i + 1) + '월</small></div>').join('') + '</div>';
+  // 모집 공고 모아보기(11-13 운영자 "'달마다 모집시기'는 매번 다르니까 빼고, '모집공고 모아보기'로 해서 서칭하다가 실제로 아빠단 모집 글 있으면 여기다가 모아줘"): 모임마다 찾은 실제 모집 글(recruit_posts)을 새 글부터
+  const RP_KIND = { '공고': 'of', '보도자료': 'of', '기사': 'ar' };
+  function dadRecruit(list, title) {
+    const seen = {}, all = [];
+    list.forEach(d => (d.recruit_posts || []).forEach(p => { if (okUrl(p.url) && !seen[p.url]) { seen[p.url] = 1; all.push(Object.assign({ who: d }, p)); } }));
+    if (!all.length) return '';
+    all.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    const row = p => '<a class="dnews drec" href="' + esc(p.url) + '" target="_blank" rel="noopener"><small><span class="' + (RP_KIND[p.kind] || 'ar') + '">' + esc(p.kind || '기사') + '</span>' + esc([p.publisher, p.date ? dotd(p.date) : ''].filter(Boolean).join(' · ')) + '</small><b>' + esc(p.title) + '</b>'
+      + '<span class="rw">' + esc(p.who.name) + (p.period ? ' · 모집 ' + esc(p.period) : '') + '</span><span class="o">원문 보기 ↗</span></a>';
+    return '<div class="sec"><h2>' + (title || '모집 공고 모아보기') + '</h2><span>' + all.length + '건</span></div>' + all.slice(0, 5).map(row).join('')
+      + (all.length > 5 ? '<details class="dmore"><summary>모집 글 ' + (all.length - 5) + '건 더 보기</summary>' + all.slice(5).map(row).join('') + '</details>' : '');
   }
   function dadNews(list, n) {
     const seen = {}, all = [];
@@ -2480,11 +2483,11 @@
     let groups = '', last = '';
     list.forEach(d => { if (!dadS.region && d.region !== last) { groups += '<h3 class="dreg">' + esc(d.region) + '<small>' + list.filter(x => x.region === d.region).length + '곳</small></h3>'; last = d.region; } groups += dadCard(d); });
     view.innerHTML = '<section class="pad">' + pageHead('🤝', '전국 아빠단', '아빠단 · 아빠 교육 · 아빠 모임')
-      + '<div class="dstats"><div><b>' + all.length + '</b><small>모은 모임</small></div><div><b>' + DAD_REG.filter(r => all.some(d => d.region === r)).length + '</b><small>지역</small></div><div><b>' + cnt('public') + '</b><small>공공</small></div><div><b>' + (cnt('org') + cnt('self')) + '</b><small>민간 · 자발</small></div></div>'
+      + '<div class="dstats"><div><b>' + all.length + '</b><small>전체</small></div><div><b>' + cnt('public') + '</b><small>공공</small></div><div><b>' + cnt('org') + '</b><small>민간</small></div><div><b>' + cnt('self') + '</b><small>자발</small></div></div>'
       + '<div class="seg dkseg" id="dadKind"><button type="button" class="' + (!dadS.kind ? 'on' : '') + '" data-k="">전체</button>' + DAD_KORDER.map(k => '<button type="button" class="' + (dadS.kind === k ? 'on' : '') + '" data-k="' + k + '">' + DAD_KIND[k].n + '</button>').join('') + '</div>'
       + (dadS.kind ? '<p class="dkdesc">' + DAD_KIND[dadS.kind].d + '</p>' : '')
       + '<div class="chips" id="dadReg" data-keep="dads"><button type="button" class="chip' + (!dadS.region ? ' on' : '') + '" data-r="">전체</button>' + regs.map(r => '<button type="button" class="chip' + (dadS.region === r ? ' on' : '') + '" data-r="' + esc(r) + '">' + esc(r) + '<i class="cn">' + byKind.filter(d => d.region === r).length + '</i></button>').join('') + '</div>'
-      + dadMonths(list)
+      + dadRecruit(list)
       + '<div class="sec"><h2>' + (dadS.region ? esc(dadS.region) + ' ' : '') + '모임 목록</h2><span>' + list.length + '곳</span></div>'
       + (list.length ? '<div class="dlist">' + groups + '</div>' : empty('이 조건의 모임 없음', '다른 지역이나 갈래 고르기'))
       + (list.length ? '<div class="sec"><h2>최근 소식</h2><small class="note">공식 발표 · 기사</small></div>' + dadNews(list, 5) : '')
@@ -2504,7 +2507,6 @@
     const rows = [['대상', d.target], ['인원', d.size], ['모집', d.recruit], ['활동', d.active], ['지역', dadPlace(d)]].filter(r => r[1]);
     const mrow = (name, ms, cls) => (ms || []).length ? '<div class="crow"><span class="cn">' + name + '</span>' + [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => '<i class="' + (ms.indexOf(m) >= 0 ? cls : '') + '"></i>').join('') + '</div>' : '';
     const cal = mrow('모집', d.recruit_months, 'r') + mrow('활동', d.active_months, 'a');
-    const same = DADS.items.filter(x => x.id !== d.id && x.region === d.region).sort(dadSort).slice(0, 4);
     view.innerHTML = '<section class="pad">'
       + '<div class="dhead"><div class="tx"><div class="crumb">아빠단 › ' + esc(d.region) + '</div><h1>' + esc(d.name) + '</h1>' + (d.host ? '<p class="who">' + esc(d.host) + '</p>' : '') + '</div>'
       + (links.length ? '<div class="dlinks">' + links.slice(0, 4).map(l => '<a class="dlink" href="' + esc(l.url) + '" target="_blank" rel="noopener"><span>' + (LINK_E[l.label] || '🔗') + '</span>' + esc(LINK_N[l.label] || l.label) + '</a>').join('') + '</div>' : '') + '</div>'
@@ -2513,9 +2515,9 @@
       + ((d.does || []).length ? '<div class="sec"><h2>하는 일</h2></div><div class="ddo">' + d.does.map(w => '<span>' + esc(w) + '</span>').join('') + '</div>' : '')
       + (cal ? '<div class="sec"><h2>모집 · 활동 달력</h2><small class="note">' + (d.year ? d.year + '년 발표 기준' : '발표 기준') + '</small></div><div class="dcal"><div class="crow hd"><span class="cn"></span>' + [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => '<b' + (m === new Date().getMonth() + 1 ? ' class="now"' : '') + '>' + m + '</b>').join('') + '</div>' + cal + '</div>' : '')
       + (d.note ? '<div class="warn">ℹ️ ' + esc(d.note) + '</div>' : '')
+      + dadRecruit([d], '모집 글')
       + ((d.sources || []).length ? '<div class="sec"><h2>출처</h2></div>' + dadNews([d], 6) : '')
-      + '<a class="btn primary dask" href="#/community">이 모임 해 본 아빠에게 묻기 →</a>'
-      + (same.length ? '<div class="sec"><h2>' + esc(d.region) + '의 다른 모임</h2><span>' + DADS.items.filter(x => x.id !== d.id && x.region === d.region).length + '곳</span></div><div class="dlist">' + same.map(dadCard).join('') + '</div>' : '')
+      // '이 모임 해 본 아빠에게 묻기'와 '○○의 다른 모임'은 뺐다(11-13 운영자 "이모임해본아빠에게 묻기는 삭제 이 다른 모임 부분도 삭제")
       + notes(['정보는 출처 날짜 기준', '신청과 운영 문의는 운영 기관으로'])
       + '</section>';
     window.scrollTo(0, 0);
