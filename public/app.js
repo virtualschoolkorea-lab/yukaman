@@ -950,7 +950,7 @@
     view.innerHTML = '<section class="pad">'
       + guideHead(cat)
       + (cat === 'leave' ? calcCard() + '<a class="grow" href="#/calc" style="margin-top:16px"><span class="ge">🧮</span><span class="tx"><b>계산기 모음</b><small>단축근무 · 배우자 출산휴가</small></span></a>' : '')
-      + (cat === 'gear' ? shopGo('') + (items.length ? '' : gearEmpty) : '')
+      + (cat === 'gear' && !items.length ? gearEmpty : '')     // 맨 위 '육아템 추천받기' 단추는 뺐다(11-14 운영자). 글 끝의 단추는 그대로
       + (cat === 'gear' && !items.length ? '' : '<div class="glist">' + (items.length ? items.map(grow).join('') : empty('준비 중', '곧 글 올라옴'))
         + (cat === 'outing' ? '<a class="grow" href="#/community/play"><span class="ge">🙋</span><span class="tx"><b>아빠들에게 물어보기</b><small>질문게시판 놀이·나들이 칸</small></span></a>' : '') + '</div>')
       + lawBox(lawsFor(items))
@@ -1009,7 +1009,7 @@
   function cardDeck(g) {
     let h = '<div class="deck"><div class="deckrow" id="deckRow">';
     for (let i = 1; i <= g.cards; i++) h += '<img src="cards/' + esc(g.id) + '-' + i + '.webp" width="1080" height="1350" ' + (i > 2 ? 'loading="lazy" ' : '') + 'alt="' + esc((g.cardAlt || [])[i - 1] || g.title + ' ' + i + '장') + '">';
-    h += '</div><div class="deckdots" id="deckDots">';
+    h += '</div><button type="button" class="deckarr prev" id="deckPrev" aria-label="이전 장" hidden>‹</button><button type="button" class="deckarr next" id="deckNext" aria-label="다음 장">›</button><div class="deckdots" id="deckDots">';
     for (let i = 0; i < g.cards; i++) h += '<button type="button" aria-label="' + (i + 1) + '장"' + (i ? '' : ' class="on"') + '></button>';
     return h + '</div></div>';
   }
@@ -1018,8 +1018,13 @@
     if (!row) return;
     const step = () => row.clientWidth + 10;     // style.css .deckrow gap 10px
     const cur = () => Math.round(row.scrollLeft / step());
-    row.addEventListener('scroll', () => { const n = cur(); dots.forEach((d, i) => d.classList.toggle('on', i === n)); }, { passive: true });
-    dots.forEach((d, i) => d.addEventListener('click', () => row.scrollTo({ left: i * step(), behavior: 'smooth' })));
+    const prev = $('#deckPrev'), next = $('#deckNext'), last = dots.length - 1;
+    const go = i => row.scrollTo({ left: Math.max(0, Math.min(last, i)) * step(), behavior: 'smooth' });
+    const paint = () => { const n = cur(); dots.forEach((d, i) => d.classList.toggle('on', i === n)); prev.hidden = n <= 0; next.hidden = n >= last; };
+    row.addEventListener('scroll', paint, { passive: true });
+    dots.forEach((d, i) => d.addEventListener('click', () => go(i)));
+    prev.addEventListener('click', () => go(cur() - 1));
+    next.addEventListener('click', () => go(cur() + 1));
   }
 
   // ----- 계산기 -----
