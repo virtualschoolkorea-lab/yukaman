@@ -1,0 +1,308 @@
+[
+ {
+  "id": "gyeongnam-tongyeong-appadan-2026",
+  "name": "2026년 통영 아빠단",
+  "kind": "public",
+  "type": "아빠단",
+  "region": "경남",
+  "area": "통영시",
+  "host": "통영시 (기획예산실 인구청년정책팀)",
+  "target": "통영시에 주민등록을 둔 1~7세 자녀의 아빠",
+  "size": "20명(선착순)",
+  "year": 2026,
+  "recruit": "2026-06-10 ~ 06-30",
+  "recruit_months": [
+   6
+  ],
+  "active": "7월 오리엔테이션부터 12월 수료식까지 7회",
+  "active_months": [
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ],
+  "does": [
+   "육아 진단",
+   "전문강사 심층 상담",
+   "소그룹 코칭",
+   "아이 놀이 활동",
+   "지역 문화 체험"
+  ],
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "http://ityb.co.kr/sub_read.html?uid=11220"
+   }
+  ],
+  "sources": [
+   {
+    "title": "함께하는 육아의 시작 「2026년 통영 아빠단」 참가자 모집",
+    "url": "http://ityb.co.kr/sub_read.html?uid=11220",
+    "publisher": "인터넷 통영방송",
+    "date": "2026-06-10",
+    "kind": "기사"
+   }
+  ],
+  "note": "신청은 시 누리집 공고의 신청서를 이메일로 제출. 문의 055-650-3162. 이미 모집 마감."
+ },
+ {
+  "id": "gyeongnam-goseong-appahaebom-2026",
+  "name": "고성군 아빠해봄(경남형 아빠 육아 참여 지원사업) 2차",
+  "kind": "public",
+  "type": "아빠 모임",
+  "region": "경남",
+  "area": "고성군",
+  "host": "경남 고성군",
+  "target": "고성군 거주자 또는 관내 기업 근무 아빠, 또는 3~7세 자녀를 둔 고성군 거주 아빠",
+  "size": "20명",
+  "year": 2026,
+  "recruit": "2차 2026-10-08 ~ 10-22",
+  "recruit_months": [
+   10
+  ],
+  "active": "2차 활동 2026-11-05 고성청년센터",
+  "active_months": [
+   11
+  ],
+  "does": [
+   "전문가 맞춤 육아 코칭",
+   "아빠 행동 유형 분석",
+   "육아 경험 나눔"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "경남 고성군, 아빠 육아 참여 프로그램 2차 참가자 모집",
+    "url": "https://www.gukjenews.com/news/articleView.html?idxno=3715278",
+    "publisher": "국제뉴스",
+    "date": "2026-10-07",
+    "kind": "기사"
+   }
+  ],
+  "note": "1차 모집 일정은 확인 전. 신청은 네이버폼 또는 이메일. 2차 모집 마감."
+ },
+ {
+  "id": "gyeongnam-hapcheon-appahaebom-2026",
+  "name": "합천 아빠 해봄",
+  "kind": "public",
+  "type": "아빠 모임",
+  "region": "경남",
+  "area": "합천군",
+  "host": "합천군 육아지원센터",
+  "target": "합천 아빠와 자녀",
+  "size": "약 60명(발대식 기준)",
+  "year": 2026,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "2026-06-17 발대식(첫 활동 6월 13일 가족 단체티 만들기)",
+  "active_months": [
+   6
+  ],
+  "does": [
+   "위촉장 수여",
+   "육아 다짐",
+   "아빠와 아이 레크리에이션",
+   "가족 단체티 만들기"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "합천군, 육아문화 프로그램 '합천 아빠 해봄' 발대식",
+    "url": "https://kpinews.kr/newsView/1065591331747262",
+    "publisher": "KPI뉴스",
+    "date": "2026-06-18",
+    "kind": "기사"
+   }
+  ],
+  "note": "경남도 '경남, 아빠해봄' 사업의 군 단위 운영으로 보임(기사에는 명시 없음). 모집 기간과 활동 기간은 확인 전."
+ },
+ {
+  "id": "gyeongbuk-uiseong-uridongne-appa-2026",
+  "name": "의성군 우리동네 아빠교실",
+  "kind": "public",
+  "type": "아빠 교육",
+  "region": "경북",
+  "area": "의성군",
+  "host": "의성군 · 의성군가족센터",
+  "target": "관내 아빠와 자녀",
+  "size": "7월 부자캠프 14가정(34명), 10월 약 70명",
+  "year": 2026,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "2026-07-25 부자캠프, 2026-10-24 · 10-28 체험",
+  "active_months": [
+   7,
+   10
+  ],
+  "does": [
+   "부모교육",
+   "대구FC 경기 관람",
+   "과학관 탐방",
+   "할로윈 케이크 만들기"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "의성군 우리동네 아빠교실 부자캠프",
+    "url": "https://kbmaeil.com/article/20260728500154",
+    "publisher": "경북매일",
+    "date": "2026-07-28",
+    "kind": "기사"
+   },
+   {
+    "title": "의성군 우리동네 아빠교실 (10월 운영)",
+    "url": "https://www.kbmaeil.com/article/20261027500121",
+    "publisher": "경북매일",
+    "date": "2026-10-27",
+    "kind": "기사"
+   }
+  ],
+  "note": "경상북도 '우리동네 아빠교실' 사업의 군 단위 운영. 모집 방법은 기사에 없음. 같은 해 여러 차례 운영."
+ },
+ {
+  "id": "gyeongbuk-bonghwa-uridongne-appa-2026",
+  "name": "봉화군가족센터 우리동네 아빠교실",
+  "kind": "public",
+  "type": "아빠 교육",
+  "region": "경북",
+  "area": "봉화군",
+  "host": "봉화군가족센터",
+  "target": "",
+  "size": "",
+  "year": 2026,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "",
+  "active_months": [],
+  "does": [
+   "부모 참여형 프로그램"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "봉화군가족센터, 주민 밀착형 가족 지원 서비스 대폭 강화",
+    "url": "https://www.heraldk.com/article/2026031713544034569",
+    "publisher": "헤럴드경제",
+    "date": "2026-03-17",
+    "kind": "기사"
+   }
+  ],
+  "note": "기사는 만족도 4.91점으로 소개했을 뿐 일정 · 대상 · 인원은 없음. 세부는 확인 전."
+ },
+ {
+  "id": "gyeongbuk-cheongsong-uridongne-appa-2025",
+  "name": "청송군가족센터 우리동네 아빠교실",
+  "kind": "public",
+  "type": "아빠 교육",
+  "region": "경북",
+  "area": "청송군",
+  "host": "청송군가족센터(경상북도 사업)",
+  "target": "부모(아빠 참여 확대 목적), 자녀 동반",
+  "size": "",
+  "year": 2025,
+  "recruit": "센터 누리집 회원가입 후 신청",
+  "recruit_months": [
+   5
+  ],
+  "active": "2025-05 말 부모교육, 5월 31일 · 6월 7일 아빠와 목공체험",
+  "active_months": [
+   5,
+   6
+  ],
+  "does": [
+   "긍정 훈육 부모교육",
+   "아빠와 함께하는 목공체험",
+   "자녀 미술 활동"
+  ],
+  "links": [
+   {
+    "label": "공식 누리집",
+    "url": "https://cheongsonggun.familynet.or.kr"
+   }
+  ],
+  "sources": [
+   {
+    "title": "청송군가족센터 우리동네 아빠교실",
+    "url": "https://www.kbmaeil.com/article/20250526500328",
+    "publisher": "경북매일",
+    "date": "2025-05-27",
+    "kind": "기사"
+   }
+  ],
+  "note": "2025년 운영 사례. 2026년 일정은 확인 전."
+ },
+ {
+  "id": "gyeongbuk-andong-chodeung-appagyosil-2026",
+  "name": "안동시가족센터 초등아빠교실",
+  "kind": "public",
+  "type": "아빠 모임",
+  "region": "경북",
+  "area": "안동시",
+  "host": "안동시가족센터(공동육아나눔터 1호점 위탁 운영)",
+  "target": "아빠와 자녀",
+  "size": "",
+  "year": 2026,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "",
+  "active_months": [],
+  "does": [
+   "아빠와 자녀 함께 활동",
+   "추억 만들기"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "안동시가족센터 공동육아나눔터 1호점 맞춤형 프로그램 운영",
+    "url": "https://kbmaeil.com/article/20260713500120",
+    "publisher": "경북매일",
+    "date": "2026-07-14",
+    "kind": "기사"
+   }
+  ],
+  "note": "장소는 구시장 고객지원센터 2층. 일정 · 모집 방식은 기사에 없어 확인 전."
+ },
+ {
+  "id": "gyeongbuk-gyeongsan-goal-appa-2026",
+  "name": "경산시가족센터 골 때리는 아이와 아빠",
+  "kind": "public",
+  "type": "아빠 교육",
+  "region": "경북",
+  "area": "경산시",
+  "host": "경산시가족센터(우리동네 아빠교실 사업)",
+  "target": "7~9세 자녀와 아빠",
+  "size": "",
+  "year": 2026,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "2026-04 ~ 10, 총 23회기",
+  "active_months": [
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10
+  ],
+  "does": [
+   "아버지 역할 교육",
+   "발달 단계별 양육 이해",
+   "부자 축구 활동",
+   "미니게임"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "경산시가족센터 「골 때리는 아이와 아빠」",
+    "url": "https://www.sisa-news.com/news/article.html?no=269105",
+    "publisher": "시사뉴스",
+    "date": "2026-04-21",
+    "kind": "기사"
+   }
+  ],
+  "note": "문의 053-819-5522. 모집 기간과 인원은 기사에 없어 확인 전."
+ }
+]

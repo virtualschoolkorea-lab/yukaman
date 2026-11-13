@@ -433,7 +433,10 @@
 
   // ----- 화면 틀 -----
   const view = $('#view'), appbar = $('#appbar'), app = $('#app'), fab = $('#fab');
-  const bar = h => { appbar.innerHTML = h; appbar.classList.toggle('isbrand', h.indexOf('class="brand"') >= 0); };
+  // MY는 아래 탭에서 빼고 앱 바 오른쪽 위 동그라미로(2026-11-13 운영자 "마이 탭을 우측 상단에 프로필 동그란 형식으로 Google처럼" · "동그라미 안에는 MY라고 써주고"). 새 답 빨간 점도 여기. 글쓰기 화면은 '올리기' 자리라 뺀다
+  let meDotOn = false;
+  const myBtn = () => '<a class="mybtn' + (parse().name === 'me' ? ' on' : '') + '" href="#/me" aria-label="MY">MY<i class="dot" id="meDot" aria-label="새 답"' + (meDotOn ? '' : ' hidden') + '></i></a>';
+  const bar = h => { appbar.innerHTML = h + (h.indexOf('submitTop') >= 0 ? '' : myBtn()); appbar.classList.toggle('isbrand', h.indexOf('class="brand"') >= 0); };
   // PC 화면(11-06 운영자 "A안으로 제작해줘"): 창 폭 1100px부터 왼쪽 메뉴, 1280px부터 오른쪽 칸. 그보다 좁으면 지금까지의 폰 화면 그대로
   const WIDE = window.matchMedia('(min-width: 1100px)'), RAILED = window.matchMedia('(min-width: 1280px)');
   const isWide = () => WIDE.matches, hasRail = () => RAILED.matches;
@@ -465,6 +468,7 @@
     if (s[0] === 'calc') return { name: 'calc', tab: CALC_TABS.some(t => t.key === s[1]) ? s[1] : 'leave' };
     if (s[0] === 'library') return { name: 'library' };
     if (s[0] === 'shop') return { name: 'shop', cat: s[1] && SHOP_CAT[s[1]] ? s[1] : '', sub: s[2] || '' };
+    if (s[0] === 'dads') return s[1] ? { name: 'dad', id: s[1] } : { name: 'dads' };
     if (s[0] === 'community') return { name: 'community', cat: s[1] && CAT[s[1]] ? s[1] : '' };
     if (s[0] === 'p' && /^\d+$/.test(s[1] || '')) return { name: 'post', id: +s[1] };
     if (s[0] === 'write') return { name: 'write' };
@@ -488,6 +492,8 @@
       else if (r.name === 'calc') renderCalc(r.tab);
       else if (r.name === 'library') await renderLibrary();
       else if (r.name === 'shop') renderShop(r.cat, r.sub);
+      else if (r.name === 'dads') renderDads();
+      else if (r.name === 'dad') renderDad(r.id);
       else if (r.name === 'community') await renderCommunity(r.cat);
       else if (r.name === 'post') await renderPost(r.id);
       else if (r.name === 'write') renderWrite();
@@ -1748,7 +1754,7 @@
     b.addEventListener('click', ev => { const x = ev.target.closest('[data-theme-pick]'); if (!x) return; store.set('theme', x.dataset.themePick); applyTheme(); $$('#themeBox button').forEach(y => y.classList.toggle('on', y === x)); });
   }
   // 새 댓글 표시(아래 탭 MY의 점, 검수 22)
-  function setDot(n) { const d = $('#meDot'); if (d) d.hidden = !n; const s = $('#sideDot'); if (s) s.hidden = !n; }
+  function setDot(n) { meDotOn = !!n; const d = $('#meDot'); if (d) d.hidden = !n; const s = $('#sideDot'); if (s) s.hidden = !n; }
   function newCommentsBox(r) {
     if (!r.new_comments) return '';
     return '<div class="sec"><h2>내 질문의 새 답</h2><span>' + r.new_comments + '개</span></div><div class="list" style="margin-top:0">'
@@ -2426,10 +2432,100 @@
   new MutationObserver(() => { markScrollers(); restoreChips(); }).observe(view, { childList: true, subtree: true });
   window.addEventListener('resize', markScrollers);
 
+  // ----- 아빠단 탭(2026-11-13 운영자 "아빠단 정보 라는 탭을 … 네 번째 순서로" · "강의 활동 주제 부분은 빼버리고 … 링크버튼을 … 우측 상단에" · "공공기관에 하는 건지 사적으로 하는 건지 이러한 장르를 구분해서") -----
+  // 자료는 dad-data.js(tools/build_dads.py가 data-src/dads/*.json에서 만든다). 사실과 날짜는 출처에 적힌 그대로, 신청은 운영 기관에서
+  const DADS = window.YK_DADS || { updated: '', items: [] };
+  const DAD_KIND = { public: { n: '공공', c: 'k-pub', d: '정부 · 지자체 · 공공기관' }, org: { n: '민간 단체', c: 'k-org', d: '단체 · 기업 · 협회' }, self: { n: '자발 모임', c: 'k-self', d: '아빠들이 스스로 만든 모임' } };
+  const DAD_KORDER = ['public', 'org', 'self'];
+  const DAD_REG = ['전국', '서울', '인천', '경기', '강원', '대전', '세종', '충북', '충남', '광주', '전북', '전남', '부산', '대구', '울산', '경북', '경남', '제주'];
+  const dadS = { kind: '', region: '' };
+  const dadEmoji = d => d.kind === 'self' ? '🙋' : d.kind === 'org' ? '🤝' : d.type === '아빠 교육' ? '🎓' : '🏛️';
+  const dadPlace = d => d.area ? (d.area.indexOf(d.region) === 0 || d.region === '전국' ? d.area : d.region + ' ' + d.area) : d.region;
+  const dadOld = d => d.year && d.year < new Date().getFullYear() ? d.year + ' 기준' : '';
+  const dadSort = (a, b) => (DAD_REG.indexOf(a.region) - DAD_REG.indexOf(b.region)) || (DAD_KORDER.indexOf(a.kind) - DAD_KORDER.indexOf(b.kind)) || ((b.year || 0) - (a.year || 0)) || a.name.localeCompare(b.name, 'ko');
+  const LINK_E = { '공식 누리집': '🔗', '네이버 카페': '☕', '다음 카페': '☕', '밴드': '👥', '모집 공고': '📢', '인스타그램': '📷', '블로그': '📝', '유튜브': '▶️', '카카오톡 채널': '💬', '오픈채팅': '💬' };
+  const LINK_N = { '공식 누리집': '누리집', '네이버 카페': '카페', '다음 카페': '카페', '인스타그램': '인스타', '카카오톡 채널': '카톡 채널' };
+  const okUrl = u => /^https?:\/\//i.test(u || '');
+  function dadCard(d) {
+    const k = DAD_KIND[d.kind] || DAD_KIND.public, old = dadOld(d);
+    return '<a class="dcard" href="#/dads/' + encodeURIComponent(d.id) + '"><span class="ge">' + dadEmoji(d) + '</span><div class="tx"><b>' + esc(d.name) + '</b>'
+      + '<small>' + esc([dadPlace(d), d.host].filter(Boolean).join(' · ')) + '</small>'
+      + ((d.does || []).length ? '<span class="kw">' + d.does.slice(0, 4).map(w => '<i>' + esc(w) + '</i>').join('') + '</span>' : '')
+      + '</div><span class="dbs"><span class="dk ' + k.c + '">' + k.n + '</span>' + (old ? '<span class="dyr">' + old + '</span>' : '') + '</span></a>';
+  }
+  // 달마다 모집 · 가입 시기: 지금 고른 모임 가운데 모집 달이 적힌 것의 수(발표 기준). 이번 달은 진하게
+  function dadMonths(list) {
+    const cnt = Array(13).fill(0), now = new Date().getMonth() + 1;
+    list.forEach(d => (d.recruit_months || []).forEach(m => { if (m >= 1 && m <= 12) cnt[m]++; }));
+    if (!cnt.some(x => x)) return '';
+    const max = Math.max.apply(null, cnt);
+    return '<div class="sec"><h2>달마다 모집 시기</h2><small class="note">발표 기준 · 해마다 다를 수 있음</small></div><div class="dmon" role="img" aria-label="달마다 모집하는 모임 수">'
+      + cnt.slice(1).map((c, i) => '<div class="m' + (i + 1 === now ? ' now' : '') + '"><span class="bx"><i style="height:' + (c ? Math.max(18, Math.round(c / max * 100)) : 0) + '%"></i></span><b>' + (c || '') + '</b><small>' + (i + 1) + '월</small></div>').join('') + '</div>';
+  }
+  function dadNews(list, n) {
+    const seen = {}, all = [];
+    list.forEach(d => (d.sources || []).forEach(s => { if (okUrl(s.url) && !seen[s.url]) { seen[s.url] = 1; all.push(s); } }));
+    all.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    return all.slice(0, n).map(s => '<a class="dnews" href="' + esc(s.url) + '" target="_blank" rel="noopener"><small><span class="' + (s.kind === '기사' ? 'ar' : 'of') + '">' + (s.kind === '기사' ? '기사' : '공식') + '</span>' + esc([s.publisher, s.date ? dotd(s.date) : ''].filter(Boolean).join(' · ')) + '</small><b>' + esc(s.title) + '</b><span class="o">원문 보기 ↗</span></a>').join('');
+  }
+  function renderDads() {
+    setTab('dads');
+    bar(brandBar());
+    const all = DADS.items.slice().sort(dadSort);
+    const byKind = all.filter(d => !dadS.kind || d.kind === dadS.kind);
+    const regs = DAD_REG.filter(r => byKind.some(d => d.region === r));
+    if (dadS.region && regs.indexOf(dadS.region) < 0) dadS.region = '';
+    const list = byKind.filter(d => !dadS.region || d.region === dadS.region);
+    const cnt = k => all.filter(d => d.kind === k).length;
+    let groups = '', last = '';
+    list.forEach(d => { if (!dadS.region && d.region !== last) { groups += '<h3 class="dreg">' + esc(d.region) + '<small>' + list.filter(x => x.region === d.region).length + '곳</small></h3>'; last = d.region; } groups += dadCard(d); });
+    view.innerHTML = '<section class="pad">' + pageHead('🤝', '전국 아빠단', '아빠단 · 아빠 교육 · 아빠 모임')
+      + '<div class="dstats"><div><b>' + all.length + '</b><small>모은 모임</small></div><div><b>' + DAD_REG.filter(r => all.some(d => d.region === r)).length + '</b><small>지역</small></div><div><b>' + cnt('public') + '</b><small>공공</small></div><div><b>' + (cnt('org') + cnt('self')) + '</b><small>민간 · 자발</small></div></div>'
+      + '<div class="seg dkseg" id="dadKind"><button type="button" class="' + (!dadS.kind ? 'on' : '') + '" data-k="">전체</button>' + DAD_KORDER.map(k => '<button type="button" class="' + (dadS.kind === k ? 'on' : '') + '" data-k="' + k + '">' + DAD_KIND[k].n + '</button>').join('') + '</div>'
+      + (dadS.kind ? '<p class="dkdesc">' + DAD_KIND[dadS.kind].d + '</p>' : '')
+      + '<div class="chips" id="dadReg" data-keep="dads"><button type="button" class="chip' + (!dadS.region ? ' on' : '') + '" data-r="">전체</button>' + regs.map(r => '<button type="button" class="chip' + (dadS.region === r ? ' on' : '') + '" data-r="' + esc(r) + '">' + esc(r) + '<i class="cn">' + byKind.filter(d => d.region === r).length + '</i></button>').join('') + '</div>'
+      + dadMonths(list)
+      + '<div class="sec"><h2>' + (dadS.region ? esc(dadS.region) + ' ' : '') + '모임 목록</h2><span>' + list.length + '곳</span></div>'
+      + (list.length ? '<div class="dlist">' + groups + '</div>' : empty('이 조건의 모임 없음', '다른 지역이나 갈래 고르기'))
+      + (list.length ? '<div class="sec"><h2>최근 소식</h2><small class="note">공식 발표 · 기사</small></div>' + dadNews(list, 5) : '')
+      + '<a class="btn primary dask" href="#/community">아빠단 해 본 아빠에게 묻기 →</a>'
+      + notes(['공식 발표 · 기사 · 모임 첫 화면에서 확인한 것만, 날짜는 출처 날짜', '모집 시기와 대상은 해마다 바뀜. 신청 전에 운영 기관 공고 확인', (DADS.updated ? dotd(DADS.updated) + ' 모음' : '')].filter(Boolean))
+      + '</section>';
+    $('#dadKind').addEventListener('click', ev => { const b = ev.target.closest('[data-k]'); if (!b) return; dadS.kind = b.dataset.k; renderDads(); });
+    $('#dadReg').addEventListener('click', ev => { const b = ev.target.closest('[data-r]'); if (!b) return; dadS.region = b.dataset.r; renderDads(); });
+  }
+  function renderDad(id) {
+    setTab('dads');
+    bar(backBtn('#/dads') + '<div class="fill atitle">아빠단</div>');
+    const d = DADS.items.find(x => x.id === id);
+    if (!d) { view.innerHTML = '<section class="pad">' + empty('모임을 찾을 수 없음', '아빠단 목록에서 다시 고르기') + '</section>'; return; }
+    const k = DAD_KIND[d.kind] || DAD_KIND.public, old = dadOld(d);
+    const links = (d.links || []).filter(l => okUrl(l.url));
+    const rows = [['대상', d.target], ['인원', d.size], ['모집', d.recruit], ['활동', d.active], ['지역', dadPlace(d)]].filter(r => r[1]);
+    const mrow = (name, ms, cls) => (ms || []).length ? '<div class="crow"><span class="cn">' + name + '</span>' + [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => '<i class="' + (ms.indexOf(m) >= 0 ? cls : '') + '"></i>').join('') + '</div>' : '';
+    const cal = mrow('모집', d.recruit_months, 'r') + mrow('활동', d.active_months, 'a');
+    const same = DADS.items.filter(x => x.id !== d.id && x.region === d.region).sort(dadSort).slice(0, 4);
+    view.innerHTML = '<section class="pad">'
+      + '<div class="dhead"><div class="tx"><div class="crumb">아빠단 › ' + esc(d.region) + '</div><h1>' + esc(d.name) + '</h1>' + (d.host ? '<p class="who">' + esc(d.host) + '</p>' : '') + '</div>'
+      + (links.length ? '<div class="dlinks">' + links.slice(0, 4).map(l => '<a class="dlink" href="' + esc(l.url) + '" target="_blank" rel="noopener"><span>' + (LINK_E[l.label] || '🔗') + '</span>' + esc(LINK_N[l.label] || l.label) + '</a>').join('') + '</div>' : '') + '</div>'
+      + '<div class="dtags"><span class="dk ' + k.c + '">' + k.n + '</span>' + (d.type ? '<span class="dk k-gy">' + esc(d.type) + '</span>' : '') + (old ? '<span class="dk k-old">' + old + '</span>' : d.year ? '<span class="dk k-gy">' + d.year + '</span>' : '') + '</div>'
+      + (rows.length ? '<dl class="ddl">' + rows.map(r => '<div><dt>' + r[0] + '</dt><dd>' + esc(r[1]) + '</dd></div>').join('') + '</dl>' : '')
+      + ((d.does || []).length ? '<div class="sec"><h2>하는 일</h2></div><div class="ddo">' + d.does.map(w => '<span>' + esc(w) + '</span>').join('') + '</div>' : '')
+      + (cal ? '<div class="sec"><h2>모집 · 활동 달력</h2><small class="note">' + (d.year ? d.year + '년 발표 기준' : '발표 기준') + '</small></div><div class="dcal"><div class="crow hd"><span class="cn"></span>' + [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(m => '<b' + (m === new Date().getMonth() + 1 ? ' class="now"' : '') + '>' + m + '</b>').join('') + '</div>' + cal + '</div>' : '')
+      + (d.note ? '<div class="warn">ℹ️ ' + esc(d.note) + '</div>' : '')
+      + ((d.sources || []).length ? '<div class="sec"><h2>출처</h2></div>' + dadNews([d], 6) : '')
+      + '<a class="btn primary dask" href="#/community">이 모임 해 본 아빠에게 묻기 →</a>'
+      + (same.length ? '<div class="sec"><h2>' + esc(d.region) + '의 다른 모임</h2><span>' + DADS.items.filter(x => x.id !== d.id && x.region === d.region).length + '곳</span></div><div class="dlist">' + same.map(dadCard).join('') + '</div>' : '')
+      + notes(['정보는 출처 날짜 기준', '신청과 운영 문의는 운영 기관으로'])
+      + '</section>';
+    window.scrollTo(0, 0);
+  }
+
   // ----- PC 왼쪽 메뉴와 오른쪽 칸(11-06 운영자 A안). 창이 좁으면 비워 두고 서버에도 묻지 않는다 -----
   const shell = { me: null, meAt: 0, hot: null, hotAt: 0 };
   const FRESH = 60000;     // 화면을 옮겨 다닐 때마다 서버에 묻지 않게 1분은 그대로 쓴다
-  const tabIcon = t => { const s = $('.tab[data-tab="' + t + '"] svg'); return s ? s.outerHTML : ''; };
+  const ME_ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zm-8 8.5c0-4 3.6-7 8-7s8 3 8 7V21H4z"/></svg>';     // 아래 탭에서 MY를 뺀 뒤(11-13) PC 메뉴가 쓰는 그림
+  const tabIcon = t => { if (t === 'me') return ME_ICON; const s = $('.tab[data-tab="' + t + '"] svg'); return s ? s.outerHTML : ''; };
   function shellPlace(r) {
     const n = r.name;
     if (n === 'guide' || n === 'calc' || n === 'library' || n === 'garticle') {
@@ -2438,6 +2534,7 @@
     }
     if (n === 'community' || n === 'post' || n === 'write') return { top: 'community', sub: n === 'community' ? (r.cat || 'all') : '' };
     if (n === 'shop') return { top: 'shop', sub: r.cat || 'all' };
+    if (n === 'dads' || n === 'dad') return { top: 'dads', sub: '' };
     if (n === 'me' || n === 'admin') return { top: 'me', sub: '' };
     return { top: 'home', sub: '' };
   }
@@ -2447,13 +2544,14 @@
     const guide = '<div class="subs">' + GUIDE_BTNS.map(b => '<a class="sv' + (at.top === 'guide' && b.on.indexOf(at.sub) >= 0 ? ' on' : '') + '" href="' + b.h + '"><span class="e">' + b.e + '</span>' + esc(b.name) + '</a>').join('') + '</div>';
     const com = '<div class="subs">' + [{ key: '', name: '전체', e: '🏠' }].concat(CATS).map(c => '<a class="sv' + (at.sub === (c.key || 'all') ? ' on' : '') + '" href="#/community' + (c.key ? '/' + c.key : '') + '"><span class="e">' + c.e + '</span>' + esc(c.name) + '</a>').join('') + '</div>';
     const shop = '<div class="subs">' + [{ key: '', name: '전체', e: '🛍️' }].concat(SHOP_CATS).map(c => '<a class="sv' + (at.sub === (c.key || 'all') ? ' on' : '') + '" href="#/shop' + (c.key ? '/' + c.key : '') + '"><span class="e">' + c.e + '</span>' + esc(c.name) + '</a>').join('') + '</div>';
-    const open = at.top === 'community' ? 'community' : at.top === 'shop' ? 'shop' : 'guide', dotHidden = $('#meDot') ? $('#meDot').hidden : true, side = $('#side');
+    const open = at.top === 'community' ? 'community' : at.top === 'shop' ? 'shop' : at.top === 'dads' ? '' : 'guide', dotHidden = !meDotOn, side = $('#side');
     const focused = side.contains(document.activeElement) ? document.activeElement.getAttribute('href') : null;     // 다시 그려도 키보드 자리를 잃지 않게
-    // 메뉴는 아래 탭과 같은 다섯(11-12): 홈 · 가이드 · 육아템 · 질문 · MY(육아템을 가운데로)
+    // 메뉴는 아래 탭 순서(11-13): 홈 · 가이드 · 육아템 · 아빠단 · 질문, 그리고 MY(PC는 자리가 넉넉해 메뉴에 그대로 둔다)
     side.innerHTML = '<a class="sbrand" href="#/"><span class="logo">' + DAD + '</span><span class="bt"><span class="wm" role="img" aria-label="육아맨">' + WORDMARK + '</span><small>아빠 육아의 모든 정보</small></span></a>'
       + nv('home', '#/', '홈')
       + nv('guide', '#/guide', '가이드') + (open === 'guide' ? guide : '')
       + nv('shop', '#/shop', '육아템') + (open === 'shop' ? shop : '')
+      + nv('dads', '#/dads', '아빠단')
       + nv('community', '#/community', '질문') + (open === 'community' ? com : '')
       + nv('me', '#/me', 'MY', '<i class="dot" id="sideDot" aria-label="새 답"' + (dotHidden ? ' hidden' : '') + '></i>')
       + '<div class="fill"></div>'

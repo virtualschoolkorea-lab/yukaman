@@ -1,0 +1,547 @@
+[
+ {
+  "id": "busan-1000-dads",
+  "name": "부산 1000인의 아빠단 (부산 100인의 아빠단 10기 포함)",
+  "kind": "public",
+  "type": "아빠단",
+  "region": "부산",
+  "area": "부산 전역(시 100명 + 16개 구·군 900명)",
+  "host": "부산광역시 출산보육과, 16개 구·군",
+  "target": "2018~2022년생 자녀를 둔 부산 거주 초보 아빠",
+  "size": "시 100명 + 구·군 900명 = 1,000명",
+  "year": 2026,
+  "recruit": "10기: 2026-02-25 ~ 03-06 (선정 발표 03-12)",
+  "recruit_months": [
+   2,
+   3
+  ],
+  "active_months": [
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ],
+  "active": "2026년 3월 ~ 12월 (3월 21일 합동 발대식, 9월 함께육아 데이, 12월 해단식)",
+  "does": [
+   "온라인 주간 미션",
+   "부산 명소 체험",
+   "구·군 특화 체험",
+   "발대식",
+   "해단식"
+  ],
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://www.busan.go.kr/nbtnewsBU/1719963"
+   },
+   {
+    "label": "공식 누리집",
+    "url": "https://www.busan.go.kr/childcare"
+   }
+  ],
+  "sources": [
+   {
+    "title": "아빠가 만드는 육아 도시 부산… 「부산 100인의 아빠단」 10기 모집",
+    "url": "https://www.busan.go.kr/nbtnewsBU/1719963",
+    "publisher": "부산광역시",
+    "date": "2026-02-25",
+    "kind": "공식"
+   },
+   {
+    "title": "박형준 시장, '100인을 넘어 1000인으로'… 「부산 1000인의 아빠단」 출범!",
+    "url": "https://www.busan.go.kr/nbtnewsBU/1742946",
+    "publisher": "부산광역시",
+    "date": "2026-03-20",
+    "kind": "공식"
+   },
+   {
+    "title": "‘부산 1000인의 아빠단’ 출범…행복육아 문화 확산",
+    "url": "https://www.heraldk.com/article/2026031916594736057",
+    "publisher": "헤럴드경제(미주)",
+    "date": "2026-03-19",
+    "kind": "기사"
+   }
+  ],
+  "note": "2026년 10기 모집은 마감됨. 구·군별 900명 모집 일정은 확인 못함. 다음 모집은 부산시 출산보육과(051-888-1564)에서 확인."
+ },
+ {
+  "id": "kphw-fathering-busan-2026",
+  "name": "2026 찾아가는 파더링 (부산 권역)",
+  "kind": "public",
+  "type": "아빠 교육",
+  "region": "부산",
+  "area": "부산(서울·대전과 권역별 대면교육)",
+  "host": "인구보건복지협회",
+  "target": "만 2~5세(2021~2024년생) 자녀를 키우는 아버지",
+  "size": "부산 40명 (서울·대전 포함 총 120명)",
+  "year": 2026,
+  "recruit": "2026년 6월 28일까지 (기사 날짜상 6월로 보임)",
+  "recruit_months": [
+   6
+  ],
+  "active": "원데이 클래스 1회 (교육 날짜는 기사에 없음)",
+  "active_months": [],
+  "does": [
+   "기질별 양육법",
+   "훈육과 소통",
+   "연령별 놀이",
+   "TCI 기질검사",
+   "온라인 육아 코칭"
+  ],
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://www.heraldk.com/article/2026060918041873238"
+   }
+  ],
+  "sources": [
+   {
+    "title": "아이와 더 가까워지는 특별한 하루…‘2026 찾아가는 파더링’ 참가자 모집",
+    "url": "https://www.heraldk.com/article/2026060918041873238",
+    "publisher": "헤럴드경제(미주)",
+    "date": "2026-06-09",
+    "kind": "기사"
+   }
+  ],
+  "note": "일회성 원데이 교육. 모집 마감됨. 신청은 협회 누리집 새소식에서 안내(기사 기준)."
+ },
+ {
+  "id": "daegu-100-dads",
+  "name": "대구 100인의 아빠단",
+  "kind": "public",
+  "type": "아빠단",
+  "region": "대구",
+  "area": "대구 전역",
+  "host": "대구광역시, 인구보건복지협회 대구경북지회",
+  "target": "자녀가 3세~초등 2학년인 아빠 (2025년 7기 기사: 3~8세)",
+  "size": "8기 정원 100명(신청 170명), 7기 138명 참여",
+  "year": 2026,
+  "recruit": "8기 모집 기간은 기사에 없음 (연 1회)",
+  "recruit_months": [],
+  "active": "2026년 6월 13일 발대식 후 연말까지",
+  "active_months": [
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ],
+  "does": [
+   "온라인 육아 미션",
+   "전문가 강연",
+   "가족 체험 부스",
+   "가족 운동회",
+   "육아 홍보단"
+  ],
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://www.kbmaeil.com/article/20260614500314"
+   }
+  ],
+  "sources": [
+   {
+    "title": "제8기 대구 100인의 아빠단 발대식",
+    "url": "https://www.kbmaeil.com/article/20260614500314",
+    "publisher": "경북매일",
+    "date": "2026-06-14",
+    "kind": "기사"
+   },
+   {
+    "title": "대구 100인의 아빠단 7기 발대식",
+    "url": "https://www.kbmaeil.com/article/20250608500461",
+    "publisher": "경북매일",
+    "date": "2025-06-08",
+    "kind": "기사"
+   }
+  ],
+  "note": "다문화·다자녀·신규 참여 가정 우선 선발(8기). 9기 모집 일정 미확인. 운영 주체 표기는 기사마다 다름(대구시 / 협회 대구경북지회)."
+ },
+ {
+  "id": "daegu-dalseong-dad-class",
+  "name": "달성아빠클래스 (달성군가족센터 아빠 육아 교실)",
+  "kind": "public",
+  "type": "아빠 교육",
+  "region": "대구",
+  "area": "대구 달성군",
+  "host": "달성군가족센터",
+  "target": "아버지와 자녀",
+  "size": "28가정 62명 (1차 12가정, 2차 16가정)",
+  "year": 2026,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "1차 6월, 2차 7월, 8월 29일 수료식과 대전 가족 나들이",
+  "active_months": [
+   6,
+   7,
+   8
+  ],
+  "does": [
+   "자녀 기질 이해",
+   "아버지 역할 이론 수업",
+   "브레인 트레이닝 테라피",
+   "가족 나들이"
+  ],
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://kbmaeil.com/article/20260831500460"
+   }
+  ],
+  "sources": [
+   {
+    "title": "달성군가족센터 아빠 육아 교실 수료",
+    "url": "https://kbmaeil.com/article/20260831500460",
+    "publisher": "경북매일",
+    "date": "2026-08-31",
+    "kind": "기사"
+   }
+  ],
+  "note": "2026년 과정은 수료됨. 내년 모집은 달성군가족센터에 확인."
+ },
+ {
+  "id": "gyeongbuk-100-dads",
+  "name": "경북 100인의 아빠단",
+  "kind": "public",
+  "type": "아빠단",
+  "region": "경북",
+  "area": "경북 전역",
+  "host": "경상북도, 인구보건복지협회 대구경북지회, 보건복지부",
+  "target": "2018~2022년생(3~7세) 자녀를 둔 아빠",
+  "size": "100명",
+  "year": 2024,
+  "recruit": "2024-04-10까지 (온라인 설문, 선착순)",
+  "recruit_months": [
+   4
+  ],
+  "active": "2024년 연말(12월)까지",
+  "active_months": [
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ],
+  "does": [
+   "온라인 주간 미션",
+   "오프라인 행사",
+   "멘토 아빠 팁 공유",
+   "영상 콘텐츠 제작",
+   "이달의 우수 아빠"
+  ],
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://kbmaeil.com/article/202403270388916"
+   }
+  ],
+  "sources": [
+   {
+    "title": "2024년 6기 경북 100인의 아빠단 모집",
+    "url": "https://kbmaeil.com/article/202403270388916",
+    "publisher": "경북매일",
+    "date": "2024-03-27",
+    "kind": "기사"
+   }
+  ],
+  "note": "2024년(6기) 기준. 2025·2026년 모집은 확인 못함."
+ },
+ {
+  "id": "gyeongbuk-uridongne-dad-class",
+  "name": "우리동네 아빠교실 (경북 22개 시·군 가족센터)",
+  "kind": "public",
+  "type": "아빠 교육",
+  "region": "경북",
+  "area": "경북 22개 시·군",
+  "host": "경상북도, 시·군 가족센터",
+  "target": "육아에 참여하려는 아빠",
+  "size": "2024년 총 5,259명 참여",
+  "year": 2024,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "2024년 261회 운영",
+  "active_months": [],
+  "does": [
+   "아빠와 아이 놀이",
+   "육아 강연",
+   "워크숍",
+   "가족 캠프",
+   "체험 프로그램"
+  ],
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://kbmaeil.com/article/202412250415015"
+   }
+  ],
+  "sources": [
+   {
+    "title": "경북도 아빠교실 22개 시·군 261회 운영",
+    "url": "https://kbmaeil.com/article/202412250415015",
+    "publisher": "경북매일",
+    "date": "2024-12-25",
+    "kind": "기사"
+   }
+  ],
+  "note": "2024년 실적 기준. 올해 운영 여부와 시·군별 일정은 각 가족센터에 확인."
+ },
+ {
+  "id": "gyeongbuk-sangju-dad-class",
+  "name": "우리동네 아빠교실 (상주시가족센터)",
+  "kind": "public",
+  "type": "아빠 교육",
+  "region": "경북",
+  "area": "상주시",
+  "host": "상주시가족센터",
+  "target": "0~9세 자녀를 둔 남성 양육자",
+  "size": "",
+  "year": 2024,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "2024년 7월 ~ 11월",
+  "active_months": [
+   7,
+   8,
+   9,
+   10,
+   11
+  ],
+  "does": [
+   "찾아가는 아빠교실",
+   "아빠랑 호기심 과학놀이",
+   "1박 2일 캠핑"
+  ],
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://kbmaeil.com/article/202408020401499"
+   }
+  ],
+  "sources": [
+   {
+    "title": "상주시가족센터 우리동네 아빠교실",
+    "url": "https://kbmaeil.com/article/202408020401499",
+    "publisher": "경북매일",
+    "date": "2024-08-02",
+    "kind": "기사"
+   }
+  ],
+  "note": "2024년 기준, 이후 연도 미확인. 문의 054-531-1342(기사 기재)."
+ },
+ {
+  "id": "ulsan-childcare-center-new-dad",
+  "name": "초보 아빠를 위한 육아의 기술 AtoZ (울산광역시육아종합지원센터)",
+  "kind": "public",
+  "type": "아빠 교육",
+  "region": "울산",
+  "area": "울산 동구(센터 위치)",
+  "host": "울산광역시육아종합지원센터",
+  "target": "초보 아버지",
+  "size": "회차별 10명 선착순",
+  "year": 2025,
+  "recruit": "2025년 7월 28일부터 '울아이랑' 홈페이지 교육 및 행사 메뉴에서 신청",
+  "recruit_months": [
+   7
+  ],
+  "active": "2025년 8월 16·23·30일 토요일 오전 10시 (3회)",
+  "active_months": [
+   8
+  ],
+  "does": [
+   "아빠 정체성과 가족 관계",
+   "신생아 건강·안전사고 예방",
+   "베이비 마사지 실습"
+  ],
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://www.heraldk.com/article/2025072117035889294"
+   }
+  ],
+  "sources": [
+   {
+    "title": "울산육아종합지원센터 초보 아버지 육아 교육",
+    "url": "https://www.heraldk.com/article/2025072117035889294",
+    "publisher": "헤럴드경제(미주)",
+    "date": "2025-07-21",
+    "kind": "기사"
+   }
+  ],
+  "note": "2025년 기준(월은 기사 문맥상 8월로 추정). 2026년 운영 여부 미확인."
+ },
+ {
+  "id": "gyeongnam-yangsan-400-dads",
+  "name": "경남 400인의 아빠단 (양산시)",
+  "kind": "public",
+  "type": "아빠단",
+  "region": "경남",
+  "area": "양산시",
+  "host": "양산시 여성청소년과(경남도 저출생 시범사업)",
+  "target": "양산 거주, 3~7세 자녀를 키우는 아빠 및 예비 아빠",
+  "size": "양산 20명 (경남 전체 400명)",
+  "year": 2025,
+  "recruit": "2025-04-04 ~ 04-23 (선착순, 발표 04-25)",
+  "recruit_months": [
+   4
+  ],
+  "active": "",
+  "active_months": [],
+  "does": [
+   "부자 교감 체험",
+   "전문 강사 육아 코칭",
+   "온라인 미션"
+  ],
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://www.asiae.co.kr/en/article/2025040315492163440"
+   }
+  ],
+  "sources": [
+   {
+    "title": "Yangsan City Recruits Participants for '400 Fathers Group'",
+    "url": "https://www.asiae.co.kr/en/article/2025040315492163440",
+    "publisher": "아시아경제",
+    "date": "2025-04-03",
+    "kind": "기사"
+   }
+  ],
+  "note": "2025년 시범사업. 2026년 지속 여부 미확인."
+ },
+ {
+  "id": "gyeongnam-jinju-dads",
+  "name": "진주 아빠단 (경남 400인의 아빠단)",
+  "kind": "public",
+  "type": "아빠단",
+  "region": "경남",
+  "area": "진주시",
+  "host": "진주시(경남도 시범사업)",
+  "target": "진주 거주, 3~7세 자녀를 키우는 아빠",
+  "size": "",
+  "year": 2025,
+  "recruit": "2025년 4월 23일까지 (진주시 청년온라인 플랫폼 신청)",
+  "recruit_months": [
+   4
+  ],
+  "active": "2025년 5월 발대식 ~ 12월",
+  "active_months": [
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ],
+  "does": [
+   "지역문화 체험",
+   "육아 멘토링",
+   "온라인 주간 미션",
+   "특강"
+  ],
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://kpinews.kr/newsView/1065576610718425"
+   }
+  ],
+  "sources": [
+   {
+    "title": "[진주시 소식] 육아 멘토링 '아빠단' 모집-유홍준 교수 초청 특강",
+    "url": "https://kpinews.kr/newsView/1065576610718425",
+    "publisher": "KPI뉴스",
+    "date": "2025-04-15",
+    "kind": "기사"
+   }
+  ],
+  "note": "2025년 기준. 2026년 모집 미확인."
+ },
+ {
+  "id": "gyeongnam-hamyang-400-dads",
+  "name": "함양 400인 아빠단 (경남 400인의 아빠단)",
+  "kind": "public",
+  "type": "아빠단",
+  "region": "경남",
+  "area": "함양군",
+  "host": "함양군(경남도 시범사업)",
+  "target": "아버지와 자녀가 함께하는 가정",
+  "size": "19가정 참여 (2025년 6월 기사 기준)",
+  "year": 2025,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "첫 프로그램 2025년 6월 21일",
+  "active_months": [
+   6
+  ],
+  "does": [
+   "부자 요리 체험",
+   "체험활동"
+  ],
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://kpinews.kr/newsView/1065577152788030"
+   }
+  ],
+  "sources": [
+   {
+    "title": "[함양군 소식] 400인 아빠단 운영-지리산시장 토요 포차 운영",
+    "url": "https://kpinews.kr/newsView/1065577152788030",
+    "publisher": "KPI뉴스",
+    "date": "2025-06-24",
+    "kind": "기사"
+   }
+  ],
+  "note": "2025년 기준. 운영 기간 전체는 기사에 없음."
+ },
+ {
+  "id": "gyeongnam-gimhae-appa-haebom",
+  "name": "김해, 아빠 해봄 (전신: 김해 40인의 아빠단)",
+  "kind": "public",
+  "type": "아빠단",
+  "region": "경남",
+  "area": "김해시",
+  "host": "김해시 인구정책 담당",
+  "target": "아빠와 자녀",
+  "size": "2026년 인원은 기사에 없음",
+  "year": 2026,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "2026년 6월 말 기준 발대식 개최 (운영 기간은 기사에 없음)",
+  "active_months": [],
+  "does": [
+   "발대식",
+   "반려식물 화분 만들기",
+   "화포천습지과학관 견학·체험"
+  ],
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://v.daum.net/v/20260630201308035"
+   }
+  ],
+  "sources": [
+   {
+    "title": "[현장속으로] 김해 아빠들의 당찬 도전 ‘김해, 아빠 해봄’",
+    "url": "https://v.daum.net/v/20260630201308035",
+    "publisher": "KBS 창원(다음)",
+    "date": "2026-06-30",
+    "kind": "기사"
+   }
+  ],
+  "note": "모집 기간과 정원은 확인 못함. 신청 정보는 김해시에 확인."
+ }
+]

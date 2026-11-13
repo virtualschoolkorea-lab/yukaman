@@ -66,7 +66,7 @@ ok('아이 칸이 제목 띠 안에', await q(`!!document.querySelector('.phead 
 // 메뉴
 await q(`[...document.querySelectorAll('#side .sv')].find(x => x.textContent.includes('심리')).click()`); await sleep(300);
 ok('메뉴 → 심리', (await q('location.hash')) === '#/guide/mind' && await q(`document.querySelector('#side .sv.on').textContent.includes('심리')`));
-ok('메뉴 다섯(홈 · 가이드 · 육아템 · 질문 · MY)', await q(`[...document.querySelectorAll('#side .nv')].map(x => x.textContent.trim()).join(',') === '홈,가이드,육아템,질문,MY'`));
+ok('메뉴 여섯(홈 · 가이드 · 육아템 · 아빠단 · 질문 · MY)', await q(`[...document.querySelectorAll('#side .nv')].map(x => x.textContent.trim()).join(',') === '홈,가이드,육아템,아빠단,질문,MY'`));
 await q(`[...document.querySelectorAll('#side .nv')].find(x => x.textContent.includes('질문')).click()`); await sleep(500);
 ok('질문 주제 8칸', await q(`document.querySelectorAll('#side .subs .sv').length === 8`));
 await q(`[...document.querySelectorAll('#side .sv')].find(x => x.textContent.includes('아기 돌보기')).click()`); await sleep(500);

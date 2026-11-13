@@ -1,0 +1,220 @@
+[
+ {
+  "id": "duranno-father-school",
+  "name": "두란노아버지학교",
+  "kind": "org",
+  "type": "아빠 교육",
+  "region": "전국",
+  "area": "전국 각 도시 지부",
+  "host": "(사)두란노아버지학교운동본부",
+  "target": "아버지(누구나 입학 신청 가능)",
+  "size": "누적 수료 454,813명(81개국 354개 도시, 누리집 표기)",
+  "year": 2026,
+  "recruit": "기수별 입학 신청",
+  "recruit_months": [],
+  "active": "기수별 과정 운영, 오픈세미나, 카드뉴스·아버지학교TV 콘텐츠",
+  "active_months": [
+   11,
+   12
+  ],
+  "does": [
+   "아버지 교육",
+   "아버지학교 과정",
+   "오픈세미나"
+  ],
+  "links": [
+   {
+    "label": "공식 누리집",
+    "url": "https://father.or.kr"
+   }
+  ],
+  "sources": [
+   {
+    "title": "두란노아버지학교 공식 누리집",
+    "url": "https://father.or.kr",
+    "publisher": "(사)두란노아버지학교운동본부",
+    "date": "2026-11-13",
+    "kind": "공식"
+   }
+  ],
+  "note": "기독교 기반 프로그램. 누리집에 2026-11-25 순천, 2026-12-05 서울 중앙 등 기수 일정 안내"
+ },
+ {
+  "id": "appa-school-cafe",
+  "name": "아빠학교(아빠놀이학교) 네이버 카페",
+  "kind": "self",
+  "type": "아빠 모임",
+  "region": "전국",
+  "area": "온라인",
+  "host": "아빠학교 운영진",
+  "target": "자녀를 둔 아빠",
+  "size": "2005년 당시 5,000명 보도",
+  "year": 2014,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "자녀 양육 정보·노하우 공유, 간단한 놀이('1분 놀이') 소개",
+  "active_months": [],
+  "does": [
+   "놀이 소개",
+   "육아 정보 나눔"
+  ],
+  "links": [
+   {
+    "label": "네이버 카페",
+    "url": "https://cafe.naver.com/swdad"
+   }
+  ],
+  "sources": [
+   {
+    "title": "[아주초대석] 권오진 아빠학교 교장",
+    "url": "https://www.ajunews.com/view/20140805100316862",
+    "publisher": "아주경제",
+    "date": "2014-08-06",
+    "kind": "기사"
+   }
+  ],
+  "note": "기사는 2014년, 카페 첫 화면은 도구 제한으로 열지 못함. 현재 활동 여부 확인 전"
+ },
+ {
+  "id": "sunday-fathers-club",
+  "name": "썬데이 파더스 클럽",
+  "kind": "self",
+  "type": "아빠 모임",
+  "region": "전국",
+  "area": "온라인(이메일 뉴스레터)",
+  "host": "아빠 회원들",
+  "target": "육아하는 아빠",
+  "size": "참여 아빠 5명(2023년 기사)",
+  "year": 2023,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "아빠들이 번갈아 육아일기를 쓰는 주 1회 뉴스레터(일요일 밤 9시 발송, 2023년 기사 기준)",
+  "active_months": [],
+  "does": [
+   "육아일기",
+   "뉴스레터"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "\"여보, 애 또 싼다!\"…밀레니얼 아빠들의 육아일기",
+    "url": "https://nocutnews.co.kr/news/5939902",
+    "publisher": "CBS노컷뉴스",
+    "date": "2023-05-09",
+    "kind": "기사"
+   },
+   {
+    "title": "육아하는 아빠 늘었지만…\"육아와 일의 균형 찾는 게 가장 큰 스트레스\"",
+    "url": "https://weekly.khan.co.kr/article/202605040600021",
+    "publisher": "주간경향",
+    "date": "2026-05-04",
+    "kind": "기사"
+   }
+  ],
+  "note": "구독 주소는 기사에 없음. 2026년 5월 기사에도 소개됨"
+ },
+ {
+  "id": "wikkuluka-dads",
+  "name": "위스테이별내 꿀꿀이 아빠모임(위꿀아)",
+  "kind": "self",
+  "type": "아빠 모임",
+  "region": "경기",
+  "area": "위스테이별내 아파트단지",
+  "host": "아빠 회원들",
+  "target": "같은 단지 2019년생 자녀를 둔 아빠",
+  "size": "아빠 15명",
+  "year": 2026,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "매월 마지막 토요일 여행·연극·미술·음악 등 프로그램, 아빠들이 재능에 따라 돌봄·교육 분담",
+  "active_months": [],
+  "does": [
+   "공동육아",
+   "여행",
+   "연극",
+   "미술",
+   "음악"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "육아하는 아빠 늘었지만…\"육아와 일의 균형 찾는 게 가장 큰 스트레스\"",
+    "url": "https://weekly.khan.co.kr/article/202605040600021",
+    "publisher": "주간경향",
+    "date": "2026-05-04",
+    "kind": "기사"
+   }
+  ],
+  "note": "기사 기준 6년째 활동. 같은 단지 주민 대상으로 외부 가입 여부는 확인 전. 시도 표기는 단지명 기준"
+ },
+ {
+  "id": "daangn-appadeul-playground",
+  "name": "아빠들의 놀이터(당근 모임)",
+  "kind": "self",
+  "type": "아빠 모임",
+  "region": "충남",
+  "area": "아산시 탕정면",
+  "host": "아빠 회원들",
+  "target": "초보·예비·다둥이 아빠 누구나",
+  "size": "회원 220명",
+  "year": 2026,
+  "recruit": "당근 모임 가입",
+  "recruit_months": [],
+  "active": "주말 야외활동, 키즈카페·체험학습 정보, 육아 정보 공유, 아빠 친목",
+  "active_months": [],
+  "does": [
+   "야외활동",
+   "체험학습 정보",
+   "육아 정보 나눔",
+   "친목"
+  ],
+  "links": [
+   {
+    "label": "당근 모임",
+    "url": "https://www.daangn.com/kr/group/%EC%95%84%EB%B9%A0%EB%93%A4%EC%9D%98-%EB%86%80%EC%9D%B4%ED%84%B0-3qi89xef81bj/post/"
+   }
+  ],
+  "sources": [
+   {
+    "title": "아빠들의 놀이터 - 당근 모임",
+    "url": "https://www.daangn.com/kr/group/%EC%95%84%EB%B9%A0%EB%93%A4%EC%9D%98-%EB%86%80%EC%9D%B4%ED%84%B0-3qi89xef81bj/post/",
+    "publisher": "당근",
+    "date": "2026-11-13",
+    "kind": "공식"
+   }
+  ],
+  "note": "게시글 58개, 개설 시기·최근 글 날짜는 페이지에 표시되지 않음"
+ },
+ {
+  "id": "haechi-papas",
+  "name": "해치파파스",
+  "kind": "self",
+  "type": "아빠 모임",
+  "region": "서울",
+  "area": "",
+  "host": "아빠 회원들",
+  "target": "자녀를 키우는 아빠",
+  "size": "회원 22명(2026-09 기사)",
+  "year": 2026,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "아이들과 키즈카페 등에서 함께 놀기, 육아 정보 나눔",
+  "active_months": [],
+  "does": [
+   "공동육아",
+   "키즈카페",
+   "육아 정보 나눔"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "경험 나누는 아빠표 육아 품앗이…\"엄마 없어도 재밌대요\"",
+    "url": "https://news.nate.com/view/20260918n00423",
+    "publisher": "조선일보",
+    "date": "2026-09-18",
+    "kind": "기사"
+   }
+  ],
+  "note": "'서울 200인의 아빠단' 출신 자조 모임이라는 설명은 검색 요약 기준으로 기사 본문에서 재확인하지 못함. 지난해 11월 9명에서 22명으로 증가"
+ }
+]

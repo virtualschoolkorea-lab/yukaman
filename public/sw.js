@@ -4,9 +4,9 @@
 // CACHE 이름 규칙: 화면 파일(index.html·app.js·style.css·guide-data.js·official-data.js·calc.js·library.json)을 고쳐 올릴 때마다 숫자를 하나 올린다. 안 올리면 옛 화면이 한 번 더 보일 수 있다.
 // 11-13: 도메인의 Cloudflare 설정이 JS · CSS에 '브라우저에 4시간 보관'(max-age=14400)을 붙여, 새로 올려도 브라우저가 옛 파일을 계속 썼다.
 // 그래서 미리 받을 때는 브라우저 보관분을 건너뛰고(cache: 'reload'), 평소에는 서버에 바뀌었는지 꼭 물어본다(cache: 'no-cache', 안 바뀌었으면 304로 가볍다).
-const CACHE = 'yukaman-v40';
+const CACHE = 'yukaman-v41';
 const TIMEOUT = 3000;
-const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'calc.js', 'config.js', 'guide-data.js', 'official-data.js', 'law-data.js', 'shop-data.js', 'sample-data.js', 'manifest.json', 'data/library.json', 'icons/logo.svg', 'icons/icon-192.png', 'icons/og.png'];
+const SHELL = ['./', 'index.html', 'style.css', 'app.js', 'calc.js', 'config.js', 'guide-data.js', 'official-data.js', 'law-data.js', 'shop-data.js', 'dad-data.js', 'sample-data.js', 'manifest.json', 'data/library.json', 'icons/logo.svg', 'icons/icon-192.png', 'icons/og.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(SHELL.map(u => new Request(u, { cache: 'reload' })))).catch(() => {}));

@@ -1,0 +1,729 @@
+[
+ {
+  "id": "national-100-dads-mohw",
+  "name": "100인의 아빠단 (보건복지부·인구보건복지협회)",
+  "kind": "public",
+  "type": "아빠단",
+  "region": "전국",
+  "area": "전국(시도별로 따로 모집·운영)",
+  "host": "보건복지부, 인구보건복지협회",
+  "target": "지역별로 다름(예: 3~8세 자녀를 둔 초보 아빠)",
+  "size": "",
+  "year": 2026,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "",
+  "active_months": [],
+  "does": [
+   "온라인 주간 미션",
+   "체험 프로그램",
+   "육아 멘토링"
+  ],
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://eiec.kdi.re.kr/policy/materialView.do?num=285911"
+   }
+  ],
+  "sources": [
+   {
+    "title": "“육아가 막막할 때, 선배 아빠와 함께 답 찾아요” 100인의 아빠단 육아멘토링(육친소 DAY) 개최",
+    "url": "https://eiec.kdi.re.kr/policy/materialView.do?num=285911",
+    "publisher": "보건복지부 인구정책총괄과(KDI 경제교육·정보센터 게시)",
+    "date": "2026-08-27",
+    "kind": "공식"
+   }
+  ],
+  "note": "보도자료는 보건복지부와 인구보건복지협회가 아빠단과 유사 프로그램을 계속 지원·운영할 계획이라고만 밝힘. 모집은 시도별이라 거주 지역 지역사무국에서 확인."
+ },
+ {
+  "id": "national-mentor-dads-yukchinso-2026",
+  "name": "100인의 아빠단 찾아가는 육아멘토링(육친소 DAY)",
+  "kind": "public",
+  "type": "아빠 교육",
+  "region": "전국",
+  "area": "인천(8.29) · 충남(9.5) · 울산(9.12)",
+  "host": "보건복지부, 인구보건복지협회",
+  "target": "참가 가족(세부 자격은 보도자료에 없음)",
+  "size": "",
+  "year": 2026,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "2026.8.29~9.12 (세 차례)",
+  "active_months": [
+   8,
+   9
+  ],
+  "does": [
+   "멘토 아빠 경험담",
+   "사전 접수 고민 상담",
+   "자연·생태 체험"
+  ],
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://eiec.kdi.re.kr/policy/materialView.do?num=285911"
+   }
+  ],
+  "sources": [
+   {
+    "title": "“육아가 막막할 때, 선배 아빠와 함께 답 찾아요” 100인의 아빠단 육아멘토링(육친소 DAY) 개최",
+    "url": "https://eiec.kdi.re.kr/policy/materialView.do?num=285911",
+    "publisher": "보건복지부 인구정책총괄과(KDI 경제교육·정보센터 게시)",
+    "date": "2026-08-27",
+    "kind": "공식"
+   }
+  ],
+  "note": "2026년 일정은 모두 끝남. 서울·경기에서 열린 회차는 없음. 멘토 아빠 파견 형식."
+ },
+ {
+  "id": "national-fathering-2026",
+  "name": "2026 찾아가는 파더링",
+  "kind": "public",
+  "type": "아빠 교육",
+  "region": "전국",
+  "area": "서울 · 대전 · 부산",
+  "host": "인구보건복지협회",
+  "target": "만 2~5세(2021~2024년생) 자녀를 키우는 아버지",
+  "size": "지역별 40명, 총 120명",
+  "year": 2026,
+  "recruit": "~28일까지(기사에 월 표기 없음, 6월 보도)",
+  "recruit_months": [
+   6
+  ],
+  "active": "권역별 원데이 클래스(날짜는 기사에 없음)",
+  "active_months": [],
+  "does": [
+   "기질별 양육법",
+   "훈육과 소통",
+   "나이별 놀이",
+   "TCI 기질검사",
+   "온라인 육아 코칭"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "아이와 더 가까워지는 특별한 하루…‘2026 찾아가는 파더링’ 참가자 모집",
+    "url": "https://www.heraldk.com/article/2026060918041873238",
+    "publisher": "헤럴드경제 미주판",
+    "date": "2026-06-09",
+    "kind": "기사"
+   }
+  ],
+  "note": "2023년부터 운영된 교육이라고 기사에 나옴. 신청은 협회 누리집 공지에서 받는다고 기사에 안내됨(누리집은 직접 열어 확인하지 않음)."
+ },
+ {
+  "id": "seoul-200-dads-2026",
+  "name": "서울 200인의 아빠단",
+  "kind": "public",
+  "type": "아빠단",
+  "region": "서울",
+  "area": "서울 전역",
+  "host": "서울시 여성가족실 저출생담당관",
+  "target": "서울 거주, 3세~초등 2학년(2018~2023년생) 자녀를 둔 아빠",
+  "size": "200명",
+  "year": 2026,
+  "recruit": "2026.2.4~2.20 (발표 2.26)",
+  "recruit_months": [
+   2
+  ],
+  "active": "2026.3.14 발대식 시작, 약 10개월",
+  "active_months": [
+   3,
+   4,
+   5,
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ],
+  "does": [
+   "캠핑",
+   "문화공연 관람",
+   "온라인 주간 미션",
+   "서울 유아차런 참석",
+   "연령별 소모임"
+  ],
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://mediahub.seoul.go.kr/archives/2017002"
+   }
+  ],
+  "sources": [
+   {
+    "title": "육아는 팀플! '서울 200인의 아빠단' 20일까지 참여자 모집",
+    "url": "https://mediahub.seoul.go.kr/archives/2017002",
+    "publisher": "서울시 미디어허브",
+    "date": "2026-02-04",
+    "kind": "공식"
+   },
+   {
+    "title": "'서울 200인의 아빠단' 활동 첫발…아빠 육아 지원 뭐가 있나?",
+    "url": "https://mediahub.seoul.go.kr/archives/2017420",
+    "publisher": "서울시 미디어허브",
+    "date": "2026-03-12",
+    "kind": "공식"
+   },
+   {
+    "title": "\"서울 200인의 아빠단\"과 함께…서울시, 맞돌봄 확산 위한 아빠육아 지원 확대",
+    "url": "https://news.seoul.go.kr/welfare/archives/577755",
+    "publisher": "서울시 복지분야 누리집",
+    "date": "2026-03-12",
+    "kind": "공식"
+   }
+  ],
+  "note": "2026년 모집은 마감(1,412명 신청, 약 7:1). 다음 모집 시기는 미확인. 문의 02-2133-5020."
+ },
+ {
+  "id": "seoul-fathers-class",
+  "name": "서울시 아버지 교실",
+  "kind": "public",
+  "type": "아빠 교육",
+  "region": "서울",
+  "area": "서울시·자치구 가족센터",
+  "host": "서울시, 자치구 가족센터",
+  "target": "서울시 소재 기업·학교·어린이집 아버지",
+  "size": "",
+  "year": 2026,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "",
+  "active_months": [],
+  "does": [
+   "아빠 자기돌봄·스트레스 관리",
+   "코치형 아버지되기",
+   "애착관계",
+   "아동학대 예방교육"
+  ],
+  "links": [
+   {
+    "label": "공식 누리집",
+    "url": "https://news.seoul.go.kr/welfare/archives/101728"
+   }
+  ],
+  "sources": [
+   {
+    "title": "아버지 교실",
+    "url": "https://news.seoul.go.kr/welfare/archives/101728",
+    "publisher": "서울시 복지분야 누리집",
+    "date": "2026-03-09",
+    "kind": "공식"
+   }
+  ],
+  "note": "인원·기간은 페이지에 없음(수정일 2026-03-09). 담당 여성가족실 가족담당관 02-2133-6549."
+ },
+ {
+  "id": "seoul-family-center-dad-edu",
+  "name": "서울시가족센터 아빠 육아 역량 향상 교육",
+  "kind": "public",
+  "type": "아빠 교육",
+  "region": "서울",
+  "area": "서울 전역",
+  "host": "서울시가족센터",
+  "target": "임신부 · 영유아 자녀를 둔 아빠",
+  "size": "",
+  "year": 2026,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "",
+  "active_months": [],
+  "does": [
+   "감정코칭",
+   "자기돌봄",
+   "긍정훈육",
+   "온·오프라인 교육"
+  ],
+  "links": [
+   {
+    "label": "공식 누리집",
+    "url": "https://mediahub.seoul.go.kr/archives/2017420"
+   }
+  ],
+  "sources": [
+   {
+    "title": "'서울 200인의 아빠단' 활동 첫발…아빠 육아 지원 뭐가 있나?",
+    "url": "https://mediahub.seoul.go.kr/archives/2017420",
+    "publisher": "서울시 미디어허브",
+    "date": "2026-03-12",
+    "kind": "공식"
+   }
+  ],
+  "note": "기사에는 임신부 또는 영유아 자녀를 둔 아빠 대상 온·오프라인 교육으로만 소개됨. 일정·인원은 미확인."
+ },
+ {
+  "id": "seoul-childcare-center-dad-coaching",
+  "name": "서울시육아종합지원센터 맞춤형 양육 코칭(아빠)",
+  "kind": "public",
+  "type": "아빠 교육",
+  "region": "서울",
+  "area": "서울 전역",
+  "host": "서울시육아종합지원센터",
+  "target": "만 7세까지 자녀를 키우는 아빠",
+  "size": "",
+  "year": 2026,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "",
+  "active_months": [],
+  "does": [
+   "양육 자가점검",
+   "영상 관찰",
+   "대면·비대면 상담",
+   "맞춤 해결책"
+  ],
+  "links": [
+   {
+    "label": "공식 누리집",
+    "url": "https://mediahub.seoul.go.kr/archives/2017420"
+   }
+  ],
+  "sources": [
+   {
+    "title": "'서울 200인의 아빠단' 활동 첫발…아빠 육아 지원 뭐가 있나?",
+    "url": "https://mediahub.seoul.go.kr/archives/2017420",
+    "publisher": "서울시 미디어허브",
+    "date": "2026-03-12",
+    "kind": "공식"
+   }
+  ],
+  "note": "상시 운영 여부와 신청 방법은 기사에 없어 미확인."
+ },
+ {
+  "id": "seoul-gangnam-builog",
+  "name": "강남구가족센터 부(父)이로그",
+  "kind": "public",
+  "type": "아빠 모임",
+  "region": "서울",
+  "area": "강남구",
+  "host": "강남구가족센터",
+  "target": "아빠와 자녀(아자프로젝트-아지트), 육아휴직 중인 아빠(부라보)",
+  "size": "",
+  "year": 2026,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "",
+  "active_months": [],
+  "does": [
+   "아빠·자녀 체험(도자기 공방)",
+   "육아휴직 아빠 프로그램",
+   "매월 놀이 키트"
+  ],
+  "links": [
+   {
+    "label": "공식 누리집",
+    "url": "https://www.gangnam.go.kr/gangnamlife/2026/html/vol369/sub01_03.html"
+   }
+  ],
+  "sources": [
+   {
+    "title": "함께하는 따뜻한 이음 강남구가족센터",
+    "url": "https://www.gangnam.go.kr/gangnamlife/2026/html/vol369/sub01_03.html",
+    "publisher": "강남구",
+    "date": "",
+    "kind": "공식"
+   }
+  ],
+  "note": "구 소식지 글에 올해부터 대폭 확대됐다고 나옴. 인원·기간·신청법은 글에 없음. 강남구가족센터 02-3412-2222."
+ },
+ {
+  "id": "seoul-seocho-healing-daddy",
+  "name": "서초힐링대디",
+  "kind": "public",
+  "type": "아빠 모임",
+  "region": "서울",
+  "area": "서초구",
+  "host": "서초구(서초구가족센터 공동육아나눔터)",
+  "target": "육아휴직 중이거나 휴직 예정인 남성 양육자",
+  "size": "",
+  "year": 2024,
+  "recruit": "연중 상시(카카오톡 오픈채팅 '쉼표아빠, 육휴아빠')",
+  "recruit_months": [],
+  "active": "2024년 연말까지 월 4회, 총 44회",
+  "active_months": [],
+  "does": [
+   "육아달인 교육",
+   "양육 코칭",
+   "힐링데이 원데이클래스",
+   "가족 행사"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "아빠 교육? 서초힐링대디에 물어보세요",
+    "url": "https://m.go.seoul.co.kr/news/2024/03/01/20240301500071",
+    "publisher": "서울신문",
+    "date": "2024-03-01",
+    "kind": "기사"
+   }
+  ],
+  "note": "2024년 기준 기사. 2026년 운영 여부는 미확인. 문의 서초구 가족센터 02-6919-9760."
+ },
+ {
+  "id": "seoul-seocho-heal-n-fit",
+  "name": "서초구 아빠 힐앤핏 · 육퇴운동클럽",
+  "kind": "public",
+  "type": "아빠 모임",
+  "region": "서울",
+  "area": "서초구(서초보건지소)",
+  "host": "서울 서초구",
+  "target": "미취학 자녀를 키우는 아빠(힐앤핏은 12개월 이하 자녀 동반 가능)",
+  "size": "",
+  "year": 2026,
+  "recruit": "매월 셋째 주 월요일 14시부터 건강부모e음 누리집(힐앤핏)",
+  "recruit_months": [],
+  "active": "2026.2~ 짝수 달 월 1회 특강형(힐앤핏)",
+  "active_months": [
+   2,
+   4,
+   6,
+   8,
+   10,
+   12
+  ],
+  "does": [
+   "맞춤형 운동",
+   "서킷 운동",
+   "육아 아빠 회복"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "육아하는 아빠도 회복이 필요하다! ...서초구, 맞춤형 운동 프로그램 '아빠 힐앤핏' 운영",
+    "url": "https://www.heraldk.com/article/2026050714544859278",
+    "publisher": "헤럴드경제 미주판",
+    "date": "2026-05-07",
+    "kind": "기사"
+   },
+   {
+    "title": "서초구 ‘육아하는 아빠를 위한 육퇴운동클럽(서킷)’ 운영",
+    "url": "https://www.heraldk.com/article/2026012301121110194",
+    "publisher": "헤럴드경제 미주판",
+    "date": "2026-01-23",
+    "kind": "기사"
+   }
+  ],
+  "note": "육퇴운동클럽은 1월 20일 특강 1회(참여 8명) 보도만 확인. 두 프로그램의 이후 일정은 미확인."
+ },
+ {
+  "id": "seoul-eunpyeong-father-edu-2026",
+  "name": "은평구 아버지 교육 프로그램(놀이·유대감)",
+  "kind": "public",
+  "type": "아빠 교육",
+  "region": "서울",
+  "area": "은평구",
+  "host": "은평구청(은평구 종합육아지원센터)",
+  "target": "생후 36개월~만 6세 자녀를 키우는 은평구 거주 아버지",
+  "size": "10명",
+  "year": 2026,
+  "recruit": "은평구 종합육아지원센터 홈페이지 신청",
+  "recruit_months": [
+   10
+  ],
+  "active": "2026.10 (온라인 이론 10.21, 대면 10.24)",
+  "active_months": [
+   10
+  ],
+  "does": [
+   "아이 행동 이해",
+   "놀이 양육",
+   "놀이 상호작용 관찰·지도"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "은평구, 놀이와 유대감에 초점을 맞춘 아버지 교육 프로그램 운영",
+    "url": "https://biz.heraldcorp.com/article/10900518",
+    "publisher": "헤럴드경제",
+    "date": "2026-10-13",
+    "kind": "기사"
+   }
+  ],
+  "note": "2026년 10월 회차는 끝남. 다음 회차는 미확인."
+ },
+ {
+  "id": "gyeonggi-100-dads",
+  "name": "경기 100인의 아빠단",
+  "kind": "public",
+  "type": "아빠단",
+  "region": "경기",
+  "area": "경기도 전역",
+  "host": "경기도, 인구보건복지협회 경기도지회(가족계획협회 경기지부)",
+  "target": "경기 거주 3~9세(2017~2022년생) 자녀를 둔 초보 아빠(2025년 기준, 다문화·다자녀·한부모 우선)",
+  "size": "100명",
+  "year": 2025,
+  "recruit": "2025.5.13~5.23 (선착순)",
+  "recruit_months": [
+   5
+  ],
+  "active": "2025.6 개강식 이후",
+  "active_months": [
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ],
+  "does": [
+   "온라인 주간 미션",
+   "부부 전문가 특강",
+   "자녀 체험 프로그램",
+   "가족친화 캠페인"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "Gyeonggi Province Recruiting \"100 Dads Group\" for Novice Fathers with Children Aged 3 to 9",
+    "url": "https://www.asiae.co.kr/en/article/2025051307151040038",
+    "publisher": "아시아경제",
+    "date": "2025-05-13",
+    "kind": "기사"
+   },
+   {
+    "title": "‘아빠와 추억 만들기’…인구보건복지협회, 경기 100인의 아빠단 체험 프로그램 성료",
+    "url": "https://www.kyeonggi.com/article/20240701580238",
+    "publisher": "경기일보",
+    "date": "2024-07-01",
+    "kind": "기사"
+   }
+  ],
+  "note": "2025년 모집 기준(2024년은 3~7세 대상). 2026년 모집은 이번 조사에서 확인하지 못함. 2025 기사는 안내 채널로 네이버 카페 100papa를 언급(직접 열어 확인하지 않음)."
+ },
+ {
+  "id": "gyeonggi-papa-school-2026",
+  "name": "경기도 아빠스쿨 (정규과정 2기)",
+  "kind": "public",
+  "type": "아빠 교육",
+  "region": "경기",
+  "area": "경기도 전역",
+  "host": "경기도여성가족재단",
+  "target": "만 18세 이하 자녀를 키우는 남성양육자·예비 남성양육자(경기 거주 또는 도내 재직)",
+  "size": "300명",
+  "year": 2026,
+  "recruit": "2026.5.13 10시부터 선착순",
+  "recruit_months": [
+   5
+  ],
+  "active": "2026.6.13 입학식 예정~11월",
+  "active_months": [
+   6,
+   7,
+   8,
+   9,
+   10,
+   11
+  ],
+  "does": [
+   "아빠에듀(교육)",
+   "아빠코칭(1대1)",
+   "아빠하이(교류)",
+   "온라인 실시간 교육"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "경기도여성가족재단, '경기도 아빠스쿨' 정규과정 2기 참여자 모집 '스타트'",
+    "url": "https://www.kgnews.co.kr/mobile/article.html?no=895216",
+    "publisher": "경기신문",
+    "date": "2026-05-11",
+    "kind": "기사"
+   },
+   {
+    "title": "“아빠도 함께, 같이 육아” 경기도여성가족재단 ‘아빠하이&아빠스쿨’ 호응",
+    "url": "https://v.daum.net/v/20251013121854867?f=p",
+    "publisher": "중부일보(다음뉴스)",
+    "date": "2025-10-13",
+    "kind": "기사"
+   }
+  ],
+  "note": "2026년 2기 모집은 마감 추정. 1기(2025 시범)는 150명. 신청은 재단 누리집이라고만 안내돼 주소 미확인. 2025 기사는 재단 협찬 기사."
+ },
+ {
+  "id": "gyeonggi-appa-high",
+  "name": "경기도 아빠하이",
+  "kind": "public",
+  "type": "아빠 모임",
+  "region": "경기",
+  "area": "경기도 시·군",
+  "host": "경기도여성가족재단",
+  "target": "3~7세 자녀를 둔 남성양육자",
+  "size": "2025년 550명 계획(2024년 1,200명)",
+  "year": 2025,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "2020년 시작, 2025년 상반기 4.5 원예교육으로 시작",
+  "active_months": [],
+  "does": [
+   "놀이",
+   "지역별 체험활동",
+   "네트워킹",
+   "지역별 소모임"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "“아빠도 함께, 같이 육아” 경기도여성가족재단 ‘아빠하이&아빠스쿨’ 호응",
+    "url": "https://v.daum.net/v/20251013121854867?f=p",
+    "publisher": "중부일보(다음뉴스)",
+    "date": "2025-10-13",
+    "kind": "기사"
+   },
+   {
+    "title": "\"경기도가 아빠 육아를 지원합니다\"…양육사업 통합 운영",
+    "url": "https://kpinews.kr/newsView/1065566425272811&dt=m",
+    "publisher": "KPI뉴스",
+    "date": "2025-04-13",
+    "kind": "기사"
+   }
+  ],
+  "note": "2026년에는 아빠스쿨 정규과정의 교류 트랙(아빠하이)으로 소개됨. 별도 모집 여부는 미확인."
+ },
+ {
+  "id": "gyeonggi-latte-papa-nanum",
+  "name": "라떼파파 육아나눔터",
+  "kind": "public",
+  "type": "아빠 모임",
+  "region": "경기",
+  "area": "경기도 시·군 육아나눔터 10개소(2025년)",
+  "host": "경기도, 시군 육아나눔터",
+  "target": "육아나눔터를 이용하는 아빠",
+  "size": "",
+  "year": 2025,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "",
+  "active_months": [],
+  "does": [
+   "아빠 육아 맞춤 프로그램",
+   "아빠 커뮤니티 지원"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "\"경기도가 아빠 육아를 지원합니다\"…양육사업 통합 운영",
+    "url": "https://kpinews.kr/newsView/1065566425272811&dt=m",
+    "publisher": "KPI뉴스",
+    "date": "2025-04-13",
+    "kind": "기사"
+   }
+  ],
+  "note": "2025년 4월 기사 기준(2024년 9개소, 연 3,183명 이용). 개소 위치와 2026년 운영은 미확인."
+ },
+ {
+  "id": "incheon-100-dads-8th",
+  "name": "인천 100인의 아빠단 (제8기)",
+  "kind": "public",
+  "type": "아빠단",
+  "region": "인천",
+  "area": "인천 전역",
+  "host": "인천시, 인구보건복지협회 인천지회",
+  "target": "초보 아빠(자녀 나이는 기사에 없음)",
+  "size": "",
+  "year": 2026,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "2026.6.13 발대식 이후",
+  "active_months": [
+   6,
+   7,
+   8,
+   9,
+   10,
+   11,
+   12
+  ],
+  "does": [
+   "놀이·교육·건강·일상·관계 온라인 주간 미션",
+   "육아 노하우 공유"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "인천시, '제8기 100인의 아빠단' 닻 올렸다…부부 공동 육아 문화 확대",
+    "url": "https://kyeonggi.com/article/20260614580253",
+    "publisher": "경기일보",
+    "date": "2026-06-14",
+    "kind": "기사"
+   }
+  ],
+  "note": "2026년 모집 요강(대상 자녀 나이, 인원, 기간)은 확인하지 못함. 종료 시점도 기사에 없음."
+ },
+ {
+  "id": "self-seoul-southwest-dads-yugacrew",
+  "name": "아빠 공동육아 모임 (육아크루 자유모임, 서울 서남권)",
+  "kind": "self",
+  "type": "아빠 모임",
+  "region": "서울",
+  "area": "서울 서남권(모임장 거주 구로구 오류동)",
+  "host": "육아크루 앱 자유모임 아빠 회원들",
+  "target": "비슷한 연령대 자녀를 키우는 아빠(2022년·2025년생 자녀를 둔 모임장이 운영, 희망 인원 2~100명)",
+  "size": "",
+  "year": 2026,
+  "recruit": "상시 오픈(모임장 승인 필요)",
+  "recruit_months": [],
+  "active": "정기 모임 없이 자유롭게",
+  "active_months": [],
+  "does": [
+   "놀이터",
+   "키즈카페",
+   "축제",
+   "체험활동",
+   "피크닉"
+  ],
+  "links": [
+   {
+    "label": "모집 공고",
+    "url": "https://www.yugacrew.com/freemeetup/2068"
+   }
+  ],
+  "sources": [
+   {
+    "title": "아빠 공동육아 모임 (자유모임)",
+    "url": "https://www.yugacrew.com/freemeetup/2068",
+    "publisher": "육아크루",
+    "date": "",
+    "kind": "공식"
+   }
+  ],
+  "note": "육아크루 앱에서 가입 신청. 게시일은 페이지에 없고 이미지 경로상 2026년 4월경 등록으로 보임."
+ },
+ {
+  "id": "self-wistay-byeollae-dads",
+  "name": "위스테이별내 꿀꿀이 아빠모임(위꿀아)",
+  "kind": "self",
+  "type": "아빠 모임",
+  "region": "경기",
+  "area": "위스테이별내 단지(기사에 시·군 이름 없음)",
+  "host": "단지 거주 아빠들",
+  "target": "같은 단지에 사는 아빠, 2019년생 자녀를 둔 아빠 15명",
+  "size": "15명",
+  "year": 2026,
+  "recruit": "",
+  "recruit_months": [],
+  "active": "6년째 활동, 매월 마지막 토요일",
+  "active_months": [],
+  "does": [
+   "아이들과 여행",
+   "연극",
+   "미술",
+   "음악",
+   "재능 나눔 돌봄"
+  ],
+  "links": [],
+  "sources": [
+   {
+    "title": "육아하는 아빠 늘었지만…“육아와 일의 균형 찾는 게 가장 큰 스트레스”",
+    "url": "https://weekly.khan.co.kr/article/202605040600021",
+    "publisher": "주간경향",
+    "date": "2026-05-04",
+    "kind": "기사"
+   }
+  ],
+  "note": "단지 주민 중심 모임으로 외부 가입 방법·온라인 주소는 기사에 없음. 지역(경기)은 단지명으로 분류한 것이라 확인 전."
+ }
+]
