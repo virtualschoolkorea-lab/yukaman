@@ -729,7 +729,35 @@
       ]
     };
     L.low = L.kid.map(x => (x.t === '육아휴직 시작 기한' ? Object.assign({}, x, { t: '육아휴직은 초2까지', lab: '초2 끝까지' }) : x));
-    return L[key] || [];
+    return jobItems(L[key] || [], key);
+  }
+  // 홈 직종 칩(11-13 운영자 "홈에서 이 다른직종 보기 누르면 줄글로 나와서 뭔가 불편해 그냥 여기서도 직종 선택하면 곧바로 화면 바뀌게" → 시안 → "이대로 만들고 올려").
+  // 고용보험 근로자가 아니면 고용보험 · 남녀고용평등법 항목을 빼고 그 직종 항목을 넣는다. 글은 가이드 '직종마다 달라요'(leave-job)에 있는 것만. 계산기 직종(calcS.job)과 같은 값을 쓴다
+  const HOME_JOBS = [{ k: 'worker', n: '회사원 등' }, { k: 'civil', n: '공무원' }, { k: 'teacher', n: '교원' }, { k: 'self', n: '자영업 · 프리랜서' }];
+  // 칩에서 고른 값이 계산기에서 바꾼 직종과 어긋나면 계산기 쪽을 따른다(교원 칩은 계산기의 '공무원·국공립 교원')
+  const homeJob = () => { const h = store.get('homeJob', ''); if (h && (h === 'teacher' ? 'civil' : h) === calcS.job) return h; return calcS.job === 'civil' ? 'civil' : calcS.job === 'self' ? 'self' : 'worker'; };
+  const JOB_CARD = {
+    civil: ['공무원은 수당 규정 기준', '고용보험이 아니라 공무원 수당 규정. 첫 6개월 월봉급액, 7개월째부터 80%, 휴직 시작일부터 1년까지.'],
+    teacher: ['교원은 공무원 수당 규정 기준', '국공립 · 사립 교원 모두 공무원 수당 규정을 따름. 육아휴직은 만 8세 · 초2 이하 자녀, 1명당 3년 이내.'],
+    self: ['육아휴직 급여 대상 아님', '고용보험에 가입했어도 자영업자는 육아휴직과 그 급여 대상이 아님. 지역 지원은 따로 확인.']
+  };
+  const EMP_ONLY = /배우자 출산휴가|6\+6|육아휴직|근로시간 단축/;
+  function jobItems(list, key) {
+    const j = homeJob();
+    if (j === 'worker') return list;
+    const out = list.filter(x => !EMP_ONLY.test(x.t)), add = [];
+    const pay = { t: '휴직 수당 상한', s: '4~6개월 200만원 · 7개월째부터 160만원', lab: '1~3개월 250만원', h: '#/calc/leave', go: '공무원 수당 계산하기' };
+    if (j === 'civil' && key !== 'teen') add.push({ t: '육아휴직', s: '자녀 1명당 3년 이내. 수당은 그중 1년', lab: '12세 · 초6 이하', h: '#/g/leave-job' }, pay);
+    if (j === 'teacher' && ['expect', 'baby', 'kid', 'low'].indexOf(key) >= 0) add.push({ t: '육아휴직', s: '자녀 1명당 3년 이내. 수당은 그중 1년', lab: '만 8세 · 초2 이하', h: '#/g/leave-job' }, Object.assign({}, pay, { go: '교원 수당 계산하기' }));
+    if (j === 'self' && (key === 'expect' || key === 'baby')) add.push({ t: '서울 아빠 출산휴가급여', s: '1인 자영업자 · 프리랜서 아빠, 최대 15일 · 하루 8만원', lab: '서울 거주', h: '#/g/leave-job' });
+    add.forEach(x => { x.job = 1; });
+    out.splice(Math.min(2, out.length), 0, ...add);
+    return out;
+  }
+  function jobRow() {
+    const j = homeJob(), c = JOB_CARD[j];
+    return '<div class="chips jobchips" id="homeJobs" role="group" aria-label="내 직종"><span class="jk">내 직종</span>' + HOME_JOBS.map(x => '<button type="button" class="chip' + (x.k === j ? ' on' : '') + '" data-job="' + x.k + '" aria-pressed="' + (x.k === j) + '">' + x.n + '</button>').join('') + '<a class="chip jmore" href="#/g/leave-job">그 밖 ›</a></div>'
+      + (c ? '<div class="jcard"><b>' + c[0] + '</b>' + c[1] + ' <a href="#/g/leave-job">자세히 ›</a></div>' : '');
   }
   // 먼저 4개만, 끝난 것과 나머지는 '더 보기' 뒤에(11-04 운영자 "특히 홈화면이 가독성이 떨어져")
   const TL_SHOW = 4;
@@ -746,6 +774,7 @@
       }
       const hide = state === 'done' || (shown >= TL_SHOW && !isWide());     // PC는 자리가 넉넉해 끝난 것만 접는다
       if (!hide) shown++;
+      if (x.job && !state) state = 'job';
       return '<a class="tli ' + state + '" href="' + x.h + '"' + (hide ? ' hidden' : '') + '><span class="top"><b>' + esc(x.t) + '</b><span class="pill ' + state + '">' + esc(pill) + '</span></span><small>' + esc(x.s) + '</small>' + (x.go ? '<span class="go">' + esc(x.go) + ' →</span>' : '') + '</a>';
     }).join('');
     const rest = items.length - shown;
@@ -755,6 +784,13 @@
     const e = $('#kidEdit'); if (e) e.addEventListener('click', () => openKidDates());
     const ka = $('#kidAdd'); if (ka) ka.addEventListener('click', () => openKidDates(true));
     const m = $('#tlMore'); if (m) m.addEventListener('click', () => { $$('.tli[hidden]').forEach(x => { x.hidden = false; }); m.remove(); });
+    const jb = $('#homeJobs');
+    if (jb) jb.addEventListener('click', ev => {
+      const b = ev.target.closest('[data-job]'); if (!b) return;
+      const k = b.dataset.job, y = window.scrollY;
+      store.set('homeJob', k); calcS.job = k === 'teacher' ? 'civil' : k; saveCalc();
+      renderHome(); window.scrollTo(0, y);
+    });
     const box = $('#ages'); if (!box) return;
     box.addEventListener('click', ev => { const b = ev.target.closest('[data-age]'); if (!b) return; store.set('age', store.get('age', '') === b.dataset.age ? '' : b.dataset.age); renderHome(); });
   }
@@ -798,7 +834,7 @@
       + kidsRow()
       + agesRow(key)
       + homeSec(a ? esc(a.name) + ', 지금 챙길 것' : '지금 챙길 것', a ? '<span>순서대로</span>' : '')
-      + (a && calcS.job !== 'worker' ? '<a class="jobhint" href="#/g/leave-job">회사원 등 고용보험 기준. <b>다른 직종 보기 ›</b></a>' : '')
+      + (a ? jobRow() : '')
       + timeline(key, d)
       + homeGear(key)
       + homeSec(a ? '우리 아이 나이에 맞는 글' : '아빠 가이드', !a ? '<a class="all" href="#/guide">전체 보기 →</a>' : picks.length > (isWide() ? 3 : 4) ? '<a class="all" href="#/guide/age/' + key + '">전체 보기 →</a>' : '')

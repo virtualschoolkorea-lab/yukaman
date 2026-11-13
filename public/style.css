@@ -997,6 +997,15 @@ a.btn { text-align: center; }
 .dnews b { display: block; margin-top: 3px; font-size: 14.5px; font-weight: 800; line-height: 1.4; word-break: keep-all; }
 .dnews .o { display: block; margin-top: 3px; font-size: 12.5px; font-weight: 800; color: var(--pri-d); }
 .btn.dask { display: block; margin-top: 18px; }
+/* 홈 직종 칩(11-13) */
+.chips.jobchips { margin-top: 2px; margin-bottom: 4px; align-items: center; }
+.jobchips .jk { flex: none; font-size: 12.5px; font-weight: 800; color: var(--sub); margin-right: 2px; }
+.jobchips .chip { padding: 7px 12px; font-size: 13.5px; }
+.jobchips .jmore { border-color: transparent; background: transparent; color: var(--pri-d); padding-left: 4px; }
+.jcard { margin: 8px 0 10px; padding: 12px 13px; border-radius: 14px; background: var(--pri-l); font-size: 13.5px; font-weight: 700; line-height: 1.55; color: var(--pri-d); }
+.jcard b { display: block; font-size: 14.5px; font-weight: 900; color: var(--ink); margin-bottom: 2px; }
+.jcard a { font-weight: 800; text-decoration: underline; text-underline-offset: 3px; }
+.tli.job:before { background: var(--pri); }
 .drec .rw { display: block; margin-top: 4px; font-size: 12.5px; font-weight: 700; color: var(--sub); }
 .dmore { margin-top: 8px; }
 .dmore summary { padding: 10px 2px; font-size: 13.5px; font-weight: 800; color: var(--pri-d); cursor: pointer; }
