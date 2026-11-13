@@ -1034,3 +1034,20 @@ a.btn { text-align: center; }
 .dcal i.a { background: var(--pri); }
 [data-theme=dark] .dmon .bx i { background: #34507F; }
 [data-theme=dark] .dmon .now .bx i { background: var(--pri); }
+
+/* 카드뉴스(11-13): 글 위에서 옆으로 넘기기, 줄글은 접어 둠 */
+.deck { margin: 14px 0 4px; }
+.deckrow { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; scrollbar-width: none; border-radius: 16px; }
+.deckrow::-webkit-scrollbar { display: none; }
+.deckrow img { flex: 0 0 100%; width: 100%; height: auto; aspect-ratio: 4 / 5; scroll-snap-align: start; border-radius: 16px; box-shadow: 0 2px 10px rgba(30, 42, 74, .10); background: #fff; }
+.deckdots { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
+.deckdots button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 4px; background: var(--line-s); cursor: pointer; transition: width .2s; }
+.deckdots button.on { width: 22px; background: var(--ink); }
+.gfold { margin-top: 14px; background: var(--card); border: 1.5px solid var(--line); border-radius: 14px; padding: 0 14px; }
+.gfold > summary { list-style: none; cursor: pointer; padding: 14px 0; font-weight: 800; display: flex; justify-content: space-between; }
+.gfold > summary::-webkit-details-marker { display: none; }
+.gfold > summary::after { content: '⌄'; color: var(--mute); }
+.gfold[open] > summary::after { content: '⌃'; }
+.gfold[open] { padding-bottom: 8px; }
+@media (min-width: 1100px) { .deck { max-width: 520px; } }
+[data-theme=dark] .deckdots button.on { background: #fff; }

@@ -992,7 +992,7 @@
     view.innerHTML = '<section class="pad"><article class="garticle">'
       + '<div class="meta"><span class="badge c-etc">' + esc(c.e || '') + ' ' + esc(c.name || '') + '</span>' + (g.tag ? '<span class="tag ' + tagCls(g.tag) + '">' + esc(g.tag) + '</span>' : '') + '</div>'
       + '<h1>' + esc(g.title) + '</h1><p class="gsub">' + esc(g.sub) + '</p>' + lawWarn(g, laws) + note     // 글 맨 위의 '육아템 추천받기'는 뺐다(11-13 운영자). 글 끝의 단추는 그대로
-      + blocks(g.body, g)
+      + (g.cards ? cardDeck(g) + '<details class="gfold"><summary>글로 자세히 보기</summary>' + blocks(g.body, g) + '</details>' : blocks(g.body, g))
       + (g.shop ? shopGo(g.shop) : '')     // 다 읽은 뒤에도 한 번 더(읽고 난 뒤가 누를 마음이 가장 클 때)
       + (related.length ? '<div class="gearrel"><b>이 글과 닿는 용품</b><div class="glist">' + related.map(grow).join('') + '</div><a class="lk2" data-cta="rel" href="#/shop">육아템 추천받기 ›</a></div>' : '')
       + lawBox(laws)
@@ -1002,7 +1002,24 @@
       // 글 끝에서 질문게시판으로(11-12). 글의 community 값이 지금 질문 주제에 있으면 그 칸으로, 아니면 전체로
       + (g.community ? '<a class="glink" href="#/community' + (CAT[g.community] ? '/' + esc(g.community) : '') + '"><span>🙋 아빠들에게 물어보기 (질문게시판)</span><span>→</span></a>' : '')
       + '</section>';
+    if (g.cards) wireDeck();
     window.scrollTo(0, 0);
+  }
+  // 카드뉴스(11-13): 옆으로 넘기는 그림 묶음. 글의 cards = 장 수, 그림은 cards/<글 id>-N.webp, 글자는 cardAlt(화면 읽기용)
+  function cardDeck(g) {
+    let h = '<div class="deck"><div class="deckrow" id="deckRow">';
+    for (let i = 1; i <= g.cards; i++) h += '<img src="cards/' + esc(g.id) + '-' + i + '.webp" width="1080" height="1350" ' + (i > 2 ? 'loading="lazy" ' : '') + 'alt="' + esc((g.cardAlt || [])[i - 1] || g.title + ' ' + i + '장') + '">';
+    h += '</div><div class="deckdots" id="deckDots">';
+    for (let i = 0; i < g.cards; i++) h += '<button type="button" aria-label="' + (i + 1) + '장"' + (i ? '' : ' class="on"') + '></button>';
+    return h + '</div></div>';
+  }
+  function wireDeck() {
+    const row = $('#deckRow'), dots = $$('#deckDots button');
+    if (!row) return;
+    const step = () => row.clientWidth + 10;     // style.css .deckrow gap 10px
+    const cur = () => Math.round(row.scrollLeft / step());
+    row.addEventListener('scroll', () => { const n = cur(); dots.forEach((d, i) => d.classList.toggle('on', i === n)); }, { passive: true });
+    dots.forEach((d, i) => d.addEventListener('click', () => row.scrollTo({ left: i * step(), behavior: 'smooth' })));
   }
 
   // ----- 계산기 -----
