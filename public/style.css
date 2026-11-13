@@ -1039,7 +1039,7 @@ a.btn { text-align: center; }
 .deck { position: relative; margin: 14px auto 4px; }
 .deckrow { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; gap: 10px; scrollbar-width: none; border-radius: 16px; }
 .deckrow::-webkit-scrollbar { display: none; }
-.deckrow img { flex: 0 0 100%; width: 100%; height: auto; aspect-ratio: 4 / 5; scroll-snap-align: start; border-radius: 16px; box-shadow: 0 2px 10px rgba(30, 42, 74, .10); background: #fff; }
+.deckrow img { flex: 0 0 100%; width: 100%; height: auto; aspect-ratio: 4 / 5; scroll-snap-align: start; border-radius: 16px; box-shadow: 0 2px 10px rgba(30, 42, 74, .10); background: #fff; border: 1.5px solid var(--line-s); box-sizing: border-box; }
 .deckdots { display: flex; justify-content: center; gap: 6px; margin-top: 10px; }
 .deckdots button { width: 8px; height: 8px; padding: 0; border: 0; border-radius: 4px; background: var(--line-s); cursor: pointer; transition: width .2s; }
 .deckdots button.on { width: 22px; background: var(--ink); }
