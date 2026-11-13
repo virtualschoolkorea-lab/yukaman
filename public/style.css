@@ -708,7 +708,7 @@ a.btn { text-align: center; }
 .badge.c-mind { background: var(--te-l); color: var(--te); }
 /* 아빠 육아템: 맨 위 표시 줄, 카테고리 여섯, 상품 칸 */
 /* 11-13 검은 상자 → 문구 한 줄(운영자 "박스 빼고 그냥 문구 하나로") */
-.paynote { margin: 12px 2px 0; font-size: 12.5px; font-weight: 600; line-height: 1.5; color: var(--sub); word-break: keep-all; }
+.paynote { margin: 12px 0 0; padding: 0 14px; font-size: 12.5px; font-weight: 600; line-height: 1.5; color: var(--sub); word-break: keep-all; }
 .cats { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 14px; }
 .cat { display: flex; flex-direction: column; gap: 3px; min-width: 0; padding: 14px; border-radius: 16px; background: var(--card); box-shadow: var(--shadow); }
 .cat .ge { width: 42px; height: 42px; border-radius: 13px; background: var(--but-l); display: grid; place-items: center; font-size: 22px; line-height: 1; margin-bottom: 5px; }
